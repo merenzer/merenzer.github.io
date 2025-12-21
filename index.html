@@ -197,7 +197,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // SENİN AYARLARIN (DOĞRU URL İLE)
+        // SENİN AYARLARIN
         const firebaseConfig = {
             apiKey: "AIzaSyAknclwFdilfFnzbPjtSXyjCPepZm5dM6k",
             authDomain: "discordtoto-5b23b.firebaseapp.com",
@@ -331,9 +331,10 @@
                 }
             });
 
+            // DÜZELTME BURADA YAPILDI: n -> name, l -> logo
             let statsMap = {};
             teamDetails.forEach(t => {
-                statsMap[t.name] = { n: t.name, l: t.logo, om:0, g:0, b:0, m:0, ag:0, yg:0, av:0, p:0 };
+                statsMap[t.name] = { name: t.name, logo: t.logo, om:0, g:0, b:0, m:0, ag:0, yg:0, av:0, p:0 };
             });
 
             fixtureData.forEach(m => {
@@ -385,7 +386,6 @@
                 
                 let displayContent = "";
 
-                // EĞER MAÇ OYNANMIŞSA (Skor varsa) -> SADECE KUTU GÖSTER
                 if (m.hs != null && m.as != null) {
                     const hs = parseInt(m.hs);
                     const as = parseInt(m.as);
@@ -409,7 +409,6 @@
                         displayContent = `<span style="display:inline-block; width:30px; height:30px; line-height:30px; background:#e74c3c; color:white; border-radius:5px; text-align:center; font-weight:bold;">M</span>`;
                     }
                 } else {
-                    // MAÇ OYNANMAMIŞSA -> VS GÖSTER
                     displayContent = `<span style="color:#aaa; font-weight:bold; font-size:0.9em;">VS</span>`;
                 }
 
@@ -422,7 +421,6 @@
                     </div>
                     <div class="stadium-info-list" style="display:flex; align-items:center;">
                         <span class="stadium-icon">🏟️</span> <span style="font-size:0.7em; margin-right:15px; width:100px; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.s || ''}</span>
-                        
                         ${displayContent}
                     </div>
                 </div>`;
