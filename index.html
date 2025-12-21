@@ -197,11 +197,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // SENİN AYARLARIN (URL DAHİL)
+        // SENİN AYARLARIN (DOĞRU URL İLE)
         const firebaseConfig = {
             apiKey: "AIzaSyAknclwFdilfFnzbPjtSXyjCPepZm5dM6k",
             authDomain: "discordtoto-5b23b.firebaseapp.com",
-            // URL EKLENDİ
             databaseURL: "https://discordtoto-5b23b-default-rtdb.europe-west1.firebasedatabase.app/",
             projectId: "discordtoto-5b23b",
             storageBucket: "discordtoto-5b23b.firebasestorage.app",
@@ -237,7 +236,7 @@
             { name: "Red Bull Eyüpspor", shortName: "Eyüpspor", logo: "logolar/eyu.png" }
         ];
 
-        // Varsayılan veriler (İlk açılış için)
+        // Varsayılan veriler
         const defaultFixtureData = [
             {w:1, h:"Galatasaray", a:"Kocaelispor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:1, h:"Fenerbahçe", a:"Kasımpaşa", s:"ACIBADEM Stadı", hs:null, as:null}, {w:1, h:"Beşiktaş JK", a:"Samsunspor", s:"VODAFONE Park", hs:null, as:null}, {w:1, h:"Trabzonspor", a:"Erzurumspor", s:"VESTEL Stadı", hs:null, as:null}, {w:1, h:"Alanyaspor", a:"ARCA Çorum FK", s:"ANEX Arena", hs:null, as:null}, {w:1, h:"Antalyaspor", a:"Konyaspor", s:"SUNEXPRESS", hs:null, as:null}, {w:1, h:"Göztepe", a:"Kayserispor", s:"ZURICH Stadı", hs:null, as:null}, {w:1, h:"MKE Ankaragücü", a:"Çaykur Rizespor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:1, h:"Red Bull Eyüpspor", a:"Sivasspor", s:"VİAPORT Arena", hs:null, as:null},
             {w:2, h:"Sivasspor", a:"Galatasaray", s:"LİMAK", hs:null, as:null}, {w:2, h:"Samsunspor", a:"Fenerbahçe", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:2, h:"Kocaelispor", a:"Beşiktaş JK", s:"BRİSA Stadı", hs:null, as:null}, {w:2, h:"Kasımpaşa", a:"Trabzonspor", s:"CİNER Stadyum", hs:null, as:null}, {w:2, h:"Çaykur Rizespor", a:"Alanyaspor", s:"ÇAYKUR Didi", hs:null, as:null}, {w:2, h:"Konyaspor", a:"MKE Ankaragücü", s:"MEDAŞ Arena", hs:null, as:null}, {w:2, h:"Kayserispor", a:"Antalyaspor", s:"RHG Arena", hs:null, as:null}, {w:2, h:"ARCA Çorum FK", a:"Göztepe", s:"ARCA Gold Park", hs:null, as:null}, {w:2, h:"Erzurumspor", a:"Red Bull Eyüpspor", s:"Türk Telekom", hs:null, as:null},
@@ -314,7 +313,6 @@
                                 <input type="number" class="score-input" value="${m.as ?? ''}" oninput="setScore(${i},'as',this.value)">
                               </div>`;
                 } else {
-                    // UNDEFINED SORUNU GİDERİLDİ
                     center = `<span class="vs">${(m.hs != null && m.as != null) ? m.hs + ' - ' + m.as : 'VS'}</span>`;
                 }
 
@@ -364,8 +362,8 @@
                 <tr>
                     <td>${i + 1}</td>
                     <td style="text-align:left; display:flex; align-items:center;">
-                        <div class="team-logo-btn" style="width:30px; height:30px; margin-right:10px; border:none; background-image:url('${t.l}'); background-color:#eee;" onclick="showTeam('${t.n}')"></div>
-                        ${t.n}
+                        <div class="team-logo-btn" style="width:30px; height:30px; margin-right:10px; border:none; background-image:url('${t.logo}'); background-color:#eee;" onclick="showTeam('${t.name}')"></div>
+                        ${t.name}
                     </td>
                     <td>${t.om}</td><td>${t.g}</td><td>${t.b}</td><td>${t.m}</td><td>${t.av}</td>
                     <td style="color:var(--pink-accent); font-weight:800;">${t.p}</td>
@@ -382,47 +380,37 @@
             
             document.getElementById('team-fixture-list').innerHTML = teamMatches.map(m => {
                 const isHome = m.h === name;
-                // Rakip takımı belirle
                 const opponent = isHome ? m.a : m.h;
-                // Ev sahibi / Deplasman ikonu
                 const icon = isHome ? "🏠" : "✈️";
                 
-                let scoreDisplay = "";
-                let badge = "";
+                let displayContent = "";
 
-                // Eğer maç oynanmışsa (Skor varsa)
+                // EĞER MAÇ OYNANMIŞSA (Skor varsa) -> SADECE KUTU GÖSTER
                 if (m.hs != null && m.as != null) {
                     const hs = parseInt(m.hs);
                     const as = parseInt(m.as);
                     
-                    // Skoru yaz (Örn: 2 - 1)
-                    scoreDisplay = isHome ? `${hs} - ${as}` : `${as} - ${hs}`;
-
-                    // Kazanma/Kaybetme Durumu Hesapla
                     let isWin = false;
                     let isDraw = false;
 
                     if (hs === as) {
                         isDraw = true;
                     } else if (isHome) {
-                        // Biz ev sahibiysek ve bizim skor (hs) büyükse
                         if (hs > as) isWin = true;
                     } else {
-                        // Biz deplasmandaysak ve bizim skor (as) büyükse
                         if (as > hs) isWin = true;
                     }
 
-                    // Rozeti (Kutucuğu) Oluştur
                     if (isWin) {
-                        badge = `<span style="background:#2ecc71; color:white; padding:3px 8px; border-radius:5px; font-weight:bold; font-size:0.9em; margin-right:8px;">G</span>`;
+                        displayContent = `<span style="display:inline-block; width:30px; height:30px; line-height:30px; background:#2ecc71; color:white; border-radius:5px; text-align:center; font-weight:bold;">G</span>`;
                     } else if (isDraw) {
-                        badge = `<span style="background:#95a5a6; color:white; padding:3px 8px; border-radius:5px; font-weight:bold; font-size:0.9em; margin-right:8px;">B</span>`;
+                        displayContent = `<span style="display:inline-block; width:30px; height:30px; line-height:30px; background:#95a5a6; color:white; border-radius:5px; text-align:center; font-weight:bold;">B</span>`;
                     } else {
-                        badge = `<span style="background:#e74c3c; color:white; padding:3px 8px; border-radius:5px; font-weight:bold; font-size:0.9em; margin-right:8px;">M</span>`;
+                        displayContent = `<span style="display:inline-block; width:30px; height:30px; line-height:30px; background:#e74c3c; color:white; border-radius:5px; text-align:center; font-weight:bold;">M</span>`;
                     }
                 } else {
-                    // Maç oynanmamışsa
-                    scoreDisplay = "VS";
+                    // MAÇ OYNANMAMIŞSA -> VS GÖSTER
+                    displayContent = `<span style="color:#aaa; font-weight:bold; font-size:0.9em;">VS</span>`;
                 }
 
                 return `
@@ -433,27 +421,9 @@
                         <div class="match-details" style="flex:1;">${opponent}</div>
                     </div>
                     <div class="stadium-info-list" style="display:flex; align-items:center;">
-                        <span class="stadium-icon">🏟️</span> <span style="font-size:0.7em; margin-right:10px;">${m.s || ''}</span>
+                        <span class="stadium-icon">🏟️</span> <span style="font-size:0.7em; margin-right:15px; width:100px; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.s || ''}</span>
                         
-                        ${badge}
-                        <strong style="color:var(--pink-accent); font-size:1.1em;">${scoreDisplay}</strong>
-                    </div>
-                </div>`;
-            }).join('');
-            
-            showView('team');
-        }
-
-                return `
-                <div class="gs-match-card">
-                    <div class="card-left">
-                        <div class="week-badge">${m.w}.</div>
-                        <div class="location-icon">${icon}</div>
-                        <div class="match-details" style="flex:1;">${opponent}</div>
-                    </div>
-                    <div class="stadium-info-list">
-                        <span class="stadium-icon">🏟️</span> ${m.s || ''} 
-                        <strong style="margin-left:10px; color:var(--pink-accent); font-size:1.1em;">${scoreText}</strong>
+                        ${displayContent}
                     </div>
                 </div>`;
             }).join('');
@@ -509,7 +479,6 @@
             renderAll();
         }
 
-        // LOGO SORUNU GİDERİLDİ
         document.getElementById('logo-grid').innerHTML = teamDetails.sort((a,b) => a.name.localeCompare(b.name)).map(t => 
             `<div class="team-logo-btn" style="background-image:url('${t.logo}')" onclick="showTeam('${t.name}')"></div>`
         ).join('');
