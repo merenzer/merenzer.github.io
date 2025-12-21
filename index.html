@@ -382,9 +382,67 @@
             
             document.getElementById('team-fixture-list').innerHTML = teamMatches.map(m => {
                 const isHome = m.h === name;
-                const scoreText = (m.hs != null && m.as != null) ? (isHome ? `${m.hs} - ${m.as}` : `${m.as} - ${m.hs}`) : "VS";
-                const icon = isHome ? "🏠" : "✈️";
+                // Rakip takımı belirle
                 const opponent = isHome ? m.a : m.h;
+                // Ev sahibi / Deplasman ikonu
+                const icon = isHome ? "🏠" : "✈️";
+                
+                let scoreDisplay = "";
+                let badge = "";
+
+                // Eğer maç oynanmışsa (Skor varsa)
+                if (m.hs != null && m.as != null) {
+                    const hs = parseInt(m.hs);
+                    const as = parseInt(m.as);
+                    
+                    // Skoru yaz (Örn: 2 - 1)
+                    scoreDisplay = isHome ? `${hs} - ${as}` : `${as} - ${hs}`;
+
+                    // Kazanma/Kaybetme Durumu Hesapla
+                    let isWin = false;
+                    let isDraw = false;
+
+                    if (hs === as) {
+                        isDraw = true;
+                    } else if (isHome) {
+                        // Biz ev sahibiysek ve bizim skor (hs) büyükse
+                        if (hs > as) isWin = true;
+                    } else {
+                        // Biz deplasmandaysak ve bizim skor (as) büyükse
+                        if (as > hs) isWin = true;
+                    }
+
+                    // Rozeti (Kutucuğu) Oluştur
+                    if (isWin) {
+                        badge = `<span style="background:#2ecc71; color:white; padding:3px 8px; border-radius:5px; font-weight:bold; font-size:0.9em; margin-right:8px;">G</span>`;
+                    } else if (isDraw) {
+                        badge = `<span style="background:#95a5a6; color:white; padding:3px 8px; border-radius:5px; font-weight:bold; font-size:0.9em; margin-right:8px;">B</span>`;
+                    } else {
+                        badge = `<span style="background:#e74c3c; color:white; padding:3px 8px; border-radius:5px; font-weight:bold; font-size:0.9em; margin-right:8px;">M</span>`;
+                    }
+                } else {
+                    // Maç oynanmamışsa
+                    scoreDisplay = "VS";
+                }
+
+                return `
+                <div class="gs-match-card">
+                    <div class="card-left">
+                        <div class="week-badge">${m.w}.</div>
+                        <div class="location-icon">${icon}</div>
+                        <div class="match-details" style="flex:1;">${opponent}</div>
+                    </div>
+                    <div class="stadium-info-list" style="display:flex; align-items:center;">
+                        <span class="stadium-icon">🏟️</span> <span style="font-size:0.7em; margin-right:10px;">${m.s || ''}</span>
+                        
+                        ${badge}
+                        <strong style="color:var(--pink-accent); font-size:1.1em;">${scoreDisplay}</strong>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            showView('team');
+        }
 
                 return `
                 <div class="gs-match-card">
