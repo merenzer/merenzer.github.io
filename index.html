@@ -19,12 +19,13 @@
         .team-logo {
             width: 60px;
             height: 60px;
-            object-fit: cover; /* Resim orantısını korur */
-            background-color: #ddd; /* Resim yoksa gri görünür */
+            object-fit: cover; 
+            background-color: #ddd; 
             border-radius: 50%;
+            /* Logo ile isim arasına biraz boşluk ekleyelim */
+            margin-bottom: 10px;
         }
 
-        /* 2. SORUN ÇÖZÜMÜ: Yönetici paneli varsayılan olarak gizli */
         #admin-panel {
             display: none; 
             margin-top: 15px;
@@ -33,8 +34,6 @@
         }
 
         button { cursor: pointer; padding: 5px 10px; }
-        
-        /* Alt kısımdaki giriş linki */
         footer { margin-top: 50px; font-size: 12px; color: #888; }
         .admin-link { cursor: pointer; text-decoration: underline; }
     </style>
@@ -44,19 +43,20 @@
     <div class="match-card">
         <h3>Haftanın Maçı</h3>
         
-        <div style="display: flex; justify-content: space-around; align-items: center;">
+        <div style="display: flex; justify-content: space-around; align-items: flex-start;">
             <div>
                 <img src="img/galatasaray.png" class="team-logo" alt="GS" onerror="this.src='https://placehold.co/60x60?text=GS'">
-                <h4 id="team1-name">Galatasaray</h4>
-                <h2 id="score1">0</h2>
+                <h4 id="team1-name" style="margin: 5px 0;">Galatasaray</h4>
+                <h2 id="score1" style="margin: 5px 0;">0</h2>
             </div>
 
-            <h1>-</h1>
+            <h1 style="align-self: center;">-</h1>
 
             <div>
-                <img src="img/fenerbahce.png" class="team-logo" alt="FB" onerror="this.src='https://placehold.co/60x60?text=FB'">
-                <h4 id="team2-name">Fenerbahçe</h4>
-                <h2 id="score2">0</h2>
+                <div style="height: 60px; margin-bottom: 10px;"></div> 
+                
+                <h4 id="team2-name" style="margin: 5px 0;">Fenerbahçe</h4>
+                <h2 id="score2" style="margin: 5px 0;">0</h2>
             </div>
         </div>
 
@@ -81,16 +81,12 @@
         function updateScore(teamId, change) {
             let scoreElement = document.getElementById(teamId);
             let currentScore = parseInt(scoreElement.innerText);
-            
-            // Skor 0'ın altına düşmesin
             if (currentScore + change >= 0) {
                 scoreElement.innerText = currentScore + change;
             }
         }
 
-        // --- YÖNETİCİ SİSTEMİ (GÜVENLİK) ---
-        
-        // Sayfa yüklendiğinde daha önce giriş yapılmış mı kontrol et
+        // --- YÖNETİCİ SİSTEMİ ---
         window.onload = function() {
             if (localStorage.getItem("isAdmin") === "true") {
                 document.getElementById("admin-panel").style.display = "block";
@@ -98,13 +94,10 @@
         };
 
         function adminLogin() {
-            // Basit bir şifre kontrolü
-            let password = prompt("Lütfen yönetici şifresini girin:");
-            
-            if (password === "1234") { // Şifreyi buradan değiştirebilirsin
+            let password = prompt("Lütfen yönetici şifresini girin (Şifre: 1234):");
+            if (password === "1234") { 
                 alert("Giriş Başarılı!");
                 document.getElementById("admin-panel").style.display = "block";
-                // Tarayıcıya 'bu kişi admin' diye kaydet
                 localStorage.setItem("isAdmin", "true");
             } else {
                 alert("Hatalı Şifre!");
