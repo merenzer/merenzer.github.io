@@ -130,9 +130,10 @@
         /* PUAN DURUMU */
         #standings-view { display: none; }
         .standings-container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--card-border); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: center; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; }
         th { padding: 12px; color: var(--pink-accent); border-bottom: 2px solid var(--card-border); font-size: 0.9em; text-transform: uppercase; }
         td { padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -331,7 +332,6 @@
                 }
             });
 
-            // DÜZELTME BURADA YAPILDI: n -> name, l -> logo
             let statsMap = {};
             teamDetails.forEach(t => {
                 statsMap[t.name] = { name: t.name, logo: t.logo, om:0, g:0, b:0, m:0, ag:0, yg:0, av:0, p:0 };
@@ -359,9 +359,26 @@
 
             let sortedStats = Object.values(statsMap).sort((a, b) => b.p - a.p || b.av - a.av || b.ag - a.ag);
             
-            document.getElementById('standings-body').innerHTML = sortedStats.map((t, i) => `
-                <tr>
-                    <td>${i + 1}</td>
+            // --- GÜNCELLENEN KISIM: RENK MANTIĞI BURAYA EKLENDİ ---
+            const totalTeams = sortedStats.length;
+
+            document.getElementById('standings-body').innerHTML = sortedStats.map((t, i) => {
+                const rank = i + 1;
+                let barColor = "transparent";
+                
+                // Şampiyonlar Ligi (İlk 2) - Koyu Lacivert
+                if (rank <= 2) barColor = "#0E1E5B";
+                // Avrupa Ligi (3 ve 4) - Turuncu
+                else if (rank <= 4) barColor = "#D85C00";
+                // Konferans Ligi (5) - Yeşil
+                else if (rank === 5) barColor = "#06c222";
+                // Düşme Hattı (Son 3) - Kırmızı
+                else if (rank > totalTeams - 3) barColor = "red";
+
+                // box-shadow ile sol tarafa çubuk efekti
+                return `
+                <tr style="box-shadow: inset 5px 0 0 0 ${barColor};">
+                    <td>${rank}</td>
                     <td style="text-align:left; display:flex; align-items:center;">
                         <div class="team-logo-btn" style="width:30px; height:30px; margin-right:10px; border:none; background-image:url('${t.logo}'); background-color:#eee;" onclick="showTeam('${t.name}')"></div>
                         ${t.name}
@@ -369,7 +386,7 @@
                     <td>${t.om}</td><td>${t.g}</td><td>${t.b}</td><td>${t.m}</td><td>${t.av}</td>
                     <td style="color:var(--pink-accent); font-weight:800;">${t.p}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         window.showTeam = function(name) {
