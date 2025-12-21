@@ -2,441 +2,120 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İnteraktif Süper Lig Fikstürü</title>
-    
+    <title>Skor Tablosu</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
-
-        :root {
-            --bg-color: #ffffff;
-            --card-bg-transparent: rgba(240, 242, 245, 0.95);
-            --text-dark: #333333;
-            --text-stadium: #777777;
-            --pink-accent: #ff3385;
-            --card-border: rgba(255, 51, 133, 0.15);
-            --team-c1: var(--text-dark);
-            --team-c2: var(--card-border);
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
-            background-size: 20px 20px;
-            margin: 0; padding: 30px 15px 200px 15px;
-            color: var(--text-dark);
-            min-height: 100vh; display: flex; flex-direction: column;
+        /* Genel Stil */
+        body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
+        
+        .match-card {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        h1.main-title {
-            text-align: center; color: var(--pink-accent); font-weight: 800;
-            font-size: 2.2em; margin-bottom: 25px; text-transform: uppercase;
-            letter-spacing: 1px; cursor: pointer; user-select: none;
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: cover; /* Resim orantısını korur */
+            background-color: #ddd; /* Resim yoksa gri görünür */
+            border-radius: 50%;
         }
 
-        /* --- MENÜ VE ADMIN BUTONU --- */
-        .nav-container { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
-        .nav-btn { padding: 10px 20px; border-radius: 20px; background: white; border: 2px solid var(--pink-accent); cursor: pointer; font-weight: 700; color: var(--text-dark); }
-        .nav-btn.active { background: var(--pink-accent); color: white; }
-        
-        #admin-toggle { position: fixed; top: 20px; right: 20px; padding: 10px 20px; background: var(--text-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; z-index: 3000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        #admin-toggle.on { background: #2ecc71; }
-        
-        #reset-data { position: fixed; top: 60px; right: 20px; padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; font-size: 0.8em; cursor: pointer; z-index: 3000; display: none; }
-        #admin-toggle.on ~ #reset-data { display: block; }
-
-        /* --- ANA GÖRÜNÜM (GRID) CSS --- */
-        #main-view { display: block; animation: fadeIn 0.5s ease; }
-        .fixture-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px; max-width: 1400px; margin: 0 auto 100px auto;
-        }
-        .week-card {
-            background: var(--card-bg-transparent); backdrop-filter: blur(10px);
-            border-radius: 16px; padding: 15px 20px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            border: 1px solid var(--card-border); transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-        .week-card:hover { transform: translateY(-3px); border-color: var(--pink-accent); }
-        .week-header { display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid rgba(255, 51, 133, 0.2); }
-        .week-number { font-size: 1.6em; font-weight: 800; color: var(--pink-accent); margin-right: 8px; }
-        .week-label { font-size: 1em; font-weight: 600; text-transform: uppercase; }
-        
-        .match-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9em; }
-        .match-row:last-child { border-bottom: none; }
-        
-        .match-info { flex: 3; font-weight: 800; display: flex; align-items: center; flex-wrap: wrap;}
-        .stadium-info { flex: 2; text-align: right; font-size: 0.8em; color: var(--text-stadium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;}
-        
-        .vs { color: var(--pink-accent); margin: 0 6px; font-weight: 800; font-size: 1.1em;}
-        .score-input { width: 40px; text-align: center; font-weight: 800; border: 2px solid var(--pink-accent); border-radius: 5px; margin: 0 2px; padding: 2px; font-size: 1em;}
-
-        /* --- TAKIM SEÇİCİ (LOGOLAR) CSS --- */
-        .team-selector-container {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 15px 10px; background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px 20px 0 0; border-top: 3px solid var(--pink-accent);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1); text-align: center;
-            backdrop-filter: blur(10px); z-index: 2000;
-            max-height: 30vh; overflow-y: auto;
-        }
-        .selector-title { font-weight: 700; color: var(--text-dark); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;}
-        .logo-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-        .team-logo-btn {
-            width: 45px; height: 45px; background: white;
-            border: 2px solid var(--card-border); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.8em; color: var(--text-dark);
-            cursor: pointer; transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            background-size: 70%; background-position: center; background-repeat: no-repeat;
-            overflow: hidden;
-        }
-        .team-logo-btn:hover, .team-logo-btn.active {
-            border-color: var(--pink-accent); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 51, 133, 0.3);
+        /* 2. SORUN ÇÖZÜMÜ: Yönetici paneli varsayılan olarak gizli */
+        #admin-panel {
+            display: none; 
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
         }
 
-        /* --- TAKIM ÖZEL GÖRÜNÜM (LİSTE) CSS --- */
-        #team-view { display: none; max-width: 700px; margin: 0 auto 100px auto; animation: fadeIn 0.5s ease; }
-        .team-view-header { text-align: center; margin-bottom: 25px; }
-        .team-name-big { 
-            font-size: 2em; font-weight: 800; color: var(--team-c1); 
-            text-transform: uppercase; 
-            text-shadow: 1px 1px 0px var(--team-c2);
-            margin-bottom: 10px;
-        }
-        .back-button { 
-            display: inline-flex; align-items: center; margin-bottom: 15px; padding: 8px 20px; 
-            background: var(--pink-accent); color: white; border-radius: 25px; 
-            font-weight: 600; font-size: 0.9em; cursor: pointer; transition: background 0.3s; box-shadow: 0 3px 10px rgba(255, 51, 133, 0.3);
-        }
-        .back-button:hover { background: #d41b66; }
+        button { cursor: pointer; padding: 5px 10px; }
         
-        .gs-match-card {
-            display: flex; align-items: center; justify-content: space-between;
-            background: var(--card-bg-transparent); backdrop-filter: blur(10px);
-            border-radius: 12px; padding: 15px; margin-bottom: 12px;
-            box-shadow: 0 3px 10px 0 rgba(31, 38, 135, 0.05); border: 1px solid var(--card-border);
-            transition: border-color 0.3s;
-        }
-        .gs-match-card:hover { border-color: var(--team-c1); }
-        .card-left { display: flex; align-items: center; flex: 2; }
-        .week-badge { background-color: var(--pink-accent); color: white; font-weight: 700; padding: 6px 10px; border-radius: 6px; margin-right: 12px; min-width: 35px; text-align: center; font-size: 0.9em; }
-        .location-icon { font-size: 1.4em; margin-right: 12px; }
-        .match-details { font-size: 1em; font-weight: 800; display: flex; align-items: center; flex-wrap: wrap; }
-        .stadium-info-list { flex: 1; text-align: right; font-size: 0.8em; color: var(--text-stadium); font-weight: 500; display: flex; align-items: center; justify-content: flex-end;}
-        .stadium-icon { margin-right: 5px; opacity: 0.6; font-size: 1em;}
-
-        /* PUAN DURUMU */
-        #standings-view { display: none; }
-        .standings-container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--card-border); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: center; }
-        th { padding: 12px; color: var(--pink-accent); border-bottom: 2px solid var(--card-border); font-size: 0.9em; text-transform: uppercase; }
-        td { padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 600; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        @media (max-width: 768px) {
-            body { padding: 20px 10px 200px 10px; }
-            .main-title { font-size: 1.8em; margin-bottom: 15px;}
-            .fixture-container { grid-template-columns: 1fr; gap: 15px; margin-bottom: 120px;}
-            .match-row { flex-direction: column; align-items: flex-start; }
-            .stadium-info { width: 100%; text-align: left; margin-top: 3px; }
-            .match-info { width: 100%; justify-content: space-between; }
-            
-            .gs-match-card { flex-direction: column; align-items: flex-start; padding: 12px;}
-            .card-left { margin-bottom: 8px; width: 100%; }
-            .stadium-info-list { width: 100%; justify-content: flex-start; text-align: left; padding-left: 0; margin-top: 5px;}
-            .week-badge { margin-right: 8px; padding: 5px 8px; font-size: 0.85em; min-width: 30px;}
-            .location-icon { font-size: 1.2em; margin-right: 8px; }
-            .match-details { font-size: 0.95em; }
-            .team-name-big { font-size: 1.5em; }
-            .team-selector-container { padding: 10px 5px; max-height: 35vh;}
-            .team-logo-btn { width: 40px; height: 40px; font-size: 0.75em; }
-        }
+        /* Alt kısımdaki giriş linki */
+        footer { margin-top: 50px; font-size: 12px; color: #888; }
+        .admin-link { cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <h1 class="main-title" onclick="showMainView()">2026-2027 Sezon Fikstürü</h1>
-    
-    <div class="nav-container">
-        <button class="nav-btn active" onclick="showView('main', this)">📅 Fikstür</button>
-        <button class="nav-btn" onclick="showView('standings', this)">🏆 Puan Durumu</button>
-    </div>
+    <div class="match-card">
+        <h3>Haftanın Maçı</h3>
+        
+        <div style="display: flex; justify-content: space-around; align-items: center;">
+            <div>
+                <img src="img/galatasaray.png" class="team-logo" alt="GS" onerror="this.src='https://placehold.co/60x60?text=GS'">
+                <h4 id="team1-name">Galatasaray</h4>
+                <h2 id="score1">0</h2>
+            </div>
 
-    <button id="admin-toggle" onclick="toggleAdmin()">⚙️ DÜZENLEME MODU: KAPALI</button>
-    <button id="reset-data" onclick="resetData()">⚠️ Verileri Sıfırla</button>
+            <h1>-</h1>
 
-    <div id="main-view">
-        <div class="fixture-container" id="main-fixture-grid"></div>
-    </div>
+            <div>
+                <img src="img/fenerbahce.png" class="team-logo" alt="FB" onerror="this.src='https://placehold.co/60x60?text=FB'">
+                <h4 id="team2-name">Fenerbahçe</h4>
+                <h2 id="score2">0</h2>
+            </div>
+        </div>
 
-    <div id="standings-view">
-        <div class="standings-container">
-            <table><thead><tr><th>#</th><th style="text-align:left">Takım</th><th>OM</th><th>G</th><th>B</th><th>M</th><th>AV</th><th>P</th></tr></thead><tbody id="standings-body"></tbody></table>
+        <div id="admin-panel">
+            <h4>Yönetici Paneli</h4>
+            <button onclick="updateScore('score1', 1)">GS +1</button>
+            <button onclick="updateScore('score1', -1)">GS -1</button>
+            <br><br>
+            <button onclick="updateScore('score2', 1)">FB +1</button>
+            <button onclick="updateScore('score2', -1)">FB -1</button>
+            <br><br>
+            <button onclick="logout()">Çıkış Yap</button>
         </div>
     </div>
 
-    <div id="team-view">
-        <div class="team-view-header">
-            <div class="back-button" onclick="showMainView()">← Tüm Fikstür</div>
-            <h2 class="team-name-big" id="selected-team-name">Takım Adı</h2>
-             <div style="font-weight: 600; font-size: 0.9em; color: var(--text-stadium);">🏠 Ev Sahibi | ✈️ Deplasman</div>
-        </div>
-        <div id="team-fixture-list"></div>
-    </div>
-
-    <div class="team-selector-container">
-        <div class="selector-title">Takım Fikstürü İçin Seçin</div>
-        <div class="logo-grid" id="logo-grid"></div>
-    </div>
+    <footer>
+        <span class="admin-link" onclick="adminLogin()">Yönetici Girişi</span>
+    </footer>
 
     <script>
-        // --- 1. AYARLAR VE VERİLER ---
-        const LOCAL_STORAGE_KEY = 'superLigData_2026';
-        let isAdmin = false;
+        // --- SKOR GÜNCELLEME FONKSİYONU ---
+        function updateScore(teamId, change) {
+            let scoreElement = document.getElementById(teamId);
+            let currentScore = parseInt(scoreElement.innerText);
+            
+            // Skor 0'ın altına düşmesin
+            if (currentScore + change >= 0) {
+                scoreElement.innerText = currentScore + change;
+            }
+        }
 
-        const teamDetails = [
-            { name: "Galatasaray", shortName: "GS", logo: "logolar/gs.png" },
-            { name: "Fenerbahçe", shortName: "FB", logo: "logolar/fb.png" },
-            { name: "Beşiktaş JK", shortName: "BJK", logo: "logolar/bjk.png" },
-            { name: "Trabzonspor", shortName: "TS", logo: "logolar/ts.png" },
-            { name: "Alanyaspor", shortName: "Alanyaspor", logo: "logolar/aly.png" },
-            { name: "Antalyaspor", shortName: "Antalyaspor", logo: "logolar/ant.png" },
-            { name: "Kasımpaşa", shortName: "Kasımpaşa", logo: "logolar/kas.png" },
-            { name: "Sivasspor", shortName: "Sivasspor", logo: "logolar/siv.png" },
-            { name: "Kayserispor", shortName: "Kayserispor", logo: "logolar/kay.png" },
-            { name: "Konyaspor", shortName: "Konyaspor", logo: "logolar/kon.png" },
-            { name: "MKE Ankaragücü", shortName: "Ankaragücü", logo: "logolar/ag.png" },
-            { name: "Çaykur Rizespor", shortName: "Rizespor", logo: "logolar/crs.png" },
-            { name: "Samsunspor", shortName: "Samsunspor", logo: "logolar/sam.png" },
-            { name: "Göztepe", shortName: "Göztepe", logo: "logolar/göz.png" },
-            { name: "Kocaelispor", shortName: "Kocaelispor", logo: "logolar/ks.png" },
-            { name: "Erzurumspor", shortName: "Erzurumspor", logo: "logolar/erz.png" },
-            { name: "ARCA Çorum FK", shortName: "Çorum FK", logo: "logolar/cor.png" },
-            { name: "Red Bull Eyüpspor", shortName: "Eyüpspor", logo: "logolar/eyu.png" }
-        ];
+        // --- YÖNETİCİ SİSTEMİ (GÜVENLİK) ---
+        
+        // Sayfa yüklendiğinde daha önce giriş yapılmış mı kontrol et
+        window.onload = function() {
+            if (localStorage.getItem("isAdmin") === "true") {
+                document.getElementById("admin-panel").style.display = "block";
+            }
+        };
 
-        // 17 HAFTALIK FİKSTÜR (VARSAYILAN)
-        const defaultFixtureData = [
-            {w:1, h:"Galatasaray", a:"Kocaelispor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:1, h:"Fenerbahçe", a:"Kasımpaşa", s:"ACIBADEM Stadı", hs:null, as:null}, {w:1, h:"Beşiktaş JK", a:"Samsunspor", s:"VODAFONE Park", hs:null, as:null}, {w:1, h:"Trabzonspor", a:"Erzurumspor", s:"VESTEL Stadı", hs:null, as:null}, {w:1, h:"Alanyaspor", a:"ARCA Çorum FK", s:"ANEX Arena", hs:null, as:null}, {w:1, h:"Antalyaspor", a:"Konyaspor", s:"SUNEXPRESS", hs:null, as:null}, {w:1, h:"Göztepe", a:"Kayserispor", s:"ZURICH Stadı", hs:null, as:null}, {w:1, h:"MKE Ankaragücü", a:"Çaykur Rizespor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:1, h:"Red Bull Eyüpspor", a:"Sivasspor", s:"VİAPORT Arena", hs:null, as:null},
-            {w:2, h:"Sivasspor", a:"Galatasaray", s:"LİMAK", hs:null, as:null}, {w:2, h:"Samsunspor", a:"Fenerbahçe", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:2, h:"Kocaelispor", a:"Beşiktaş JK", s:"BRİSA Stadı", hs:null, as:null}, {w:2, h:"Kasımpaşa", a:"Trabzonspor", s:"CİNER Stadyum", hs:null, as:null}, {w:2, h:"Çaykur Rizespor", a:"Alanyaspor", s:"ÇAYKUR Didi", hs:null, as:null}, {w:2, h:"Konyaspor", a:"MKE Ankaragücü", s:"MEDAŞ Arena", hs:null, as:null}, {w:2, h:"Kayserispor", a:"Antalyaspor", s:"RHG Arena", hs:null, as:null}, {w:2, h:"ARCA Çorum FK", a:"Göztepe", s:"ARCA Gold Park", hs:null, as:null}, {w:2, h:"Erzurumspor", a:"Red Bull Eyüpspor", s:"Türk Telekom", hs:null, as:null},
-            {w:3, h:"Galatasaray", a:"Erzurumspor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:3, h:"Fenerbahçe", a:"Kocaelispor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:3, h:"Beşiktaş JK", a:"Kasımpaşa", s:"VODAFONE Park", hs:null, as:null}, {w:3, h:"Trabzonspor", a:"Samsunspor", s:"VESTEL Stadı", hs:null, as:null}, {w:3, h:"Alanyaspor", a:"Konyaspor", s:"ANEX Arena", hs:null, as:null}, {w:3, h:"Antalyaspor", a:"ARCA Çorum FK", s:"SUNEXPRESS", hs:null, as:null}, {w:3, h:"Göztepe", a:"Çaykur Rizespor", s:"ZURICH Stadı", hs:null, as:null}, {w:3, h:"MKE Ankaragücü", a:"Sivasspor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:3, h:"Red Bull Eyüpspor", a:"Kayserispor", s:"VİAPORT Arena", hs:null, as:null},
-            {w:4, h:"Trabzonspor", a:"Beşiktaş JK", s:"VESTEL Stadı", hs:null, as:null}, {w:4, h:"Galatasaray", a:"Alanyaspor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:4, h:"Fenerbahçe", a:"Sivasspor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:4, h:"Samsunspor", a:"MKE Ankaragücü", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:4, h:"Erzurumspor", a:"Göztepe", s:"Türk Telekom", hs:null, as:null}, {w:4, h:"Kasımpaşa", a:"Antalyaspor", s:"CİNER Stadyum", hs:null, as:null}, {w:4, h:"Kocaelispor", a:"Kayserispor", s:"BRİSA Stadı", hs:null, as:null}, {w:4, h:"Çaykur Rizespor", a:"Konyaspor", s:"ÇAYKUR Didi", hs:null, as:null}, {w:4, h:"ARCA Çorum FK", a:"Red Bull Eyüpspor", s:"ARCA Gold Park", hs:null, as:null},
-            {w:5, h:"Kayserispor", a:"Galatasaray", s:"RHG Arena", hs:null, as:null}, {w:5, h:"Alanyaspor", a:"Fenerbahçe", s:"ANEX Arena", hs:null, as:null}, {w:5, h:"Beşiktaş JK", a:"Erzurumspor", s:"VODAFONE Park", hs:null, as:null}, {w:5, h:"Sivasspor", a:"Trabzonspor", s:"LİMAK", hs:null, as:null}, {w:5, h:"Antalyaspor", a:"Samsunspor", s:"SUNEXPRESS", hs:null, as:null}, {w:5, h:"Göztepe", a:"Kocaelispor", s:"ZURICH Stadı", hs:null, as:null}, {w:5, h:"MKE Ankaragücü", a:"ARCA Çorum FK", s:"TUSAŞ Başkent", hs:null, as:null}, {w:5, h:"Konyaspor", a:"Kasımpaşa", s:"MEDAŞ Arena", hs:null, as:null}, {w:5, h:"Red Bull Eyüpspor", a:"Çaykur Rizespor", s:"VİAPORT Arena", hs:null, as:null},
-            {w:6, h:"Galatasaray", a:"Red Bull Eyüpspor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:6, h:"Fenerbahçe", a:"Antalyaspor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:6, h:"Beşiktaş JK", a:"Alanyaspor", s:"VODAFONE Park", hs:null, as:null}, {w:6, h:"Trabzonspor", a:"MKE Ankaragücü", s:"VESTEL Stadı", hs:null, as:null}, {w:6, h:"Samsunspor", a:"Sivasspor", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:6, h:"Erzurumspor", a:"Konyaspor", s:"Türk Telekom", hs:null, as:null}, {w:6, h:"Kocaelispor", a:"Çaykur Rizespor", s:"BRİSA Stadı", hs:null, as:null}, {w:6, h:"Kasımpaşa", a:"Göztepe", s:"CİNER Stadyum", hs:null, as:null}, {w:6, h:"ARCA Çorum FK", a:"Kayserispor", s:"ARCA Gold Park", hs:null, as:null},
-            {w:7, h:"Galatasaray", a:"Trabzonspor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:7, h:"Beşiktaş JK", a:"Göztepe", s:"VODAFONE Park", hs:null, as:null}, {w:7, h:"Fenerbahçe", a:"ARCA Çorum FK", s:"ACIBADEM Stadı", hs:null, as:null}, {w:7, h:"Sivasspor", a:"Antalyaspor", s:"LİMAK", hs:null, as:null}, {w:7, h:"MKE Ankaragücü", a:"Kayserispor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:7, h:"Alanyaspor", a:"Erzurumspor", s:"ANEX Arena", hs:null, as:null}, {w:7, h:"Çaykur Rizespor", a:"Samsunspor", s:"ÇAYKUR Didi", hs:null, as:null}, {w:7, h:"Konyaspor", a:"Kocaelispor", s:"MEDAŞ Arena", hs:null, as:null}, {w:7, h:"Red Bull Eyüpspor", a:"Kasımpaşa", s:"VİAPORT Arena", hs:null, as:null},
-            {w:8, h:"Antalyaspor", a:"Galatasaray", s:"SUNEXPRESS", hs:null, as:null}, {w:8, h:"Göztepe", a:"Fenerbahçe", s:"ZURICH Stadı", hs:null, as:null}, {w:8, h:"ARCA Çorum FK", a:"Beşiktaş JK", s:"ARCA Gold Park", hs:null, as:null}, {w:8, h:"Trabzonspor", a:"Alanyaspor", s:"VESTEL Stadı", hs:null, as:null}, {w:8, h:"Samsunspor", a:"Konyaspor", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:8, h:"Erzurumspor", a:"Sivasspor", s:"Türk Telekom", hs:null, as:null}, {w:8, h:"Kasımpaşa", a:"MKE Ankaragücü", s:"CİNER Stadyum", hs:null, as:null}, {w:8, h:"Kayserispor", a:"Çaykur Rizespor", s:"RHG Arena", hs:null, as:null}, {w:8, h:"Kocaelispor", a:"Red Bull Eyüpspor", s:"BRİSA Stadı", hs:null, as:null},
-            {w:9, h:"Galatasaray", a:"Göztepe", s:"SOCAR Enerji Park", hs:null, as:null}, {w:9, h:"Fenerbahçe", a:"Erzurumspor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:9, h:"Beşiktaş JK", a:"Antalyaspor", s:"VODAFONE Park", hs:null, as:null}, {w:9, h:"Trabzonspor", a:"ARCA Çorum FK", s:"VESTEL Stadı", hs:null, as:null}, {w:9, h:"Sivasspor", a:"Kayserispor", s:"LİMAK", hs:null, as:null}, {w:9, h:"MKE Ankaragücü", a:"Kocaelispor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:9, h:"Konyaspor", a:"Alanyaspor", s:"MEDAŞ Arena", hs:null, as:null}, {w:9, h:"Çaykur Rizespor", a:"Kasımpaşa", s:"ÇAYKUR Didi", hs:null, as:null}, {w:9, h:"Red Bull Eyüpspor", a:"Samsunspor", s:"VİAPORT Arena", hs:null, as:null},
-            {w:10, h:"Fenerbahçe", a:"Beşiktaş JK", s:"ACIBADEM Stadı", hs:null, as:null}, {w:10, h:"Galatasaray", a:"Çaykur Rizespor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:10, h:"Trabzonspor", a:"Kayserispor", s:"VESTEL Stadı", hs:null, as:null}, {w:10, h:"Samsunspor", a:"Kocaelispor", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:10, h:"Erzurumspor", a:"ARCA Çorum FK", s:"Türk Telekom", hs:null, as:null}, {w:10, h:"Alanyaspor", a:"Antalyaspor", s:"ANEX Arena", hs:null, as:null}, {w:10, h:"Konyaspor", a:"Sivasspor", s:"MEDAŞ Arena", hs:null, as:null}, {w:10, h:"Göztepe", a:"MKE Ankaragücü", s:"ZURICH Stadı", hs:null, as:null}, {w:10, h:"Kasımpaşa", a:"Red Bull Eyüpspor", s:"CİNER Stadyum", hs:null, as:null},
-            {w:11, h:"Galatasaray", a:"Beşiktaş JK", s:"SOCAR Enerji Park", hs:null, as:null}, {w:11, h:"Kocaelispor", a:"Fenerbahçe", s:"BRİSA Stadı", hs:null, as:null}, {w:11, h:"Red Bull Eyüpspor", a:"Trabzonspor", s:"VİAPORT Arena", hs:null, as:null}, {w:11, h:"Sivasspor", a:"Göztepe", s:"LİMAK", hs:null, as:null}, {w:11, h:"Antalyaspor", a:"Erzurumspor", s:"SUNEXPRESS", hs:null, as:null}, {w:11, h:"MKE Ankaragücü", a:"Alanyaspor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:11, h:"Çaykur Rizespor", a:"Kasımpaşa", s:"ÇAYKUR Didi", hs:null, as:null}, {w:11, h:"Kayserispor", a:"Samsunspor", s:"RHG Arena", hs:null, as:null}, {w:11, h:"ARCA Çorum FK", a:"Konyaspor", s:"ARCA Gold Park", hs:null, as:null},
-            {w:12, h:"Galatasaray", a:"Samsunspor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:12, h:"Fenerbahçe", a:"Çaykur Rizespor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:12, h:"Beşiktaş JK", a:"Sivasspor", s:"VODAFONE Park", hs:null, as:null}, {w:12, h:"Trabzonspor", a:"Antalyaspor", s:"VESTEL Stadı", hs:null, as:null}, {w:12, h:"Erzurumspor", a:"Kocaelispor", s:"Türk Telekom", hs:null, as:null}, {w:12, h:"Alanyaspor", a:"Kayserispor", s:"ANEX Arena", hs:null, as:null}, {w:12, h:"Konyaspor", a:"ARCA Çorum FK", s:"MEDAŞ Arena", hs:null, as:null}, {w:12, h:"Göztepe", a:"Red Bull Eyüpspor", s:"ZURICH Stadı", hs:null, as:null}, {w:12, h:"Kasımpaşa", a:"MKE Ankaragücü", s:"CİNER Stadyum", hs:null, as:null},
-            {w:13, h:"Galatasaray", a:"Fenerbahçe", s:"SOCAR Enerji Park", hs:null, as:null}, {w:13, h:"Beşiktaş JK", a:"MKE Ankaragücü", s:"VODAFONE Park", hs:null, as:null}, {w:13, h:"Trabzonspor", a:"Konyaspor", s:"VESTEL Stadı", hs:null, as:null}, {w:13, h:"Samsunspor", a:"Erzurumspor", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:13, h:"Sivasspor", a:"Alanyaspor", s:"LİMAK", hs:null, as:null}, {w:13, h:"Antalyaspor", a:"Göztepe", s:"SUNEXPRESS", hs:null, as:null}, {w:13, h:"Kayserispor", a:"Kasımpaşa", s:"RHG Arena", hs:null, as:null}, {w:13, h:"Kocaelispor", a:"ARCA Çorum FK", s:"BRİSA Stadı", hs:null, as:null}, {w:13, h:"Red Bull Eyüpspor", a:"Çaykur Rizespor", s:"VİAPORT Arena", hs:null, as:null},
-            {w:14, h:"MKE Ankaragücü", a:"Galatasaray", s:"TUSAŞ Başkent", hs:null, as:null}, {w:14, h:"Fenerbahçe", a:"Konyaspor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:14, h:"Çaykur Rizespor", a:"Beşiktaş JK", s:"ÇAYKUR Didi", hs:null, as:null}, {w:14, h:"Göztepe", a:"Trabzonspor", s:"ZURICH Stadı", hs:null, as:null}, {w:14, h:"ARCA Çorum FK", a:"Samsunspor", s:"ARCA Gold Park", hs:null, as:null}, {w:14, h:"Kasımpaşa", a:"Erzurumspor", s:"CİNER Stadyum", hs:null, as:null}, {w:14, h:"Alanyaspor", a:"Kocaelispor", s:"ANEX Arena", hs:null, as:null}, {w:14, h:"Antalyaspor", a:"Sivasspor", s:"SUNEXPRESS", hs:null, as:null}, {w:14, h:"Kayserispor", a:"Red Bull Eyüpspor", s:"RHG Arena", hs:null, as:null},
-            {w:15, h:"Trabzonspor", a:"Fenerbahçe", s:"VESTEL Stadı", hs:null, as:null}, {w:15, h:"Galatasaray", a:"Red Bull Eyüpspor", s:"SOCAR Enerji Park", hs:null, as:null}, {w:15, h:"Beşiktaş JK", a:"ARCA Çorum FK", s:"VODAFONE Park", hs:null, as:null}, {w:15, h:"Samsunspor", a:"Kasımpaşa", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:15, h:"Erzurumspor", a:"Kayserispor", s:"Türk Telekom", hs:null, as:null}, {w:15, h:"Sivasspor", a:"Göztepe", s:"LİMAK", hs:null, as:null}, {w:15, h:"Kocaelispor", a:"Antalyaspor", s:"BRİSA Stadı", hs:null, as:null}, {w:15, h:"Alanyaspor", a:"MKE Ankaragücü", s:"ANEX Arena", hs:null, as:null}, {w:15, h:"Konyaspor", a:"Çaykur Rizespor", s:"MEDAŞ Arena", hs:null, as:null},
-            {w:16, h:"Kasımpaşa", a:"Galatasaray", s:"CİNER Stadyum", hs:null, as:null}, {w:16, h:"Çaykur Rizespor", a:"Fenerbahçe", s:"ÇAYKUR Didi", hs:null, as:null}, {w:16, h:"Kayserispor", a:"Beşiktaş JK", s:"RHG Arena", hs:null, as:null}, {w:16, h:"Kocaelispor", a:"Trabzonspor", s:"BRİSA Stadı", hs:null, as:null}, {w:16, h:"MKE Ankaragücü", a:"Sivasspor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:16, h:"Göztepe", a:"Samsunspor", s:"ZURICH Stadı", hs:null, as:null}, {w:16, h:"ARCA Çorum FK", a:"Alanyaspor", s:"ARCA Gold Park", hs:null, as:null}, {w:16, h:"Red Bull Eyüpspor", a:"Konyaspor", s:"VİAPORT Arena", hs:null, as:null}, {w:16, h:"Antalyaspor", a:"Erzurumspor", s:"SUNEXPRESS", hs:null, as:null},
-            {w:17, h:"Beşiktaş JK", a:"Galatasaray", s:"VODAFONE Park", hs:null, as:null}, {w:17, h:"Fenerbahçe", a:"Alanyaspor", s:"ACIBADEM Stadı", hs:null, as:null}, {w:17, h:"Trabzonspor", a:"Sivasspor", s:"VESTEL Stadı", hs:null, as:null}, {w:17, h:"Samsunspor", a:"Erzurumspor", s:"YILPORT 19 Mayıs", hs:null, as:null}, {w:17, h:"Konyaspor", a:"Göztepe", s:"MEDAŞ Arena", hs:null, as:null}, {w:17, h:"MKE Ankaragücü", a:"Antalyaspor", s:"TUSAŞ Başkent", hs:null, as:null}, {w:17, h:"ARCA Çorum FK", a:"Çaykur Rizespor", s:"ARCA Gold Park", hs:null, as:null}, {w:17, h:"Kocaelispor", a:"Kasımpaşa", s:"BRİSA Stadı", hs:null, as:null}, {w:17, h:"Kayserispor", a:"Red Bull Eyüpspor", s:"RHG Arena", hs:null, as:null}
-        ];
-
-        let fixtureData = [];
-
-        // --- 2. VERİ YÖNETİMİ ---
-        function loadData() {
-            const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (savedData) {
-                fixtureData = JSON.parse(savedData);
+        function adminLogin() {
+            // Basit bir şifre kontrolü
+            let password = prompt("Lütfen yönetici şifresini girin:");
+            
+            if (password === "1234") { // Şifreyi buradan değiştirebilirsin
+                alert("Giriş Başarılı!");
+                document.getElementById("admin-panel").style.display = "block";
+                // Tarayıcıya 'bu kişi admin' diye kaydet
+                localStorage.setItem("isAdmin", "true");
             } else {
-                fixtureData = JSON.parse(JSON.stringify(defaultFixtureData)); // Klonla
+                alert("Hatalı Şifre!");
             }
         }
 
-        function saveData() {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fixtureData));
-            renderAll();
+        function logout() {
+            localStorage.removeItem("isAdmin");
+            document.getElementById("admin-panel").style.display = "none";
+            alert("Çıkış yapıldı.");
         }
-        
-        function resetData() {
-            if(confirm("Tüm skorları sıfırlamak istediğinize emin misiniz?")) {
-                localStorage.removeItem(LOCAL_STORAGE_KEY);
-                loadData();
-                renderAll();
-            }
-        }
-
-        function setScore(index, side, val) {
-            fixtureData[index][side] = val === "" ? null : parseInt(val);
-            saveData(); // Otomatik kaydet
-        }
-
-        // --- 3. RENDER (ÇİZİM) MOTORU ---
-        function renderAll() {
-            // --- ANA FİKSTÜR ---
-            const grid = document.getElementById('main-fixture-grid');
-            grid.innerHTML = "";
-            let currentWeek = 0;
-            let weekHtml = "";
-
-            fixtureData.forEach((m, i) => {
-                if (m.w !== currentWeek) {
-                    if (currentWeek !== 0) {
-                        weekHtml += `</div></div>`;
-                        grid.innerHTML += weekHtml;
-                    }
-                    currentWeek = m.w;
-                    weekHtml = `
-                        <div class="week-card">
-                            <div class="week-header">
-                                <span class="week-number">${currentWeek}</span>
-                                <span class="week-label">Hafta</span>
-                            </div>
-                            <div class="match-list">
-                    `;
-                }
-
-                // Skor Alanı: Admin ise input, değilse normal yazı
-                let center;
-                if (isAdmin) {
-                    center = `<div style="display:flex;justify-content:center;align-items:center">
-                                <input type="number" class="score-input" value="${m.hs ?? ''}" oninput="setScore(${i},'hs',this.value)"> 
-                                <span class="vs">-</span> 
-                                <input type="number" class="score-input" value="${m.as ?? ''}" oninput="setScore(${i},'as',this.value)">
-                              </div>`;
-                } else {
-                    center = `<span class="vs">${m.hs !== null && m.as !== null ? m.hs + ' - ' + m.as : 'VS'}</span>`;
-                }
-
-                weekHtml += `
-                    <div class="match-row">
-                        <div class="match-info" style="justify-content:flex-start; flex:1;">${m.h}</div>
-                        <div style="flex:0 0 100px; text-align:center;">${center}</div>
-                        <div class="match-info" style="justify-content:flex-end; flex:1;">${m.a}</div>
-                        <div class="stadium-info">${m.s}</div>
-                    </div>
-                `;
-
-                if (i === fixtureData.length - 1) {
-                    weekHtml += `</div></div>`;
-                    grid.innerHTML += weekHtml;
-                }
-            });
-
-            // --- PUAN DURUMU HESAPLAMA ---
-            let statsMap = {};
-            teamDetails.forEach(t => {
-                statsMap[t.name] = { n: t.name, l: t.logo, om:0, g:0, b:0, m:0, ag:0, yg:0, av:0, p:0 };
-            });
-
-            fixtureData.forEach(m => {
-                if (m.hs !== null && m.as !== null && m.hs !== undefined && m.as !== undefined) {
-                    let h = statsMap[m.h];
-                    let a = statsMap[m.a];
-                    
-                    if(h && a) {
-                        h.om++; a.om++;
-                        h.ag += parseInt(m.hs); h.yg += parseInt(m.as);
-                        a.ag += parseInt(m.as); a.yg += parseInt(m.hs);
-
-                        if (m.hs > m.as) { h.g++; h.p += 3; a.m++; }
-                        else if (m.as > m.hs) { a.g++; a.p += 3; h.m++; }
-                        else { h.b++; h.p++; a.b++; a.p++; }
-                        
-                        h.av = h.ag - h.yg;
-                        a.av = a.ag - a.yg;
-                    }
-                }
-            });
-
-            let sortedStats = Object.values(statsMap).sort((a, b) => b.p - a.p || b.av - a.av || b.ag - a.ag);
-            
-            document.getElementById('standings-body').innerHTML = sortedStats.map((t, i) => `
-                <tr>
-                    <td>${i + 1}</td>
-                    <td style="text-align:left; display:flex; align-items:center;">
-                        <div class="team-logo-btn" style="width:30px; height:30px; margin-right:10px; border:none; background-image:url('${t.l}')"></div>
-                        ${t.n}
-                    </td>
-                    <td>${t.om}</td><td>${t.g}</td><td>${t.b}</td><td>${t.m}</td><td>${t.av}</td>
-                    <td style="color:var(--pink-accent); font-weight:800;">${t.p}</td>
-                </tr>
-            `).join('');
-        }
-
-        // --- GÖRÜNÜM GEÇİŞLERİ ---
-        function showTeam(name) {
-            const team = teamDetails.find(t => t.name === name);
-            if(!team) return;
-
-            document.getElementById('selected-team-name').innerText = name;
-            const teamMatches = fixtureData.filter(m => m.h === name || m.a === name);
-            
-            document.getElementById('team-fixture-list').innerHTML = teamMatches.map(m => {
-                const isHome = m.h === name;
-                const scoreText = m.hs !== null && m.as !== null ? (isHome ? `${m.hs} - ${m.as}` : `${m.as} - ${m.hs}`) : "VS";
-                const icon = isHome ? "🏠" : "✈️";
-                const opponent = isHome ? m.a : m.h;
-
-                return `
-                <div class="gs-match-card">
-                    <div class="card-left">
-                        <div class="week-badge">${m.w}.</div>
-                        <div class="location-icon">${icon}</div>
-                        <div class="match-details" style="flex:1;">${opponent}</div>
-                    </div>
-                    <div class="stadium-info-list">
-                        <span class="stadium-icon">🏟️</span> ${m.s || ''} 
-                        <strong style="margin-left:10px; color:var(--pink-accent); font-size:1.1em;">${scoreText}</strong>
-                    </div>
-                </div>`;
-            }).join('');
-            
-            showView('team');
-        }
-
-        function showView(view, el) {
-            document.getElementById('main-view').style.display = 'none';
-            document.getElementById('standings-view').style.display = 'none';
-            document.getElementById('team-view').style.display = 'none';
-            
-            if(el) {
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-                el.classList.add('active');
-            }
-
-            if(view === 'main') {
-                document.getElementById('main-view').style.display = 'block';
-                document.querySelector('.team-selector-container').style.display = 'block';
-            } else if(view === 'standings') {
-                document.getElementById('standings-view').style.display = 'block';
-                document.querySelector('.team-selector-container').style.display = 'none';
-            } else if(view === 'team') {
-                document.getElementById('team-view').style.display = 'block';
-                document.querySelector('.team-selector-container').style.display = 'block';
-            }
-        }
-
-        function showMainView() {
-            showView('main', document.querySelector('.nav-btn:first-child'));
-        }
-
-        function toggleAdmin() {
-            isAdmin = !isAdmin;
-            const btn = document.getElementById('admin-toggle');
-            btn.innerText = isAdmin ? "⚙️ DÜZENLEME MODU: AÇIK" : "⚙️ DÜZENLEME MODU: KAPALI";
-            btn.classList.toggle('on', isAdmin);
-            renderAll(); // Ekranı admin moduna göre yeniden çiz
-        }
-
-        // --- BAŞLAT ---
-        // Logoları yerleştir
-        document.getElementById('logo-grid').innerHTML = teamDetails.sort((a,b) => a.name.localeCompare(b.name)).map(t => 
-            `<div class="team-logo-btn" style="background-image:url('${t.logo}')" onclick="showTeam('${t.name}')"></div>`
-        ).join('');
-        
-        // Uygulamayı Başlat
-        loadData();
-        renderAll();
-
     </script>
 </body>
 </html>
