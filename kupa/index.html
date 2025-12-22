@@ -3,58 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anadolu Sigorta | Kupa & Lig Yönetimi</title>
+    <title>Anadolu Sigorta | Kupa & Lig Sistemi</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 
     <style>
         :root {
+            /* Federasyon Varsayılan */
             --bg-base: #f5f7fa; --bg-detail: #c3cfe2; --accent: #003366;
             --text-color: #2c3e50; --card-bg: rgba(255, 255, 255, 0.95); --sidebar-bg: #ffffff;
         }
-        body { margin: 0; display: flex; font-family: 'Segoe UI', sans-serif; background-color: var(--bg-base); background-image: radial-gradient(circle at 15% 25%, var(--bg-detail) 0%, transparent 45%), radial-gradient(circle at 85% 75%, var(--bg-detail) 0%, transparent 45%); background-attachment: fixed; min-height: 100vh; color: var(--text-color); transition: all 0.6s; overflow-x: auto; }
+        body { margin: 0; display: flex; font-family: 'Segoe UI', sans-serif; background-color: var(--bg-base); background-image: radial-gradient(circle at 15% 25%, var(--bg-detail) 0%, transparent 45%), radial-gradient(circle at 85% 75%, var(--bg-detail) 0%, transparent 45%); background-attachment: fixed; min-height: 100vh; color: var(--text-color); transition: all 0.5s; overflow-x: auto; }
         
-        /* SIDEBAR */
         .sidebar { width: 260px; background: var(--sidebar-bg); backdrop-filter: blur(25px); border-right: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 30px 15px; height: 100vh; position: sticky; left: 0; z-index: 1000; }
-        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; display: flex; align-items: center; justify-content: center; }
-        .logo-box img { max-width: 160px; }
-        .cup-btn { border: 1px solid rgba(0,0,0,0.08); padding: 12px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; background: white; margin-bottom: 10px; width: 100%; text-align: left; }
-        .cup-btn.active { background: var(--accent); color: white; }
+        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+        .logo-box img { max-width: 160px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.1)); }
+        .cup-btn { border: 1px solid rgba(0,0,0,0.08); padding: 12px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; background: white; margin-bottom: 10px; width: 100%; text-align: left; transition: 0.3s; }
+        .cup-btn.active { background: var(--accent); color: white; border-color: transparent; }
 
-        .main-content { padding: 40px; min-width: 1100px; flex: 1; }
+        .main-content { padding: 40px; min-width: 1150px; flex: 1; transition: opacity 0.4s; }
         .view-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-        .tab-btn { padding: 10px 25px; border-radius: 30px; border: 2px solid var(--accent); background: transparent; color: var(--text-color); font-weight: bold; cursor: pointer; }
+        .tab-btn { padding: 10px 25px; border-radius: 30px; border: 2px solid var(--accent); background: rgba(255,255,255,0.05); color: var(--text-color); font-weight: bold; cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: var(--accent); color: white; }
 
-        /* SKOR GİRİŞİ (Admin Modu) */
-        .score-input { width: 40px; text-align: center; border: 1px solid var(--accent); border-radius: 4px; font-weight: bold; display: none; }
+        /* SKOR VE LOGO STİLLERİ */
+        .team-logo { width: 22px; height: 22px; object-fit: contain; vertical-align: middle; margin-right: 10px; }
+        .score-input { width: 35px; text-align: center; border: 1px solid var(--accent); border-radius: 4px; font-weight: bold; display: none; margin: 0 5px; }
         .admin-active .score-input { display: inline-block; }
         .admin-active .score-display { display: none; }
+        .score-display { font-weight: 800; min-width: 20px; text-align: center; }
+
+        .league-table { width: 100%; max-width: 950px; margin: 0 auto; background: var(--card-bg); border-radius: 15px; overflow: hidden; border-collapse: collapse; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+        .league-table th { background: var(--accent); color: white; padding: 15px; text-transform: uppercase; font-size: 13px; }
+        .league-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); text-align: center; font-weight: 600; }
         
-        .league-table { width: 100%; max-width: 900px; margin: 0 auto; background: var(--card-bg); border-radius: 15px; border-collapse: collapse; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .league-table th { background: var(--accent); color: white; padding: 12px; }
-        .league-table td { padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: center; }
-
         .bracket-wrapper { display: flex; gap: 30px; justify-content: center; }
-        .round { display: flex; flex-direction: column; width: 230px; }
-        .match-card { background: var(--card-bg); border-radius: 12px; margin: 10px 0; border: 1px solid rgba(0,0,0,0.1); }
+        .round { display: flex; flex-direction: column; width: 240px; }
+        .match-card { background: var(--card-bg); border-radius: 12px; margin: 10px 0; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
         .team { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold; }
-        .team-logo { width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; }
-
-        /* Login Modal */
-        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; text-align: center; color: #333; }
-
-        .admin-trigger { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; }
-        .save-btn { display: none; position: fixed; bottom: 20px; right: 150px; background: #28a745; color: white; padding: 10px 30px; border-radius: 30px; cursor: pointer; border: none; font-weight: bold; }
+        
+        /* MODAL */
+        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .modal-content { background: white; padding: 40px; border-radius: 20px; text-align: center; color: #333; box-shadow: 0 0 30px var(--accent); }
+        .admin-trigger { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; z-index: 2000; font-weight: bold; }
+        .save-btn { display: none; position: fixed; bottom: 20px; right: 180px; background: #28a745; color: white; padding: 12px 40px; border-radius: 30px; cursor: pointer; border: none; font-weight: 800; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 2000; }
     </style>
 </head>
 <body id="body-tag">
 
     <aside class="sidebar">
         <div class="logo-box">
-            <img id="cup-logo" src="../logolar/federasyon.png" alt="Logo" onerror="this.src='../logolar/image_dd686a.jpg'">
+            <img id="cup-logo" src="../logolar/federasyon.png" alt="Cup Logo" onerror="this.src='../logolar/image_dd686a.jpg'">
         </div>
         <nav class="nav-menu">
             <button class="cup-btn active" id="btn-fed" onclick="changeCup('federasyon', this)">Federasyon Kupası</button>
@@ -64,33 +63,38 @@
         </nav>
     </aside>
 
-    <main class="main-content">
-        <h1 id="main-title" style="text-align:center;">Federasyon Kupası</h1>
+    <main class="main-content" id="main-content">
+        <h1 id="main-title" style="text-align:center; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px;">Federasyon Kupası</h1>
         <div id="tab-area" class="view-tabs" style="display:none;">
-            <button class="tab-btn active" onclick="switchView('league')">Lig Aşaması</button>
-            <button class="tab-btn" onclick="switchView('playoff')">Elemeler & Play-off</button>
+            <button class="tab-btn active" onclick="switchView('league', this)">Lig Aşaması (36)</button>
+            <button class="tab-btn" onclick="switchView('playoff', this)">Elemeler & Play-off</button>
         </div>
         <div id="display-area"></div>
     </main>
 
     <div class="admin-trigger" id="login-btn" onclick="showLogin()">Yönetici Girişi</div>
-    <button class="save-btn" id="save-btn" onclick="saveData()">Değişiklikleri Kaydet</button>
+    <button class="save-btn" id="save-btn" onclick="saveData()">DEĞİŞİKLİKLERİ KAYDET</button>
 
     <div id="login-modal">
         <div class="modal-content">
-            <h3>Yönetici Girişi</h3>
-            <input type="password" id="admin-pass" placeholder="Şifre" style="padding:10px; margin-bottom:10px;"><br>
-            <button onclick="login()">Giriş Yap</button>
-            <button onclick="closeLogin()">İptal</button>
+            <h2 style="margin-top:0">Yönetici Paneli</h2>
+            <p>Lütfen yetkili şifresini giriniz:</p>
+            <input type="password" id="admin-pass" style="padding:12px; border-radius:8px; border:1px solid #ccc; width:200px; margin-bottom:20px; font-size:18px; text-align:center;"><br>
+            <button onclick="login()" style="background:var(--accent); color:white; padding:10px 30px; border-radius:8px; cursor:pointer; border:none; font-weight:bold;">GİRİŞ</button>
+            <button onclick="closeLogin()" style="background:#eee; color:#333; padding:10px 20px; border-radius:8px; cursor:pointer; border:none; margin-left:10px;">İPTAL</button>
         </div>
     </div>
 
     <script>
-        // FIREBASE CONFIG - BURAYI KENDİ BİLGİLERİNLE DOLDUR
+        // FIREBASE ENTEGRASYONU
         const firebaseConfig = {
-            apiKey: "SENIN_API_KEY",
-            databaseURL: "SENIN_DB_URL",
-            projectId: "SENIN_PROJECT_ID",
+            apiKey: "AIzaSyDj5s9VIvEWQmdEjCPHti7_ujdrg_1C_LA",
+            authDomain: "kupalar-96dab.firebaseapp.com",
+            projectId: "kupalar-96dab",
+            databaseURL: "https://kupalar-96dab-default-rtdb.europe-west1.firebasedatabase.app/",
+            storageBucket: "kupalar-96dab.firebasestorage.app",
+            messagingSenderId: "929983415930",
+            appId: "1:929983415930:web:b5f0b066b79422e1e5ddc3"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -100,21 +104,55 @@
         let currentView = 'league';
         let localData = {};
 
-        // Verileri Firebase'den Çek
-        function loadData() {
-            db.ref('tournamentData').on('value', (snapshot) => {
-                localData = snapshot.val() || {};
-                renderContent();
-            });
-        }
-
-        // Akıllı Logo
+        // AKILLI LOGO SİSTEMİ
         function getLogo(team) {
-            if(!team || team.includes('Winner')) return '';
+            if(!team || team === 'Bekleniyor' || team.includes('Winner')) return '';
             let clean = team.replace('*', '').trim();
             return `<img src="../logolar/${clean}.png" class="team-logo" onerror="this.onerror=null; this.src='../logolar2/${clean}.png';">`;
         }
 
+        // VERİ TABANI YÜKLEME
+        function loadData() {
+            db.ref('tournamentData').on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    localData = val;
+                } else {
+                    // İlk Kurulum: Veritabanı boşsa varsayılan takımları yükle
+                    localData = initData();
+                    db.ref('tournamentData').set(localData);
+                }
+                renderContent();
+            });
+        }
+
+        function initData() {
+            return {
+                federasyon: {
+                    0: [["Galatasaray", "Kilis 1984 A.Ş."], ["Fenerbahçe", "Karaman FK"], ["Beşiktaş", "Malatya Yeşilyurt"], ["Trabzonspor", "Ağrı 1970 Spor"], ["Başakşehir FK", "Diyarbakır FK"], ["Eyüpspor", "Bursaspor"], ["Samsunspor", "Çorum FK"], ["Göztepe", "Sakaryaspor"], ["Konyaspor", "Erzurumspor"], ["Sivasspor", "Keçiörengücü"], ["Antalyaspor", "Kocaelispor"], ["Kasımpaşa", "Ümraniyespor"], ["Gaziantep FK", "Ankaragücü"], ["Rizespor", "Hatayspor"], ["Alanyaspor", "Kayserispor"], ["Adana Demirspor", "Bodrum FK"]].map(p => ({t1:p[0], t2:p[1], s1:0, s2:0})),
+                    1: Array(8).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0}),
+                    2: Array(4).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0}),
+                    3: Array(2).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0}),
+                    4: Array(1).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0})
+                },
+                sampiyonlar: {
+                    teams: ["Real Madrid", "Slavia Praha", "Sporting CP", "Tottenham", "Union SG", "Villarreal", "Man City", "Marseille", "Monaco", "Napoli", "Newcastle", "Olympiacos", "Pafos", "Paris", "PSV", "Frankfurt", "Galatasaray", "Inter", "Juventus", "Kairat Almaty", "Leverkusen", "Liverpool", "Ajax", "Arsenal", "Atalanta", "Athletic Club", "Atleti", "B. Dortmund", "Barcelona", "Bayern München", "Chelsea", "BodoGlimt"],
+                    qualifying: [{t1:"Fenerbahçe", t2:"Feyenoord", s1:0, s2:0}],
+                    playoffs: [{t1:"Qarabağ", t2:"Ferençvaroş", s1:0, s2:0}, {t1:"Copenhagen", t2:"Basel", s1:0, s2:0}, {t1:"Club Brugge", t2:"Rangers", s1:0, s2:0}, {t1:"Winner/Fener", t2:"Celtic", s1:0, s2:0}]
+                },
+                uefa: {
+                    teams: ["Real Betis", "Roma", "Freiburg", "Genk", "GNK Dinamo", "Go Ahead Eagles", "Lille", "Ludogorets", "Lyon", "Bologna", "Braga", "Brann", "Celta", "Crvena Zvezda", "FCSB", "Salzburg", "Sturm Graz", "Stuttgart", "Utrecht", "Viktoria Plzeň", "Malmö", "Midtjylland", "Nice", "Nott'm Forest", "Panathinaikos", "PAOK", "Porto"],
+                    playoffs: [{t1:"Beşiktaş", t2:"Kups Kuopio", s1:0, s2:0}, {t1:"Trabzonspor", t2:"AEK Larnaca", s1:0, s2:0}, {t1:"Dinamo Kyiv", t2:"Tel Aviv", s1:0, s2:0}, {t1:"Young Boys", t2:"Slovan Bratislava", s1:0, s2:0}]
+                },
+                konferans: {
+                    teams: ["L. Red Imps", "Lausanne-Sport", "Lech Poznań", "Legia Warszawa", "Omonoia", "Raków", "Rayo Vallecano", "Rijeka", "Fiorentina", "Noah", "Shkëndija", "Sigma Olomouc", "SK Rapid", "Sparta Praha", "Strasbourg", "U. Craiova", "Zrinjski", "Shamrock Rovers", "Shelbourne", "Aberdeen", "AEK Athens", "AZ Alkmaar", "Breiðablik", "Celje", "Crystal Palace", "Drita", "Häcken", "Hamrun Spartans", "Jagiellonia"],
+                    qualifying: [{t1:"Samsunspor", t2:"Paksi", s1:0, s2:0}, {t1:"Göztepe", t2:"Vikingur", s1:0, s2:0}],
+                    playoffs: [{t1:"Samsunspor/Paksi", t2:"Fredrikstad", s1:0, s2:0}, {t1:"Göztepe/Vikingur", t2:"CFR Cluj", s1:0, s2:0}, {t1:"Mainz", t2:"Rosenborg", s1:0, s2:0}, {t1:"Servette", t2:"Shakhtar", s1:0, s2:0}]
+                }
+            };
+        }
+
+        // BRACKET VE LİG RENDER
         function renderContent() {
             const area = document.getElementById('display-area');
             if(activeCup === 'federasyon') {
@@ -124,37 +162,87 @@
             }
         }
 
-        // Federasyon Kupası (Bracket) Çizimi
         function renderFederasyon() {
-            const rounds = [{id: 'Son 32', count: 16}, {id: 'Son 16', count: 8}, {id: 'Çeyrek', count: 4}, {id: 'Yarı', count: 2}, {id: 'Final', count: 1}];
+            const rounds = [{id: 'Son 32', c: 16}, {id: 'Son 16', c: 8}, {id: 'Çeyrek', c: 4}, {id: 'Yarı', c: 2}, {id: 'Final', c: 1}];
             let html = `<div class="bracket-wrapper">`;
             rounds.forEach((r, rIdx) => {
-                html += `<div class="round"><h4>${r.id}</h4>`;
-                for(let i=0; i<r.count; i++) {
-                    const match = (localData.federasyon?.[rIdx]?.[i]) || {t1: 'Bekleniyor', t2: 'Bekleniyor', s1: '-', s2: '-'};
-                    html += `
-                        <div class="match-card">
-                            <div class="team">${getLogo(match.t1)} ${match.t1} 
-                                <span class="score-display">${match.s1}</span>
-                                <input type="text" class="score-input" value="${match.s1}" onchange="updateFedScore(${rIdx}, ${i}, 's1', this.value)">
-                            </div>
-                            <div class="team">${getLogo(match.t2)} ${match.t2} 
-                                <span class="score-display">${match.s2}</span>
-                                <input type="text" class="score-input" value="${match.s2}" onchange="updateFedScore(${rIdx}, ${i}, 's2', this.value)">
-                            </div>
-                        </div>`;
+                html += `<div class="round"><h4 style="text-align:center; color: var(--accent);">${r.id}</h4>`;
+                for(let i=0; i<r.c; i++) {
+                    const match = localData.federasyon[rIdx][i];
+                    html += `<div class="match-card">
+                        <div class="team"><span>${getLogo(match.t1)} ${match.t1}</span> 
+                            <span class="score-display">${match.s1}</span>
+                            <input type="number" class="score-input" value="${match.s1}" onchange="updateScore('fed', ${rIdx}, ${i}, 's1', this.value)">
+                        </div>
+                        <div class="team"><span>${getLogo(match.t2)} ${match.t2}</span> 
+                            <span class="score-display">${match.s2}</span>
+                            <input type="number" class="score-input" value="${match.s2}" onchange="updateScore('fed', ${rIdx}, ${i}, 's2', this.value)">
+                        </div>
+                    </div>`;
                 }
                 html += `</div>`;
             });
             return html + `</div>`;
         }
 
-        // Admin Fonksiyonları
+        function renderLeague() {
+            let html = `<table class="league-table"><thead><tr><th>#</th><th>Takım</th><th>Durum</th></tr></thead><tbody>`;
+            const teams = localData[activeCup].teams || [];
+            for(let i=1; i<=36; i++) {
+                let status = i <= 8 ? "Direkt Son 16" : (i <= 24 ? "Play-off" : "Eledi");
+                let teamName = teams[i-1] || `Swiss Winner ${i-teams.length}`;
+                html += `<tr><td>${i}</td><td style="text-align:left; padding-left: 50px;">${getLogo(teamName)} ${teamName}</td><td><small>${status}</small></td></tr>`;
+            }
+            return html + "</tbody></table>";
+        }
+
+        function renderPlayoffs() {
+            let html = `<div class="bracket-wrapper">`;
+            if(localData[activeCup].qualifying) {
+                html += `<div class="round"><h4>Eleme Turu</h4>`;
+                localData[activeCup].qualifying.forEach((m, i) => {
+                    html += `<div class="match-card">
+                        <div class="team"><span>${getLogo(m.t1)} ${m.t1}</span> <input type="number" class="score-input" value="${m.s1}" onchange="updateScore('qual', 0, ${i}, 's1', this.value)"><span class="score-display">${m.s1}</span></div>
+                        <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('qual', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            html += `<div class="round"><h4>Play-off</h4>`;
+            localData[activeCup].playoffs.forEach((m, i) => {
+                html += `<div class="match-card">
+                    <div class="team"><span>${getLogo(m.t1)} ${m.t1}</span> <input type="number" class="score-input" value="${m.s1}" onchange="updateScore('play', 0, ${i}, 's1', this.value)"><span class="score-display">${m.s1}</span></div>
+                    <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('play', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
+                </div>`;
+            });
+            return html + `</div></div>`;
+        }
+
+        // AKILLI MANTIK: OTOMATİK TUR ATLAMA
+        function updateScore(type, r, mIdx, team, val) {
+            let valNum = parseInt(val) || 0;
+            if(type === 'fed') {
+                localData.federasyon[r][mIdx][team] = valNum;
+                // Kazananı belirle ve üst tura taşı
+                let match = localData.federasyon[r][mIdx];
+                if(match.s1 !== match.s2 && r < 4) {
+                    let winner = match.s1 > match.s2 ? match.t1 : match.t2;
+                    let nextMatchIdx = Math.floor(mIdx / 2);
+                    let nextTeamPos = mIdx % 2 === 0 ? 't1' : 't2';
+                    localData.federasyon[r+1][nextMatchIdx][nextTeamPos] = winner;
+                }
+            } else if(type === 'qual') {
+                localData[activeCup].qualifying[mIdx][team] = valNum;
+            } else if(type === 'play') {
+                localData[activeCup].playoffs[mIdx][team] = valNum;
+            }
+        }
+
+        // ADMIN FONKSİYONLARI
         function showLogin() { document.getElementById('login-modal').style.display = 'flex'; }
         function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
         function login() {
-            const pass = document.getElementById('admin-pass').value;
-            if(pass === "1234") { // Basit şifre örneği
+            if(document.getElementById('admin-pass').value === "1234") {
                 isAdmin = true;
                 document.getElementById('body-tag').classList.add('admin-active');
                 document.getElementById('save-btn').style.display = 'block';
@@ -162,58 +250,41 @@
             } else { alert("Hatalı Şifre!"); }
         }
 
-        // Skor Güncelleme ve Otomatik İlerleme
-        function updateFedScore(r, m, team, val) {
-            if(!localData.federasyon) localData.federasyon = {};
-            if(!localData.federasyon[r]) localData.federasyon[r] = {};
-            if(!localData.federasyon[r][m]) localData.federasyon[r][m] = {t1:'?', t2:'?', s1:'-', s2:'-'};
-            
-            localData.federasyon[r][m][team] = val;
-
-            // OTOMATİK İLERLEME MANTIĞI
-            const s1 = parseInt(localData.federasyon[r][m].s1);
-            const s2 = parseInt(localData.federasyon[r][m].s2);
-            
-            if(!isNaN(s1) && !isNaN(s2)) {
-                const winner = s1 > s2 ? localData.federasyon[r][m].t1 : localData.federasyon[r][m].t2;
-                const nextRound = r + 1;
-                const nextMatch = Math.floor(m / 2);
-                const nextTeamPos = m % 2 === 0 ? 't1' : 't2';
-
-                if(!localData.federasyon[nextRound]) localData.federasyon[nextRound] = {};
-                if(!localData.federasyon[nextRound][nextMatch]) localData.federasyon[nextRound][nextMatch] = {t1:'Bekleniyor', t2:'Bekleniyor', s1:'-', s2:'-'};
-                
-                localData.federasyon[nextRound][nextMatch][nextTeamPos] = winner;
-            }
-        }
-
         function saveData() {
             db.ref('tournamentData').set(localData).then(() => {
-                alert("Veriler Başarıyla Kaydedildi!");
+                alert("Veriler veritabanına kaydedildi ve herkes için güncellendi!");
             });
         }
 
-        // Turnuva Değiştirme
+        // TEMA VE SEKME YÖNETİMİ
         function changeCup(cup, btn) {
             activeCup = cup;
             document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Tema ve Logo Ayarları
             const themes = {
-                'federasyon': { base: '#f5f7fa', det: '#c3cfe2', acc: '#003366', title: 'Federasyon Kupası' },
-                'sampiyonlar': { base: '#091442', det: '#3562A6', acc: '#3562A6', title: 'Champions League' },
-                'uefa': { base: '#0D0D0D', det: '#D85C00', acc: '#F47E01', title: 'Europa League' },
-                'konferans': { base: '#000000', det: '#022e05', acc: '#03c221', title: 'Conference League' }
+                'federasyon': { b: '#f5f7fa', d: '#c3cfe2', a: '#003366', t: 'Federasyon Kupası' },
+                'sampiyonlar': { b: '#091442', d: '#3562A6', a: '#3562A6', t: 'Champions League' },
+                'uefa': { b: '#0D0D0D', d: '#D85C00', a: '#F47E01', t: 'Europa League' },
+                'konferans': { b: '#000000', d: '#022e05', a: '#03c221', t: 'Conference League' }
             };
-            const t = themes[cup];
-            document.documentElement.style.setProperty('--bg-base', t.base);
-            document.documentElement.style.setProperty('--bg-detail', t.det);
-            document.documentElement.style.setProperty('--accent', t.acc);
-            document.getElementById('main-title').innerText = t.title;
-            document.getElementById('cup-logo').src = `../logolar/${cup}.png`;
+            const th = themes[cup];
+            document.documentElement.style.setProperty('--bg-base', th.b);
+            document.documentElement.style.setProperty('--bg-detail', th.d);
+            document.documentElement.style.setProperty('--accent', th.a);
+            document.documentElement.style.setProperty('--text-color', cup === 'federasyon' ? '#2c3e50' : '#ffffff');
+            document.documentElement.style.setProperty('--card-bg', cup === 'federasyon' ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.08)');
             
+            document.getElementById('main-title').innerText = th.t;
+            document.getElementById('cup-logo').src = `../logolar/${cup}.png`;
             document.getElementById('tab-area').style.display = cup === 'federasyon' ? 'none' : 'flex';
+            renderContent();
+        }
+
+        function switchView(view, btn) {
+            currentView = view;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             renderContent();
         }
 
