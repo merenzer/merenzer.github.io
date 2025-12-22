@@ -7,31 +7,32 @@
     <style>
         :root {
             --primary: #003366; 
-            --bg-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --bg-style: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --card-bg: rgba(255, 255, 255, 0.95);
             --text-color: #2c3e50;
-            --line-color: rgba(0,0,0,0.2);
+            --line-color: rgba(0,0,0,0.15);
         }
 
         body {
             margin: 0;
             display: flex;
             font-family: 'Segoe UI', sans-serif;
-            background: var(--bg-image);
+            background: var(--bg-style);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
             color: var(--text-color);
-            transition: all 0.6s ease;
+            transition: all 0.5s ease;
             overflow-x: auto;
         }
 
+        /* SIDEBAR - Görünürlüğü artırıldı */
         .sidebar {
-            width: 250px;
-            background: rgba(255, 255, 255, 0.1);
+            width: 260px;
+            background: rgba(255, 255, 255, 0.9); /* Arka plan bembeyaz olsa da görünür */
             backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255,255,255,0.1);
+            border-right: 1px solid rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             padding: 30px 15px;
@@ -41,90 +42,61 @@
             z-index: 1000;
         }
 
-        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; }
-        /* Federasyon Kupası Logosu */
-        .logo-box img { max-width: 150px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.2)); }
+        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; min-height: 100px; }
+        .logo-box img { max-width: 150px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.1)); }
 
         .nav-menu { display: flex; flex-direction: column; gap: 10px; }
         .cup-btn {
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(0,0,0,0.1);
             padding: 12px 15px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
-            background: rgba(255,255,255,0.1);
-            color: inherit;
+            background: white;
+            color: #444;
             transition: 0.3s;
         }
-        .cup-btn.active { background: var(--primary); color: white; }
+        .cup-btn.active { background: var(--primary); color: white; border-color: transparent; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        .main-content { padding: 40px; min-width: 1400px; flex: 1; }
-        
-        .bracket-container {
-            display: flex;
-            justify-content: flex-start;
-            gap: 20px;
-        }
+        /* BRACKET ALANI */
+        .main-content { padding: 40px; min-width: 1500px; flex: 1; transition: opacity 0.4s; }
+        .header h1 { text-align: center; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 
-        .round {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 220px;
-        }
+        .bracket-wrapper { display: flex; gap: 40px; justify-content: flex-start; }
 
-        .round-header {
-            text-align: center;
-            font-size: 14px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            color: var(--primary);
-            text-transform: uppercase;
-        }
-
-        .match-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            position: relative;
-            padding: 20px 0;
-        }
+        .round { display: flex; flex-direction: column; justify-content: space-around; width: 230px; }
+        .round-header { text-align: center; font-size: 14px; font-weight: 800; margin-bottom: 25px; color: var(--primary); text-transform: uppercase; }
 
         .match-card {
             background: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255,255,255,0.5);
-            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 15px 0;
             position: relative;
+            border: 1px solid rgba(0,0,0,0.05);
             z-index: 2;
         }
 
-        .team {
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-        }
+        .team { padding: 12px 15px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
+        .team:first-child { border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .score { background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 4px; }
 
-        /* Bağlantı Çizgileri */
-        .match-wrapper::after {
+        /* BAĞLANTI ÇİZGİLERİ - Geliştirilmiş */
+        .match-card::after {
             content: "";
             position: absolute;
-            right: -20px;
+            right: -40px;
             top: 50%;
-            width: 20px;
+            width: 40px;
             height: 2px;
             background: var(--line-color);
         }
-        .round:last-child .match-wrapper::after { display: none; }
+        .round:last-child .match-card::after { display: none; }
 
-        .admin-btn {
+        .admin-trigger {
             position: fixed; bottom: 20px; right: 20px;
-            background: rgba(0,0,0,0.5); color: white;
-            padding: 10px 20px; border-radius: 30px; cursor: pointer;
+            background: #333; color: white; padding: 10px 20px;
+            border-radius: 30px; cursor: pointer; z-index: 2000;
         }
     </style>
 </head>
@@ -143,21 +115,23 @@
     </aside>
 
     <main class="main-content" id="main-content">
-        <h1 id="main-title" style="text-align:center; margin-bottom:40px;">Federasyon Kupası</h1>
-        <div class="bracket-container" id="bracket-area"></div>
+        <div class="header">
+            <h1 id="main-title">Federasyon Kupası</h1>
+        </div>
+        <div class="bracket-wrapper" id="bracket-area"></div>
     </main>
 
-    <div class="admin-btn">Yönetici Girişi</div>
+    <div class="admin-trigger">Yönetici Girişi</div>
 
     <script>
-        // Shuffled Match Data
-        const matchData = {
+        // Takım verilerini Son 32'den itibaren dağıttık
+        const allMatches = {
             'federasyon': [
                 ['Galatasaray', 'Kilis 1984 A.Ş.'], ['Başakşehir FK', 'Diyarbakır FK'],
                 ['Göztepe', 'Sakaryaspor'], ['Antalyaspor', 'Kocaelispor'],
                 ['Trabzonspor', 'Ağrı 1970 Spor'], ['Rizespor', 'Hatayspor'],
                 ['Sivasspor', 'Keçiörengücü'], ['Gaziantep FK', 'Ankaragücü'],
-                ['Beşiktaş', 'Malatya Yeşilyurt Spor'], ['Eyüpspor', 'Bursaspor'],
+                ['Beşiktaş', 'Malatya Yeşilyurt'], ['Eyüpspor', 'Bursaspor'],
                 ['Samsunspor', 'Çorum FK'], ['Kasımpaşa', 'Ümraniyespor'],
                 ['Alanyaspor', 'Kayserispor'], ['Konyaspor', 'Erzurumspor'],
                 ['Adana Demirspor', 'Bodrum FK'], ['Fenerbahçe', 'Karaman FK']
@@ -167,29 +141,26 @@
         function renderBracket(cup) {
             const area = document.getElementById('bracket-area');
             const rounds = [
-                { name: 'Son 32', matches: 16 },
-                { name: 'Son 16', matches: 8 },
-                { name: 'Çeyrek Final', matches: 4 },
-                { name: 'Yarı Final', matches: 2 },
-                { name: 'Final', matches: 1 }
+                { id: 'Son 32', count: 16 },
+                { id: 'Son 16', count: 8 },
+                { id: 'Çeyrek Final', count: 4 },
+                { id: 'Yarı Final', count: 2 },
+                { id: 'Final', count: 1 }
             ];
 
             let html = '';
             rounds.forEach((round, rIdx) => {
-                html += `<div class="round"><div class="round-header">${round.name}</div>`;
-                for (let i = 0; i < round.matches; i++) {
+                html += `<div class="round"><div class="round-header">${round.id}</div>`;
+                for (let i = 0; i < round.count; i++) {
                     let t1 = 'Bekleniyor', t2 = 'Bekleniyor';
-                    if (cup === 'federasyon' && rIdx === 0) {
-                        t1 = matchData.federasyon[i][0];
-                        t2 = matchData.federasyon[i][1];
+                    if (cup === 'federasyon' && rIdx === 0 && allMatches.federasyon[i]) {
+                        t1 = allMatches.federasyon[i][0];
+                        t2 = allMatches.federasyon[i][1];
                     }
-                    html += `
-                        <div class="match-wrapper">
-                            <div class="match-card">
-                                <div class="team">${t1} <span>-</span></div>
-                                <div class="team">${t2} <span>-</span></div>
-                            </div>
-                        </div>`;
+                    html += `<div class="match-card">
+                                <div class="team">${t1} <span class="score">-</span></div>
+                                <div class="team">${t2} <span class="score">-</span></div>
+                             </div>`;
                 }
                 html += `</div>`;
             });
@@ -205,20 +176,34 @@
                 document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                // Themes with background images
+                // Temalar ve Arka Planlar
                 const themes = {
-                    'federasyon': { primary: '#003366', text: '#2c3e50', bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', line: 'rgba(0,0,0,0.1)' },
-                    'sampiyonlar': { primary: '#00d4ff', text: '#fff', bg: 'url("../logolar/image_4c9ab7.jpg")', line: 'rgba(255,255,255,0.2)' },
-                    'uefa': { primary: '#f47920', text: '#fff', bg: 'url("../logolar/image_4c9ad6.jpg")', line: 'rgba(244,121,32,0.3)' },
-                    'konferans': { primary: '#00ff80', text: '#fff', bg: 'url("../logolar/image_4c9af5.jpg")', line: 'rgba(0,255,128,0.3)' }
+                    'federasyon': { 
+                        p: '#003366', t: '#2c3e50', c: '#ffffff', l: 'rgba(0,0,0,0.15)',
+                        bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', title: 'Federasyon Kupası' 
+                    },
+                    'sampiyonlar': { 
+                        p: '#00d4ff', t: '#ffffff', c: 'rgba(255,255,255,0.15)', l: 'rgba(255,255,255,0.3)',
+                        bg: 'linear-gradient(rgba(0,0,30,0.8), rgba(0,0,30,0.8)), url("../logolar/image_4c9ab7.jpg")', title: 'UEFA Champions League' 
+                    },
+                    'uefa': { 
+                        p: '#f47920', t: '#ffffff', c: 'rgba(255,255,255,0.1)', l: 'rgba(244,121,32,0.4)',
+                        bg: 'linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url("../logolar/image_4c9ad6.jpg")', title: 'UEFA Europa League' 
+                    },
+                    'konferans': { 
+                        p: '#00ff80', t: '#ffffff', c: 'rgba(255,255,255,0.1)', l: 'rgba(0,255,128,0.4)',
+                        bg: 'linear-gradient(rgba(0,10,0,0.8), rgba(0,10,0,0.8)), url("../logolar/image_4c9af5.jpg")', title: 'UEFA Conference League' 
+                    }
                 };
 
                 const t = themes[cup];
-                root.style.setProperty('--primary', t.primary);
-                root.style.setProperty('--bg-image', t.bg);
-                root.style.setProperty('--text-color', t.text);
-                root.style.setProperty('--line-color', t.line);
+                root.style.setProperty('--primary', t.p);
+                root.style.setProperty('--text-color', t.t);
+                root.style.setProperty('--card-bg', t.c);
+                root.style.setProperty('--line-color', t.l);
+                root.style.setProperty('--bg-style', t.bg);
                 
+                document.getElementById('main-title').innerText = t.title;
                 renderBracket(cup);
                 main.style.opacity = 1;
             }, 300);
