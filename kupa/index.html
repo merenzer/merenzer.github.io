@@ -8,14 +8,15 @@
         :root {
             --primary: #003366; 
             --bg-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.95);
             --text-color: #2c3e50;
+            --line-color: rgba(0,0,0,0.1);
         }
 
         body {
             margin: 0;
             display: flex;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: var(--bg-image);
             background-size: cover;
             background-position: center;
@@ -23,114 +24,107 @@
             min-height: 100vh;
             color: var(--text-color);
             transition: all 0.6s ease;
+            overflow-x: auto; /* Yatay kaydırma için */
         }
 
-        /* SIDEBAR - ŞEFFAF VE MODERN */
+        /* SIDEBAR */
         .sidebar {
-            width: 280px;
+            width: 260px;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255,255,255,0.1);
             display: flex;
             flex-direction: column;
             padding: 30px 15px;
             height: 100vh;
             position: sticky;
-            top: 0;
-            z-index: 100;
+            left: 0;
+            z-index: 1000;
         }
 
-        .logo-box {
-            padding: 10px;
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: center;
-            min-height: 100px;
-        }
+        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; }
+        .logo-box img { max-width: 150px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.2)); }
 
-        .logo-box img {
-            max-width: 160px;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
-        }
-
-        .nav-menu { display: flex; flex-direction: column; gap: 12px; }
-
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; }
         .cup-btn {
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 15px;
+            padding: 12px 15px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
             text-align: left;
-            transition: 0.3s;
             background: rgba(255,255,255,0.1);
             color: inherit;
-        }
-
-        .cup-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border-color: transparent;
-        }
-
-        /* ANA İÇERİK ALANI */
-        .main-content {
-            flex: 1;
-            padding: 40px;
-            transition: opacity 0.4s ease-in-out;
-        }
-
-        .header h1 {
-            font-size: 38px;
-            text-align: center;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 15px rgba(0,0,0,0.2);
-        }
-
-        /* SON 32 MAÇ LİSTESİ - GRID YAPI */
-        .bracket {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            justify-content: center;
-        }
-
-        .match-card {
-            background: var(--card-bg);
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            overflow: hidden;
             transition: 0.3s;
         }
+        .cup-btn.active { background: var(--primary); color: white; border-color: transparent; }
 
-        .match-card:hover { transform: translateY(-5px); }
+        /* ANA İÇERIK VE BRACKET */
+        .main-content { padding: 40px; min-width: 1600px; } /* Genişlik bracket için önemli */
+        
+        .header h1 { text-align: center; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 2px; }
+
+        .bracket-wrapper {
+            display: flex;
+            gap: 40px;
+            justify-content: flex-start;
+            align-items: stretch;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 240px;
+        }
+
+        .round-title {
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 14px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* MAÇ KARTLARI */
+        .match-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 15px 0;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
 
         .team {
-            padding: 15px 20px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            font-size: 13px;
             font-weight: 600;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
+        .team:first-child { border-bottom: 1px solid rgba(0,0,0,0.05); }
 
-        .score-box {
-            background: rgba(0,0,0,0.08);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 14px;
+        .score-box { background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+
+        /* BAĞLANTI ÇIZGILERI */
+        .match-card::after {
+            content: "";
+            position: absolute;
+            right: -40px;
+            top: 50%;
+            width: 40px;
+            height: 2px;
+            background: var(--line-color);
         }
+        .round:last-child .match-card::after { display: none; }
 
         .admin-trigger {
             position: fixed; bottom: 20px; right: 20px;
             background: rgba(0,0,0,0.5); color: white;
-            padding: 10px 20px; border-radius: 30px; cursor: pointer;
+            padding: 10px 20px; border-radius: 30px; cursor: pointer; z-index: 2000;
         }
     </style>
 </head>
@@ -150,101 +144,95 @@
 
     <main class="main-content" id="main-content">
         <div class="header">
-            <h1 id="main-title">Federasyon Kupası - Son 32</h1>
+            <h1 id="main-title">Federasyon Kupası</h1>
         </div>
-        <div class="bracket" id="bracket-area">
+
+        <div class="bracket-wrapper" id="bracket-area">
             </div>
     </main>
 
-    <div class="admin-trigger" onclick="alert('Admin girişi 6. aşamada aktif edilecek!')">Yönetici Girişi</div>
+    <div class="admin-trigger" onclick="alert('Admin Paneli Hazırlanıyor...')">Yönetici Girişi</div>
 
     <script>
-        // FEDERASYON KUPASI SON 32 EŞLEŞMELERİ
-        const matchData = {
+        const matches = {
             'federasyon': [
-                { t1: 'Galatasaray', s1: '-', t2: 'Kilis 1984 A.Ş.', s2: '-' },
-                { t1: 'Fenerbahçe', s1: '-', t2: 'Karaman FK', s2: '-' },
-                { t1: 'Beşiktaş', s1: '-', t2: 'Malatya Yeşilyurt', s2: '-' },
-                { t1: 'Trabzonspor', s1: '-', t2: 'Ağrı 1970 Spor', s2: '-' },
-                { t1: 'Başakşehir FK', s1: '-', t2: 'Diyarbakır FK', s2: '-' },
-                { t1: 'Eyüpspor', s1: '-', t2: 'Bursaspor', s2: '-' },
-                { t1: 'Samsunspor', s1: '-', t2: 'Çorum FK', s2: '-' },
-                { t1: 'Göztepe', s1: '-', t2: 'Sakaryaspor', s2: '-' },
-                { t1: 'Konyaspor', s1: '-', t2: 'Erzurumspor', s2: '-' },
-                { t1: 'Sivasspor', s1: '-', t2: 'Keçiörengücü', s2: '-' },
-                { t1: 'Antalyaspor', s1: '-', t2: 'Kocaelispor', s2: '-' },
-                { t1: 'Kasımpaşa', s1: '-', t2: 'Ümraniyespor', s2: '-' },
-                { t1: 'Gaziantep FK', s1: '-', t2: 'Ankaragücü', s2: '-' },
-                { t1: 'Rizespor', s1: '-', t2: 'Hatayspor', s2: '-' },
-                { t1: 'Alanyaspor', s1: '-', t2: 'Kayserispor', s2: '-' },
-                { t1: 'Adana Demirspor', s1: '-', t2: 'Bodrum FK', s2: '-' }
-            ],
-            'sampiyonlar': [{ t1: 'Eşleşmeler', s1: '-', t2: 'Bekleniyor', s2: '-' }],
-            'uefa': [{ t1: 'Eşleşmeler', s1: '-', t2: 'Bekleniyor', s2: '-' }],
-            'konferans': [{ t1: 'Eşleşmeler', s1: '-', t2: 'Bekleniyor', s2: '-' }]
+                ['Galatasaray', 'Kilis 1984 A.Ş.'], ['Fenerbahçe', 'Karaman FK'],
+                ['Beşiktaş', 'Malatya Yeşilyurt'], ['Trabzonspor', 'Ağrı 1970 Spor'],
+                ['Başakşehir FK', 'Diyarbakır FK'], ['Eyüpspor', 'Bursaspor'],
+                ['Samsunspor', 'Çorum FK'], ['Göztepe', 'Sakaryaspor'],
+                ['Konyaspor', 'Erzurumspor'], ['Sivasspor', 'Keçiörengücü'],
+                ['Antalyaspor', 'Kocaelispor'], ['Kasımpaşa', 'Ümraniyespor'],
+                ['Gaziantep FK', 'Ankaragücü'], ['Rizespor', 'Hatayspor'],
+                ['Alanyaspor', 'Kayserispor'], ['Adana Demirspor', 'Bodrum FK']
+            ]
         };
+
+        function renderBracket(cup) {
+            const area = document.getElementById('bracket-area');
+            let html = '';
+
+            const rounds = [
+                { id: 'Son 32', count: 16 },
+                { id: 'Son 16', count: 8 },
+                { id: 'Çeyrek Final', count: 4 },
+                { id: 'Yarı Final', count: 2 },
+                { id: 'Final', count: 1 }
+            ];
+
+            rounds.forEach((round, rIndex) => {
+                html += `<div class="round">
+                            <div class="round-title">${round.id}</div>`;
+                
+                for (let i = 0; i < round.count; i++) {
+                    let t1 = 'Bekleniyor', t2 = 'Bekleniyor';
+                    
+                    // Sadece Federasyon Kupası Son 32 için gerçek verileri çek
+                    if (cup === 'federasyon' && rIndex === 0 && matches.federasyon[i]) {
+                        t1 = matches.federasyon[i][0];
+                        t2 = matches.federasyon[i][1];
+                    }
+
+                    html += `
+                        <div class="match-card">
+                            <div class="team">${t1} <span class="score-box">-</span></div>
+                            <div class="team">${t2} <span class="score-box">-</span></div>
+                        </div>`;
+                }
+                html += `</div>`;
+            });
+
+            area.innerHTML = html;
+        }
 
         function changeTheme(cup, btn) {
             const root = document.documentElement;
             const main = document.getElementById('main-content');
-            const bracketArea = document.getElementById('bracket-area');
-            
             main.style.opacity = 0;
 
             setTimeout(() => {
                 document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                // TEMALAR VE ARKA PLAN GÖRSELLERİ
                 const themes = {
-                    'federasyon': {
-                        primary: '#003366',
-                        bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-                        text: '#2c3e50', card: '#ffffff', title: 'Federasyon Kupası - Son 32'
-                    },
-                    'sampiyonlar': {
-                        primary: '#00d4ff',
-                        bg: 'url("../logolar/image_4c9ab7.jpg")', //
-                        text: '#ffffff', card: 'rgba(255,255,255,0.1)', title: 'UEFA Champions League'
-                    },
-                    'uefa': {
-                        primary: '#f47920',
-                        bg: 'url("../logolar/image_4c9ad6.jpg")', //
-                        text: '#ffffff', card: 'rgba(244, 121, 32, 0.1)', title: 'UEFA Europa League'
-                    },
-                    'konferans': {
-                        primary: '#00ff80',
-                        bg: 'url("../logolar/image_4c9af5.jpg")', //
-                        text: '#ffffff', card: 'rgba(0, 255, 128, 0.05)', title: 'UEFA Conference League'
-                    }
+                    'federasyon': { primary: '#003366', text: '#2c3e50', bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', line: 'rgba(0,0,0,0.1)', title: 'Federasyon Kupası' },
+                    'sampiyonlar': { primary: '#00d4ff', text: '#ffffff', bg: 'url("../logolar/image_4c9ab7.jpg")', line: 'rgba(255,255,255,0.2)', title: 'UEFA Champions League' },
+                    'uefa': { primary: '#f47920', text: '#ffffff', bg: 'url("../logolar/image_4c9ad6.jpg")', line: 'rgba(244,121,32,0.3)', title: 'UEFA Europa League' },
+                    'konferans': { primary: '#00ff80', text: '#ffffff', bg: 'url("../logolar/image_4c9af5.jpg")', line: 'rgba(0,255,128,0.3)', title: 'UEFA Conference League' }
                 };
 
                 const t = themes[cup];
                 root.style.setProperty('--primary', t.primary);
                 root.style.setProperty('--bg-image', t.bg);
                 root.style.setProperty('--text-color', t.text);
-                root.style.setProperty('--card-bg', t.card);
-                
+                root.style.setProperty('--line-color', t.line);
                 document.getElementById('main-title').innerText = t.title;
 
-                // MAÇLARI OLUŞTUR
-                let html = '';
-                matchData[cup].forEach(m => {
-                    html += `
-                        <div class="match-card">
-                            <div class="team">${m.t1} <span class="score-box">${m.s1}</span></div>
-                            <div class="team">${m.t2} <span class="score-box">${m.s2}</span></div>
-                        </div>
-                    `;
-                });
-                bracketArea.innerHTML = html;
+                renderBracket(cup);
                 main.style.opacity = 1;
             }, 300);
         }
 
-        window.onload = () => {
-            changeTheme('federasyon', document.querySelector('.cup-btn'));
-        };
+        window.onload = () => renderBracket('federasyon');
     </script>
 </body>
 </html>
