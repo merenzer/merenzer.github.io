@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Anadolu Sigorta Kupaları</title>
+    <style>
+        :root {
+            --as-navy: #003366; /* Logodaki Lacivert */
+            --as-silver: #a6a9ac; /* Logodaki Gümüş */
+            --bg-dark: #0d1117;
+            --sidebar-bg: #161b22;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            font-family: sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            height: 100vh;
+        }
+
+        /* Sol Panel */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .cup-btn {
+            background: transparent;
+            color: var(--as-silver);
+            border: 1px solid #30363d;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .cup-btn.active {
+            border-color: var(--as-navy);
+            background-color: var(--as-navy);
+            color: white;
+        }
+
+        /* Sağ İçerik */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Bracket Tasarımı */
+        .bracket {
+            display: flex;
+            gap: 50px;
+            margin-top: 50px;
+        }
+
+        .match {
+            background: linear-gradient(145deg, #1c2128, #0d1117);
+            border: 2px solid var(--as-silver);
+            border-radius: 8px;
+            width: 200px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .team {
+            padding: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .team:last-child { border-bottom: none; }
+        
+        .winner { color: #f2e331; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <img src="../logolar/image_dd686a.jpg" alt="Logo" style="width:100%; margin-bottom:20px;">
+        <button class="cup-btn active">1. Federasyon Kupası</button>
+        <button class="cup-btn">2. Kupa</button>
+        <button class="cup-btn">3. Kupa</button>
+        <button class="cup-btn">4. Kupa</button>
+    </div>
+
+    <div class="main-content">
+        <h1>Anadolu Sigorta Federasyon Kupası</h1>
+        
+        <div class="bracket">
+            <div class="round">
+                <h3>Çeyrek Final</h3>
+                <div class="match">
+                    <div class="team">Takım 1</div>
+                    <div class="team">Takım 2</div>
+                </div>
+                <div class="match">
+                    <div class="team">Takım 3</div>
+                    <div class="team">Takım 4</div>
+                </div>
+            </div>
+            
+            <div class="round">
+                <h3>Yarı Final</h3>
+                <div class="match" style="margin-top: 45px;">
+                    <div class="team winner">Bekleniyor...</div>
+                    <div class="team">Bekleniyor...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
