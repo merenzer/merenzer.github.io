@@ -10,6 +10,7 @@
             --bg-style: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --card-bg: rgba(255, 255, 255, 0.95);
             --text-color: #2c3e50;
+            --line-color: rgba(0,0,0,0.15);
         }
 
         body {
@@ -21,50 +22,56 @@
 
         /* SIDEBAR */
         .sidebar {
-            width: 260px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            width: 260px; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
             border-right: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column;
             padding: 30px 15px; height: 100vh; position: sticky; left: 0; z-index: 1000;
         }
 
-        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; }
+        .logo-box { padding: 10px; margin-bottom: 40px; text-align: center; min-height: 100px; }
         .logo-box img { max-width: 150px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.1)); }
 
         .nav-menu { display: flex; flex-direction: column; gap: 10px; }
         .cup-btn {
             border: 1px solid rgba(0,0,0,0.1); padding: 12px 15px; border-radius: 12px;
-            cursor: pointer; font-weight: 700; background: white; transition: 0.3s;
+            cursor: pointer; font-weight: 700; background: white; color: #444; transition: 0.3s;
         }
         .cup-btn.active { background: var(--primary); color: white; border-color: transparent; }
 
         /* ANA İÇERİK */
-        .main-content { padding: 40px; min-width: 1200px; flex: 1; transition: opacity 0.4s; }
+        .main-content { padding: 40px; min-width: 1100px; flex: 1; transition: opacity 0.4s; }
         
-        .view-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
+        .view-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
         .tab-btn {
             padding: 8px 20px; border-radius: 20px; border: 2px solid var(--primary);
             background: transparent; color: var(--primary); font-weight: bold; cursor: pointer;
         }
         .tab-btn.active { background: var(--primary); color: white; }
 
-        /* LİG TABLOSU BÖLGELERİ */
+        /* LİG TABLOSU */
         .league-table {
             width: 100%; max-width: 900px; margin: 0 auto; background: var(--card-bg);
-            border-radius: 15px; overflow: hidden; border-collapse: collapse;
+            border-radius: 15px; overflow: hidden; border-collapse: collapse; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .league-table th { background: var(--primary); color: white; padding: 12px; }
         .league-table td { padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05); text-align: center; font-weight: 600; }
         
-        .direct-16 { border-left: 6px solid #28a745; background: rgba(40, 167, 69, 0.05); } /* İlk 8 */
-        .playoff-zone { border-left: 6px solid #ffc107; background: rgba(255, 193, 7, 0.05); } /* 9-24 */
-        .eliminated { border-left: 6px solid #dc3545; opacity: 0.7; } /* 25-36 */
+        .direct-16 { border-left: 6px solid #28a745; background: rgba(40, 167, 69, 0.05); } 
+        .playoff-zone { border-left: 6px solid #ffc107; background: rgba(255, 193, 7, 0.05); }
+        .eliminated { border-left: 6px solid #dc3545; opacity: 0.7; }
 
         /* BRACKET GÖRÜNÜMÜ */
-        .bracket-wrapper { display: flex; gap: 30px; justify-content: center; }
-        .round { display: flex; flex-direction: column; justify-content: space-around; width: 220px; }
-        .match-card { background: var(--card-bg); border-radius: 10px; margin: 10px 0; border: 1px solid rgba(0,0,0,0.1); }
+        .bracket-wrapper { display: flex; gap: 30px; justify-content: flex-start; }
+        .round { display: flex; flex-direction: column; justify-content: space-around; width: 230px; }
+        .round-header { text-align: center; font-size: 14px; font-weight: 800; margin-bottom: 20px; color: var(--primary); text-transform: uppercase; }
+        .match-card { background: var(--card-bg); border-radius: 10px; margin: 10px 0; border: 1px solid rgba(0,0,0,0.1); position: relative; }
         .team { padding: 10px 15px; display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; }
+        .team:first-child { border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Bağlantı Çizgileri */
+        .match-card::after { content: ""; position: absolute; right: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
+        .round:last-child .match-card::after { display: none; }
 
-        .admin-trigger { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; }
+        .admin-trigger { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; z-index: 2000; }
     </style>
 </head>
 <body>
@@ -74,7 +81,7 @@
             <img id="cup-logo" src="../logolar/image_dd686a.jpg" alt="Logo">
         </div>
         <nav class="nav-menu">
-            <button class="cup-btn active" onclick="changeCup('federasyon', this)">Federasyon Kupası</button>
+            <button class="cup-btn active" id="btn-federasyon" onclick="changeCup('federasyon', this)">Federasyon Kupası</button>
             <button class="cup-btn" onclick="changeCup('sampiyonlar', this)">Şampiyonlar Ligi</button>
             <button class="cup-btn" onclick="changeCup('uefa', this)">UEFA Avrupa Ligi</button>
             <button class="cup-btn" onclick="changeCup('konferans', this)">Konferans Ligi</button>
@@ -82,23 +89,50 @@
     </aside>
 
     <main class="main-content" id="main-content">
-        <h1 id="main-title" style="text-align:center;">Federasyon Kupası</h1>
+        <h1 id="main-title" style="text-align:center; margin-bottom: 40px;">Federasyon Kupası</h1>
         
         <div id="tab-area" class="view-tabs" style="display:none;">
             <button class="tab-btn active" onclick="switchView('league')">Lig Aşaması (36)</button>
-            <button class="tab-btn" onclick="switchView('playoff')">Eleme Play-off</button>
+            <button class="tab-btn" onclick="switchView('playoff')">Eleme Play-off (9-24)</button>
             <button class="tab-btn" onclick="switchView('final')">Final Aşaması (Son 16)</button>
         </div>
 
         <div id="display-area"></div>
     </main>
 
-    <div class="admin-trigger" onclick="alert('Firebase kurulumu sonrası aktif olacak!')">Yönetici Girişi</div>
+    <div class="admin-trigger">Yönetici Girişi</div>
 
     <script>
-        let currentCup = 'federasyon';
+        let currentCupType = 'federasyon';
 
-        function renderLeague() {
+        // Federasyon Kupası Son 32 Verileri
+        const fedMatches = [
+            ['Galatasaray', 'Kilis 1984 A.Ş.'], ['Başakşehir FK', 'Diyarbakır FK'],
+            ['Göztepe', 'Sakaryaspor'], ['Antalyaspor', 'Kocaelispor'],
+            ['Trabzonspor', 'Ağrı 1970 Spor'], ['Rizespor', 'Hatayspor'],
+            ['Sivasspor', 'Keçiörengücü'], ['Gaziantep FK', 'Ankaragücü'],
+            ['Beşiktaş', 'Malatya Yeşilyurt'], ['Eyüpspor', 'Bursaspor'],
+            ['Samsunspor', 'Çorum FK'], ['Kasımpaşa', 'Ümraniyespor'],
+            ['Alanyaspor', 'Kayserispor'], ['Konyaspor', 'Erzurumspor'],
+            ['Adana Demirspor', 'Bodrum FK'], ['Fenerbahçe', 'Karaman FK']
+        ];
+
+        function renderFederasyonBracket() {
+            const rounds = [{id: 'Son 32', count: 16}, {id: 'Son 16', count: 8}, {id: 'Çeyrek', count: 4}, {id: 'Yarı', count: 2}, {id: 'Final', count: 1}];
+            let html = `<div class="bracket-wrapper">`;
+            rounds.forEach((r, rIdx) => {
+                html += `<div class="round"><div class="round-header">${r.id}</div>`;
+                for(let i=0; i<r.count; i++) {
+                    let t1 = 'Bekleniyor', t2 = 'Bekleniyor';
+                    if(rIdx === 0 && fedMatches[i]) { t1 = fedMatches[i][0]; t2 = fedMatches[i][1]; }
+                    html += `<div class="match-card"><div class="team">${t1} <span>-</span></div><div class="team">${t2} <span>-</span></div></div>`;
+                }
+                html += `</div>`;
+            });
+            return html + `</div>`;
+        }
+
+        function renderLeagueTable() {
             let html = `<table class="league-table"><thead><tr><th>#</th><th>Takım</th><th>Puan</th><th>Durum</th></tr></thead><tbody>`;
             for(let i=1; i<=36; i++) {
                 let status = i <= 8 ? "Direkt Son 16" : (i <= 24 ? "Play-off" : "Eledi");
@@ -109,31 +143,16 @@
             return html + "</tbody></table>";
         }
 
-        function renderPlayoff() {
-            // 9-24 arası 16 takım -> 8 maç
-            let html = `<div class="bracket-wrapper"><div class="round"><h3>Play-off Eşleşmeleri</h3>`;
-            for(let i=1; i<=8; i++) {
-                html += `<div class="match-card"><div class="team">9-24 Sıralama Takımı <span>-</span></div><div class="team">9-24 Sıralama Takımı <span>-</span></div></div>`;
-            }
-            return html + "</div></div>";
-        }
-
-        function renderFinalStage() {
-            // İlk 8 + Play-off'tan gelen 8 = Son 16
-            return `<div class="bracket-wrapper">
-                <div class="round"><h3>Son 16</h3><div class="match-card"><div class="team">Lig İlk 8 Takımı <span>-</span></div><div class="team">PO Kazananı <span>-</span></div></div></div>
-                <div class="round"><h3>Çeyrek Final</h3><div class="match-card"><div class="team">Bekleniyor <span>-</span></div><div class="team">Bekleniyor <span>-</span></div></div></div>
-            </div>`;
-        }
-
         function switchView(view) {
             const area = document.getElementById('display-area');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            if(event) event.target.classList.add('active');
             
-            if(view === 'league') area.innerHTML = renderLeague();
-            else if(view === 'playoff') area.innerHTML = renderPlayoff();
-            else area.innerHTML = renderFinalStage();
+            if(view === 'league') area.innerHTML = renderLeagueTable();
+            else if(view === 'playoff') area.innerHTML = `<div class="bracket-wrapper"><div class="round"><h3>Play-off (9-24)</h3>` + 
+                Array(8).fill('<div class="match-card"><div class="team">Takım X <span>-</span></div><div class="team">Takım Y <span>-</span></div></div>').join('') + `</div></div>`;
+            else area.innerHTML = `<div class="bracket-wrapper"><div class="round"><h3>Son 16</h3>` + 
+                Array(8).fill('<div class="match-card"><div class="team">Lig İlk 8 / PO Galibi <span>-</span></div><div class="team">Lig İlk 8 / PO Galibi <span>-</span></div></div>').join('') + `</div></div>`;
         }
 
         function changeCup(cup, btn) {
@@ -145,6 +164,7 @@
             setTimeout(() => {
                 document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                currentCupType = cup;
 
                 const themes = {
                     'federasyon': { p: '#003366', bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', title: 'Federasyon Kupası' },
@@ -160,7 +180,7 @@
 
                 if(cup === 'federasyon') {
                     tabArea.style.display = 'none';
-                    document.getElementById('display-area').innerHTML = '<p style="text-align:center;">Federasyon Kupası Klasik Bracket Görünümü.</p>';
+                    document.getElementById('display-area').innerHTML = renderFederasyonBracket();
                 } else {
                     tabArea.style.display = 'flex';
                     switchView('league');
@@ -169,7 +189,10 @@
             }, 300);
         }
 
-        window.onload = () => changeCup('federasyon', document.querySelector('.cup-btn'));
+        // Başlangıç tetikleyici
+        window.addEventListener('DOMContentLoaded', (event) => {
+            changeCup('federasyon', document.getElementById('btn-federasyon'));
+        });
     </script>
 </body>
 </html>
