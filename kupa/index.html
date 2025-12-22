@@ -1,210 +1,56 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anadolu Sigorta | Kupa Yönetimi</title>
-    <style>
-        :root {
-            /* Federasyon Kupası Teması (Varsayılan) */
-            --primary: #003366; 
-            --secondary: #a6a9ac;
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --card-shadow: 0 10px 30px rgba(0, 51, 102, 0.1);
+// JavaScript kısmını şu şekilde güncelle
+function changeTheme(cup) {
+    const root = document.documentElement;
+    const title = document.getElementById('main-title');
+    const logo = document.getElementById('cup-logo');
+    
+    // Aktif buton görseli
+    document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    // Tema Ayarları
+    const themes = {
+        'federasyon': {
+            primary: '#003366',
+            gradient: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            title: 'Federasyon Kupası',
+            logo: '../logolar/federasyon.png' // Senin dosya isminle değiştir
+        },
+        'sampiyonlar': {
+            primary: '#001b44',
+            gradient: 'linear-gradient(135deg, #001b44 0%, #004b91 100%)',
+            title: 'Şampiyonlar Ligi',
+            logo: '../logolar/sampiyonlar.png'
+        },
+        'uefa': {
+            primary: '#f47920', // UEFA Turuncusu
+            gradient: 'linear-gradient(135deg, #222 0%, #444 100%)',
+            title: 'UEFA Avrupa Ligi',
+            logo: '../logolar/uefa.png'
+        },
+        'konferans': {
+            primary: '#00b359', // Konferans Yeşili
+            gradient: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+            title: 'Konferans Ligi',
+            logo: '../logolar/konferans.png'
         }
+    };
 
-        body {
-            margin: 0;
-            display: flex;
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--bg-gradient); /* 1. Madde: Gri-Lacivert geçişli arka plan */
-            min-height: 100vh;
-            color: #2c3e50;
-        }
+    const selected = themes[cup];
+    
+    // CSS Değişkenlerini Uygula
+    root.style.setProperty('--primary', selected.primary);
+    root.style.setProperty('--bg-gradient', selected.gradient);
+    
+    // İçeriği Güncelle
+    title.innerText = selected.title;
+    logo.src = selected.logo;
 
-        /* 2. Madde: Sol Panel Tasarımı */
-        .sidebar {
-            width: 300px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            padding: 30px 15px;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-        }
-
-        .logo-box {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 10px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .logo-box img { width: 100%; border-radius: 10px; }
-
-        .nav-menu { display: flex; flex-direction: column; gap: 15px; }
-
-        /* Kupa Butonları */
-        .cup-btn {
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            text-align: left;
-            transition: 0.3s all;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            color: #555;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        .cup-btn:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-
-        .cup-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Sağ İçerik Alanı */
-        .main-content { flex: 1; padding: 40px; }
-
-        .header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .header h1 {
-            font-size: 36px;
-            color: var(--primary);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
-            margin: 0;
-        }
-
-        /* Bracket Tasarımı (Canlı ve Modern) */
-        .bracket {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-        }
-
-        .match-card {
-            background: white;
-            border-radius: 16px;
-            width: 250px;
-            margin-bottom: 25px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,255,255,0.8);
-            overflow: hidden;
-        }
-
-        .team {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .team.winner { color: var(--primary); background: rgba(0, 51, 102, 0.03); }
-
-        .score {
-            background: #f0f2f5;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .winner .score { background: var(--primary); color: white; }
-
-        /* 6. Madde: Admin Butonu Taslağı */
-        .admin-trigger {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 12px;
-            opacity: 0.5;
-        }
-        .admin-trigger:hover { opacity: 1; }
-    </style>
-</head>
-<body>
-
-    <aside class="sidebar">
-        <div class="logo-box">
-            <img id="cup-logo" src="../logolar/image_dd686a.jpg" alt="Logo">
-        </div>
-        
-        <nav class="nav-menu">
-            <button class="cup-btn active" onclick="changeTheme('federasyon')">🏆 Federasyon Kupası</button>
-            <button class="cup-btn" onclick="changeTheme('sampiyonlar')">⭐ Şampiyonlar Ligi</button>
-            <button class="cup-btn" onclick="changeTheme('uefa')">⚽ UEFA Ligi</button>
-            <button class="cup-btn" onclick="changeTheme('konferans')">🇪🇺 Konferans Ligi</button>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-        <div class="header">
-            <h1 id="main-title">Federasyon Kupası</h1>
-        </div>
-
-        <div class="bracket" id="bracket-area">
-            <div class="round">
-                <div class="match-card">
-                    <div class="team winner"><span>Beşiktaş</span> <span class="score">3</span></div>
-                    <div class="team"><span>Samsunspor</span> <span class="score">1</span></div>
-                </div>
-                <div class="match-card">
-                    <div class="team"><span>Galatasaray</span> <span class="score">1</span></div>
-                    <div class="team winner"><span>Fenerbahçe</span> <span class="score">2</span></div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div class="admin-trigger" onclick="adminLogin()">Admin Girişi</div>
-
-    <script>
-        // 3. Madde: Tema Değiştirme Fonksiyonu (Başlangıç)
-        function changeTheme(cup) {
-            const root = document.documentElement;
-            const title = document.getElementById('main-title');
-            
-            // Buton aktiflik sınıflarını temizle
-            document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            if(cup === 'federasyon') {
-                root.style.setProperty('--primary', '#003366');
-                root.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)');
-                title.innerText = "Federasyon Kupası";
-            } else if(cup === 'sampiyonlar') {
-                root.style.setProperty('--primary', '#001b44');
-                root.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #001b44 0%, #004b91 100%)');
-                title.innerText = "Şampiyonlar Ligi";
-                // Body rengini burada karanlık moda çekebiliriz
-            }
-            // Diğer temalar eklenecek...
-        }
-
-        function adminLogin() {
-            const pass = prompt("Admin şifresini giriniz:");
-            if(pass === "1234") { // Geçici şifre
-                alert("Admin modu aktif! (Aşama 6'da paneli kuracağız)");
-            }
-        }
-    </script>
-</body>
-</html>
+    // Geçiş efekti için içeriği hafifçe gizleyip açalım
+    const main = document.querySelector('.main-content');
+    main.style.opacity = 0;
+    setTimeout(() => {
+        main.style.opacity = 1;
+        // Burada takımları (5. Madde) güncelleyeceğiz
+    }, 200);
+}
