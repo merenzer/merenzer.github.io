@@ -1,56 +1,254 @@
-// JavaScript kısmını şu şekilde güncelle
-function changeTheme(cup) {
-    const root = document.documentElement;
-    const title = document.getElementById('main-title');
-    const logo = document.getElementById('cup-logo');
-    
-    // Aktif buton görseli
-    document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-
-    // Tema Ayarları
-    const themes = {
-        'federasyon': {
-            primary: '#003366',
-            gradient: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-            title: 'Federasyon Kupası',
-            logo: '../logolar/federasyon.png' // Senin dosya isminle değiştir
-        },
-        'sampiyonlar': {
-            primary: '#001b44',
-            gradient: 'linear-gradient(135deg, #001b44 0%, #004b91 100%)',
-            title: 'Şampiyonlar Ligi',
-            logo: '../logolar/sampiyonlar.png'
-        },
-        'uefa': {
-            primary: '#f47920', // UEFA Turuncusu
-            gradient: 'linear-gradient(135deg, #222 0%, #444 100%)',
-            title: 'UEFA Avrupa Ligi',
-            logo: '../logolar/uefa.png'
-        },
-        'konferans': {
-            primary: '#00b359', // Konferans Yeşili
-            gradient: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
-            title: 'Konferans Ligi',
-            logo: '../logolar/konferans.png'
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anadolu Sigorta | Kupa Merkezi</title>
+    <style>
+        :root {
+            /* Varsayılan Federasyon Kupası Teması */
+            --primary: #003366; 
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
         }
-    };
 
-    const selected = themes[cup];
-    
-    // CSS Değişkenlerini Uygula
-    root.style.setProperty('--primary', selected.primary);
-    root.style.setProperty('--bg-gradient', selected.gradient);
-    
-    // İçeriği Güncelle
-    title.innerText = selected.title;
-    logo.src = selected.logo;
+        body {
+            margin: 0;
+            display: flex;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-main);
+            transition: background 0.6s ease; /* Arka plan geçiş efekti */
+        }
 
-    // Geçiş efekti için içeriği hafifçe gizleyip açalım
-    const main = document.querySelector('.main-content');
-    main.style.opacity = 0;
-    setTimeout(() => {
-        main.style.opacity = 1;
-        // Burada takımları (5. Madde) güncelleyeceğiz
-    }, 200);
-}
+        /* Sol Panel */
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 15px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-box {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo-box img {
+            width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            transition: transform 0.4s ease;
+        }
+
+        .nav-menu { display: flex; flex-direction: column; gap: 12px; }
+
+        .cup-btn {
+            border: 2px solid transparent;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            text-align: left;
+            transition: all 0.3s ease;
+            background: white;
+            color: #555;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .cup-btn:hover {
+            transform: translateX(8px);
+            border-color: var(--primary);
+        }
+
+        .cup-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Ana İçerik Alanı */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            opacity: 1;
+            transition: opacity 0.4s ease-in-out; /* Sayfa değişim efekti */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            transition: color 0.4s ease;
+        }
+
+        /* Bracket Tasarımı */
+        .bracket {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .match-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 260px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .match-card:hover { transform: translateY(-5px); }
+
+        .team {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .score-badge {
+            background: #f1f3f5;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .winner { color: var(--primary); }
+        .winner .score-badge { background: var(--primary); color: white; }
+
+        /* Admin Giriş Butonu */
+        .admin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .admin-btn:hover { background: #000; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-box">
+            <img id="cup-logo" src="../logolar/federasyon.png" alt="Logo" onerror="this.src='../logolar/image_dd686a.jpg'">
+        </div>
+        
+        <nav class="nav-menu">
+            <button class="cup-btn active" onclick="changeTheme('federasyon', this)">Federasyon Kupası</button>
+            <button class="cup-btn" onclick="changeTheme('sampiyonlar', this)">Şampiyonlar Ligi</button>
+            <button class="cup-btn" onclick="changeTheme('uefa', this)">UEFA Avrupa Ligi</button>
+            <button class="cup-btn" onclick="changeTheme('konferans', this)">Konferans Ligi</button>
+        </nav>
+    </aside>
+
+    <main class="main-content" id="main-content">
+        <div class="header">
+            <h1 id="main-title">Federasyon Kupası</h1>
+        </div>
+
+        <div class="bracket" id="bracket-area">
+            <div class="round">
+                <div class="match-card">
+                    <div class="team winner"><span>Beşiktaş</span> <span class="score-badge">3</span></div>
+                    <div class="team"><span>Samsunspor</span> <span class="score-badge">1</span></div>
+                </div>
+                <div class="match-card">
+                    <div class="team"><span>Galatasaray</span> <span class="score-badge">1</span></div>
+                    <div class="team winner"><span>Fenerbahçe</span> <span class="score-badge">2</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="admin-btn" onclick="alert('Admin Paneli Yakında!')">Yönetici Girişi</div>
+
+    <script>
+        function changeTheme(cup, element) {
+            const mainContent = document.getElementById('main-content');
+            
+            // 1. Önce içeriği karart
+            mainContent.style.opacity = 0;
+
+            setTimeout(() => {
+                const root = document.documentElement;
+                const title = document.getElementById('main-title');
+                const logo = document.getElementById('cup-logo');
+
+                // Buton aktifliğini değiştir
+                document.querySelectorAll('.cup-btn').forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+
+                // Tema Tanımları
+                const themes = {
+                    'federasyon': {
+                        primary: '#003366',
+                        bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                        name: 'Federasyon Kupası'
+                    },
+                    'sampiyonlar': {
+                        primary: '#001b44',
+                        bg: 'linear-gradient(135deg, #001b44 0%, #004b91 100%)',
+                        name: 'Şampiyonlar Ligi'
+                    },
+                    'uefa': {
+                        primary: '#f47920',
+                        bg: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)',
+                        name: 'UEFA Avrupa Ligi'
+                    },
+                    'konferans': {
+                        primary: '#00b359',
+                        bg: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+                        name: 'Konferans Ligi'
+                    }
+                };
+
+                const selected = themes[cup];
+
+                // Renkleri ve içeriği güncelle
+                root.style.setProperty('--primary', selected.primary);
+                root.style.setProperty('--bg-gradient', selected.bg);
+                title.innerText = selected.name;
+                
+                // Logo güncelleme (Resimlerin isimleri kupa ismiyle aynı olmalı)
+                logo.src = `../logolar/${cup}.png`;
+
+                // 2. İçeriği tekrar göster
+                mainContent.style.opacity = 1;
+                
+            }, 300); // 0.3 saniye sonra değişim gerçekleşir
+        }
+    </script>
+</body>
+</html>
