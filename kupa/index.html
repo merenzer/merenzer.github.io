@@ -2,122 +2,205 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Anadolu Sigorta Kupaları</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Federasyon Kupası | Anadolu Sigorta</title>
     <style>
         :root {
-            --as-navy: #003366; /* Logodaki Lacivert */
-            --as-silver: #a6a9ac; /* Logodaki Gümüş */
-            --bg-dark: #0d1117;
-            --sidebar-bg: #161b22;
+            --primary-navy: #003366; /* Logodaki Lacivert */
+            --accent-silver: #a6a9ac;
+            --bg-light: #f8f9fa; /* Lig sitesine yakın açık gri */
+            --card-white: #ffffff;
+            --text-dark: #333;
         }
 
         body {
             margin: 0;
             display: flex;
-            font-family: sans-serif;
-            background-color: var(--bg-dark);
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            /* Arka plana lig sitesindeki gibi hafif bir doku ekleyelim */
+            background-image: radial-gradient(#d1d1d1 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            color: var(--text-dark);
             height: 100vh;
         }
 
-        /* Sol Panel */
+        /* Modern Sol Panel */
         .sidebar {
-            width: 250px;
-            background-color: var(--sidebar-bg);
-            border-right: 1px solid #30363d;
+            width: 280px;
+            background-color: var(--card-white);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 30px 20px;
+            z-index: 10;
+        }
+
+        .logo-area img {
+            width: 100%;
+            margin-bottom: 40px;
         }
 
         .cup-btn {
-            background: transparent;
-            color: var(--as-silver);
-            border: 1px solid #30363d;
+            background: #fff;
+            color: #666;
+            border: 2px solid #eee;
             padding: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             cursor: pointer;
-            text-align: left;
-            border-radius: 6px;
-            transition: 0.3s;
+            text-align: center;
+            border-radius: 12px; /* Lig sitesindeki gibi oval */
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary-navy);
         }
 
         .cup-btn.active {
-            border-color: var(--as-navy);
-            background-color: var(--as-navy);
+            background: var(--primary-navy);
             color: white;
+            border-color: var(--primary-navy);
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
         }
 
-        /* Sağ İçerik */
+        /* Ana İçerik */
         .main-content {
             flex: 1;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 50px;
+            overflow-y: auto;
         }
 
-        /* Bracket Tasarımı */
-        .bracket {
-            display: flex;
-            gap: 50px;
-            margin-top: 50px;
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
         }
 
-        .match {
-            background: linear-gradient(145deg, #1c2128, #0d1117);
-            border: 2px solid var(--as-silver);
-            border-radius: 8px;
-            width: 200px;
+        .header-section h1 {
+            color: var(--primary-navy);
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Canlı Bracket Tasarımı */
+        .bracket-container {
+            display: flex;
+            gap: 80px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .round-title {
+            text-align: center;
+            font-weight: bold;
+            color: #999;
             margin-bottom: 20px;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .match-card {
+            background: var(--card-white);
+            border-radius: 15px;
+            width: 240px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
+            border: 1px solid #f0f0f0;
             overflow: hidden;
+            transition: transform 0.3s;
         }
 
-        .team {
-            padding: 10px;
-            border-bottom: 1px solid #30363d;
+        .match-card:hover { transform: scale(1.02); }
+
+        .team-row {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f9f9f9;
         }
 
-        .team:last-child { border-bottom: none; }
-        
-        .winner { color: #f2e331; font-weight: bold; }
+        .team-row:last-child { border-bottom: none; }
+
+        .team-name { font-weight: 500; color: #444; }
+
+        .score-box {
+            background: #f1f3f5;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .winner .team-name { color: var(--primary-navy); font-weight: bold; }
+        .winner .score-box { background: var(--primary-navy); color: white; }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <img src="../logolar/image_dd686a.jpg" alt="Logo" style="width:100%; margin-bottom:20px;">
-        <button class="cup-btn active">1. Federasyon Kupası</button>
-        <button class="cup-btn">2. Kupa</button>
-        <button class="cup-btn">3. Kupa</button>
-        <button class="cup-btn">4. Kupa</button>
-    </div>
+    <aside class="sidebar">
+        <div class="logo-area">
+            <img src="../logolar/image_dd686a.jpg" alt="Anadolu Sigorta">
+        </div>
+        <div class="nav-menu">
+            <button class="cup-btn active">Federasyon Kupası</button>
+            <button class="cup-btn">Süper Kupa</button>
+            <button class="cup-btn">Lig Kupası</button>
+            <button class="cup-btn">Şirket Kupası</button>
+        </div>
+    </aside>
 
-    <div class="main-content">
-        <h1>Anadolu Sigorta Federasyon Kupası</h1>
-        
-        <div class="bracket">
+    <main class="main-content">
+        <div class="header-section">
+            <h1>Anadolu Sigorta Federasyon Kupası</h1>
+        </div>
+
+        <div class="bracket-container">
             <div class="round">
-                <h3>Çeyrek Final</h3>
-                <div class="match">
-                    <div class="team">Takım 1</div>
-                    <div class="team">Takım 2</div>
+                <div class="round-title">Çeyrek Final</div>
+                <div class="match-card">
+                    <div class="team-row winner">
+                        <span class="team-name">Beşiktaş JK</span>
+                        <span class="score-box">2</span>
+                    </div>
+                    <div class="team-row">
+                        <span class="team-name">Samsunspor</span>
+                        <span class="score-box">0</span>
+                    </div>
                 </div>
-                <div class="match">
-                    <div class="team">Takım 3</div>
-                    <div class="team">Takım 4</div>
+                <div class="match-card">
+                    <div class="team-row">
+                        <span class="team-name">Galatasaray</span>
+                        <span class="score-box">1</span>
+                    </div>
+                    <div class="team-row winner">
+                        <span class="team-name">Fenerbahçe</span>
+                        <span class="score-box">3</span>
+                    </div>
                 </div>
             </div>
-            
+
             <div class="round">
-                <h3>Yarı Final</h3>
-                <div class="match" style="margin-top: 45px;">
-                    <div class="team winner">Bekleniyor...</div>
-                    <div class="team">Bekleniyor...</div>
+                <div class="round-title">Yarı Final</div>
+                <div class="match-card" style="margin-top: 60px;">
+                    <div class="team-row">
+                        <span class="team-name">Beşiktaş JK</span>
+                        <span class="score-box">-</span>
+                    </div>
+                    <div class="team-row">
+                        <span class="team-name">Fenerbahçe</span>
+                        <span class="score-box">-</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
 </body>
 </html>
