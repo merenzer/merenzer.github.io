@@ -239,7 +239,7 @@
             { name: "Redbull Eyüpspor", shortName: "Eyüpspor", logo: "logolar/eyu.png" }
         ];
 
-        // 34 HAFTALIK DOĞRU FİKSTÜR
+        // 34 HAFTALIK DOĞRU FİKSTÜR (32. HAFTA DÜZELTİLDİ)
         const defaultFixtureData = [
             // 1. HAFTA
             {w:1, h:"Fenerbahçe", a:"Antalyaspor", s:"ACIBADEM Stadı"}, 
@@ -583,7 +583,7 @@
             {w:31, h:"Arca Çorum FK", a:"Beşiktaş JK", s:"ARCA Gold Park"},
 
             // 32. HAFTA
-            {w:32, h:"Fenerbahçe", a:"Trabzonspor", s:"ACIBADEM Stadı"}, 
+            {w:32, h:"Trabzonspor", a:"Fenerbahçe", s:"VESTEL Stadı"}, 
             {w:32, h:"Kasımpaşa", a:"Konyaspor", s:"CİNER Stadyum"}, 
             {w:32, h:"Samsunspor", a:"Antalyaspor", s:"YILPORT 19 Mayıs"}, 
             {w:32, h:"Beşiktaş JK", a:"Erzurumspor", s:"VODAFONE Park"}, 
@@ -622,12 +622,6 @@
         onValue(fixtureRef, (snapshot) => {
             const data = snapshot.val();
             
-            // Eğer admin ise ve veritabanı boşsa veya eski veri varsa, zorla güncelle
-            if (isAdmin && (!data || data.length < 100)) { 
-                 set(fixtureRef, defaultFixtureData);
-                 alert("Fikstür güncellendi.");
-            }
-
             if (data) {
                 // Burada "akıllı birleştirme" yapıyoruz.
                 // Veritabanındaki skorları (hs, as) alıp, 
