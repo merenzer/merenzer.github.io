@@ -50,7 +50,7 @@
         .cup-btn.active { background: var(--accent); color: white; border-color: transparent; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 
         /* ANA İÇERİK */
-        .main-content { padding: 50px; min-width: 1200px; flex: 1; animation: fadeInUp 0.8s ease-out; }
+        .main-content { padding: 50px; min-width: 1400px; flex: 1; animation: fadeInUp 0.8s ease-out; }
         
         .view-tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 40px; }
         .tab-btn {
@@ -60,28 +60,19 @@
         }
         .tab-btn.active { background: var(--accent); color: white; box-shadow: 0 0 20px var(--accent); }
 
-        /* LİG VE BRACKET GRAFİKLERİ */
-        .league-table {
-            width: 100%; max-width: 1000px; margin: 0 auto; background: var(--card-bg);
-            border-radius: 24px; overflow: hidden; border-collapse: collapse;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3); backdrop-filter: blur(15px);
-        }
-        .league-table th { background: var(--accent); color: white; padding: 20px; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
-        .league-table td { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; font-weight: 700; }
-        
-        /* Sonuç Alanları */
-        .row-direct { border-left: 8px solid #28a745; }
-        .row-playoff { border-left: 8px solid #ffc107; }
-        .row-out { border-left: 8px solid #dc3545; opacity: 0.6; }
-
+        /* BRACKET GRAFİKLERİ */
         .bracket-wrapper { display: flex; gap: 40px; justify-content: center; }
+        .round { display: flex; flex-direction: column; justify-content: space-around; }
+        
         .match-card {
             background: var(--card-bg); border-radius: 18px; margin: 15px 0;
             border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; backdrop-filter: blur(10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); min-width: 240px;
         }
         .match-card:hover { transform: scale(1.03); box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-color: var(--accent); }
-        .team { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 800; }
+        
+        .team { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 800; }
+        .team img { width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; }
         
         /* ADMIN ARAÇLARI */
         .score-input { width: 45px; height: 30px; text-align: center; border: 2px solid var(--accent); border-radius: 8px; font-weight: 900; display: none; background: #fff; color: #000; }
@@ -98,7 +89,7 @@
 
     <aside class="sidebar">
         <div class="logo-box">
-            <img id="cup-logo" src="../logolar/federasyon.png" alt="Logo" onerror="this.src='../logolar/image_dd686a.jpg'">
+            <img id="cup-logo" src="../logolar/federasyon.png" alt="Logo" onerror="this.src='../logolar/uefa.png'">
         </div>
         <nav class="nav-menu">
             <button class="cup-btn active" id="btn-fed" onclick="changeCup('federasyon', this)">FEDERASYON KUPASI</button>
@@ -111,8 +102,8 @@
     <main class="main-content" id="main-content">
         <h1 id="main-title" style="text-align:center; margin-bottom: 50px; font-size: 42px; font-weight: 900; letter-spacing: -1px; text-shadow: 0 10px 20px rgba(0,0,0,0.2);">Federasyon Kupası</h1>
         <div id="tab-area" class="view-tabs" style="display:none;">
-            <button class="tab-btn active" onclick="switchView('league', this)">Lig Aşaması</button>
-            <button class="tab-btn" onclick="switchView('playoff', this)">Elemeler & Play-off</button>
+            <button class="tab-btn active" onclick="switchView('giyotin', this)">GİYOTİN (PLAY-IN)</button>
+            <button class="tab-btn" onclick="switchView('protokol', this)">PROTOKOL 32 (ELEME)</button>
         </div>
         <div id="display-area"></div>
     </main>
@@ -146,147 +137,175 @@
 
         let isAdmin = false;
         let activeCup = 'federasyon';
-        let currentView = 'league';
+        let currentView = 'giyotin';
         let localData = {};
 
         function getLogo(team) {
-            if(!team || team === 'Bekleniyor' || team.includes('Winner')) return '';
+            if(!team || team === 'Bekleniyor' || team.includes('Kazanan')) return '';
             let clean = team.replace('*', '').trim();
+            // Logo hata verirse logolar2 klasörüne bak, o da yoksa boş dön
             return `<img src="../logolar/${clean}.png" class="team-logo" onerror="this.onerror=null; this.src='../logolar2/${clean}.png';">`;
         }
 
         function loadData() {
-            db.ref('tournamentData').on('value', (snapshot) => {
+            db.ref('tournamentDataV2').on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) { localData = val; } 
-                else { localData = initData(); db.ref('tournamentData').set(localData); }
+                else { localData = initData(); db.ref('tournamentDataV2').set(localData); }
                 renderContent();
             });
         }
 
         function initData() {
+            // BAŞLANGIÇ VERİLERİ - GİYOTİN VE PROTOKOL 32 SİSTEMİ
+            const blankMatch = {t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0};
             return {
                 federasyon: {
+                    // Mevcut sistem (Son 32'den başlar)
                     0: [["Galatasaray", "Kilis 1984 A.Ş."], ["Fenerbahçe", "Karaman FK"], ["Beşiktaş", "Malatya Yeşilyurt"], ["Trabzonspor", "Ağrı 1970 Spor"], ["Başakşehir FK", "Diyarbakır FK"], ["Eyüpspor", "Bursaspor"], ["Samsunspor", "Çorum FK"], ["Göztepe", "Sakaryaspor"], ["Konyaspor", "Erzurumspor"], ["Sivasspor", "Keçiörengücü"], ["Antalyaspor", "Kocaelispor"], ["Kasımpaşa", "Ümraniyespor"], ["Gaziantep FK", "Ankaragücü"], ["Rizespor", "Hatayspor"], ["Alanyaspor", "Kayserispor"], ["Adana Demirspor", "Bodrum FK"]].map(p => ({t1:p[0], t2:p[1], s1:0, s2:0})),
-                    1: Array(8).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0}),
-                    2: Array(4).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0}),
-                    3: Array(2).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0}),
-                    4: Array(1).fill({t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0})
+                    1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch)
                 },
                 sampiyonlar: {
-                    teams: ["Real Madrid", "Slavia Praha", "Sporting CP", "Tottenham", "Union SG", "Villarreal", "Man City", "Marseille", "Monaco", "Napoli", "Newcastle", "Olympiacos", "Pafos", "Paris", "PSV", "Frankfurt", "Galatasaray", "Inter", "Juventus", "Kairat Almaty", "Leverkusen", "Liverpool", "Ajax", "Arsenal", "Atalanta", "Athletic Club", "Atleti", "B. Dortmund", "Barcelona", "Bayern München", "Chelsea", "BodoGlimt"],
-                    qualifying: [{t1:"Fenerbahçe", t2:"Feyenoord", s1:0, s2:0}],
-                    playoffs: [{t1:"Qarabağ", t2:"Ferençvaroş", s1:0, s2:0}, {t1:"Copenhagen", t2:"Basel", s1:0, s2:0}, {t1:"Club Brugge", t2:"Rangers", s1:0, s2:0}, {t1:"Winner/Fener", t2:"Celtic", s1:0, s2:0}]
+                    giyotin: [ // 4 Eşleşme (8 Takım)
+                        {t1:"Fenerbahçe", t2:"Feyenoord", s1:0, s2:0}, 
+                        {t1:"Qarabağ", t2:"Ferençvaroş", s1:0, s2:0}, 
+                        {t1:"Copenhagen", t2:"Basel", s1:0, s2:0}, 
+                        {t1:"Club Brugge", t2:"Rangers", s1:0, s2:0}
+                    ], 
+                    protokol: { // Son 32 (16 Eşleşme)
+                        0: Array(16).fill(blankMatch), // Buraya 28 direkt takım + 4 Giyotin kazananı gelecek (Manuel veya Otomatik)
+                        1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch)
+                    }
                 },
                 uefa: {
-                    teams: ["Real Betis", "Roma", "Freiburg", "Genk", "GNK Dinamo", "Go Ahead Eagles", "Lille", "Ludogorets", "Lyon", "Bologna", "Braga", "Brann", "Celta", "Crvena Zvezda", "FCSB", "Salzburg", "Sturm Graz", "Stuttgart", "Utrecht", "Viktoria Plzeň", "Malmö", "Midtjylland", "Nice", "Nott'm Forest", "Panathinaikos", "PAOK", "Porto"],
-                    playoffs: [{t1:"Beşiktaş", t2:"Kups Kuopio", s1:0, s2:0}, {t1:"Trabzonspor", t2:"AEK Larnaca", s1:0, s2:0}, {t1:"Dinamo Kyiv", t2:"Tel Aviv", s1:0, s2:0}, {t1:"Young Boys", t2:"Slovan Bratislava", s1:0, s2:0}]
+                    giyotin: [
+                        {t1:"Beşiktaş", t2:"Kups Kuopio", s1:0, s2:0}, 
+                        {t1:"Trabzonspor", t2:"AEK Larnaca", s1:0, s2:0}, 
+                        {t1:"Dinamo Kyiv", t2:"Tel Aviv", s1:0, s2:0}, 
+                        {t1:"Young Boys", t2:"Slovan Bratislava", s1:0, s2:0}
+                    ],
+                    protokol: { 0: Array(16).fill(blankMatch), 1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch) }
                 },
                 konferans: {
-                    teams: ["L. Red Imps", "Lausanne-Sport", "Lech Poznań", "Legia Warszawa", "Omonoia", "Raków", "Rayo Vallecano", "Rijeka", "Fiorentina", "Noah", "Shkëndija", "Sigma Olomouc", "SK Rapid", "Sparta Praha", "Strasbourg", "U. Craiova", "Zrinjski", "Shamrock Rovers", "Shelbourne", "Aberdeen", "AEK Athens", "AZ Alkmaar", "Breiðablik", "Celje", "Crystal Palace", "Drita", "Häcken", "Hamrun Spartans", "Jagiellonia"],
-                    qualifying: [{t1:"Samsunspor", t2:"Paksi", s1:0, s2:0}, {t1:"Göztepe", t2:"Vikingur", s1:0, s2:0}],
-                    playoffs: [{t1:"Samsunspor/Paksi", t2:"Fredrikstad", s1:0, s2:0}, {t1:"Göztepe/Vikingur", t2:"CFR Cluj", s1:0, s2:0}, {t1:"Mainz", t2:"Rosenborg", s1:0, s2:0}, {t1:"Servette", t2:"Shakhtar", s1:0, s2:0}]
+                    giyotin: [
+                        {t1:"Samsunspor", t2:"Paksi", s1:0, s2:0}, 
+                        {t1:"Göztepe", t2:"Vikingur", s1:0, s2:0}, 
+                        {t1:"Mainz", t2:"Rosenborg", s1:0, s2:0}, 
+                        {t1:"Servette", t2:"Shakhtar", s1:0, s2:0}
+                    ],
+                    protokol: { 0: Array(16).fill(blankMatch), 1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch) }
                 }
             };
         }
 
         function renderContent() {
             const area = document.getElementById('display-area');
-            area.style.animation = 'none';
-            area.offsetHeight; /* trigger reflow */
-            area.style.animation = 'fadeInUp 0.6s ease-out';
+            area.style.animation = 'none'; area.offsetHeight; area.style.animation = 'fadeInUp 0.6s ease-out';
             
-            if(activeCup === 'federasyon') { area.innerHTML = renderFederasyon(); } 
-            else { area.innerHTML = currentView === 'league' ? renderLeague() : renderPlayoffs(); }
+            if(activeCup === 'federasyon') { 
+                area.innerHTML = renderBracket(localData.federasyon, 'fed'); 
+            } else { 
+                if(currentView === 'giyotin') { area.innerHTML = renderGiyotin(); }
+                else { area.innerHTML = renderBracket(localData[activeCup].protokol, 'protokol'); }
+            }
         }
 
-        function renderFederasyon() {
-            const rounds = [{id: 'Son 32', c: 16}, {id: 'Son 16', c: 8}, {id: 'Çeyrek', c: 4}, {id: 'Yarı', c: 2}, {id: 'Final', c: 1}];
+        // Federasyon ve Protokol 32 için ortak Ağaç Yapısı
+        function renderBracket(data, type) {
+            const rounds = [{id: 'Son 32', c: 16}, {id: 'Son 16', c: 8}, {id: 'Çeyrek Final', c: 4}, {id: 'Yarı Final', c: 2}, {id: 'Büyük Final', c: 1}];
             let html = `<div class="bracket-wrapper">`;
+            
+            // Eğer veri eksikse (örn: yeni eklenen protokol yapısı)
+            if(!data) return "<h3 style='text-align:center'>Turnuva verisi yükleniyor...</h3>";
+
             rounds.forEach((r, rIdx) => {
-                html += `<div class="round"><h4 style="text-align:center; color: var(--accent); font-size: 14px; text-transform: uppercase;">${r.id}</h4>`;
-                for(let i=0; i<r.c; i++) {
-                    const match = localData.federasyon[rIdx][i];
+                // Eğer tur verisi yoksa atla
+                if(!data[rIdx]) return;
+
+                html += `<div class="round"><h4 style="text-align:center; color: var(--accent); font-size: 14px; text-transform: uppercase; margin-bottom:15px; font-weight:900; letter-spacing:1px;">${r.id}</h4>`;
+                
+                data[rIdx].forEach((match, mIdx) => {
                     html += `<div class="match-card">
-                        <div class="team"><span>${getLogo(match.t1)} ${match.t1}</span> 
+                        <div class="team">
+                            <span>${getLogo(match.t1)} ${match.t1}</span> 
                             <span class="score-display">${match.s1}</span>
-                            <input type="number" class="score-input" value="${match.s1}" onchange="updateScore('fed', ${rIdx}, ${i}, 's1', this.value)">
+                            <input type="number" class="score-input" value="${match.s1}" onchange="updateScore('${type}', ${rIdx}, ${mIdx}, 's1', this.value)">
                         </div>
-                        <div class="team"><span>${getLogo(match.t2)} ${match.t2}</span> 
+                        <div class="team">
+                            <span>${getLogo(match.t2)} ${match.t2}</span> 
                             <span class="score-display">${match.s2}</span>
-                            <input type="number" class="score-input" value="${match.s2}" onchange="updateScore('fed', ${rIdx}, ${i}, 's2', this.value)">
+                            <input type="number" class="score-input" value="${match.s2}" onchange="updateScore('${type}', ${rIdx}, ${mIdx}, 's2', this.value)">
                         </div>
                     </div>`;
-                }
+                });
                 html += `</div>`;
             });
             return html + `</div>`;
         }
 
-        function renderLeague() {
-            let html = `<table class="league-table"><thead><tr><th>#</th><th>TAKIM</th><th>DURUM</th></tr></thead><tbody>`;
-            const teams = localData[activeCup].teams || [];
-            for(let i=1; i<=36; i++) {
-                let status = i <= 8 ? "Direkt Son 16" : (i <= 24 ? "Play-off" : "Eledi");
-                let rowClass = i <= 8 ? "row-direct" : (i <= 24 ? "row-playoff" : "row-out");
-                let teamName = teams[i-1] || `Swiss Winner ${i-teams.length}`;
-                html += `<tr class="${rowClass}"><td>${i}</td><td style="text-align:left; padding-left: 50px;">${getLogo(teamName)} ${teamName}</td><td><small>${status}</small></td></tr>`;
-            }
-            return html + "</tbody></table>";
-        }
-
-        function renderPlayoffs() {
-            let html = `<div class="bracket-wrapper">`;
-            if(localData[activeCup].qualifying) {
-                html += `<div class="round"><h4>ELEME TURU</h4>`;
-                localData[activeCup].qualifying.forEach((m, i) => {
-                    html += `<div class="match-card">
-                        <div class="team"><span>${getLogo(m.t1)} ${m.t1}</span> <input type="number" class="score-input" value="${m.s1}" onchange="updateScore('qual', 0, ${i}, 's1', this.value)"><span class="score-display">${m.s1}</span></div>
-                        <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('qual', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
-                    </div>`;
-                });
-                html += `</div>`;
-            }
-            html += `<div class="round"><h4>PLAY-OFF</h4>`;
-            localData[activeCup].playoffs.forEach((m, i) => {
+        function renderGiyotin() {
+            let html = `<div class="bracket-wrapper"><div class="round"><h4 style="text-align:center; color: var(--accent);">GİYOTİN (PLAY-IN)</h4>`;
+            localData[activeCup].giyotin.forEach((m, i) => {
                 html += `<div class="match-card">
-                    <div class="team"><span>${getLogo(m.t1)} ${m.t1}</span> <input type="number" class="score-input" value="${m.s1}" onchange="updateScore('play', 0, ${i}, 's1', this.value)"><span class="score-display">${m.s1}</span></div>
-                    <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('play', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
+                    <div class="team"><span>${getLogo(m.t1)} ${m.t1}</span> <input type="number" class="score-input" value="${m.s1}" onchange="updateScore('giyotin', 0, ${i}, 's1', this.value)"><span class="score-display">${m.s1}</span></div>
+                    <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('giyotin', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
                 </div>`;
             });
-            return html + `</div></div>`;
+            return html + `</div><div class="round" style="justify-content:center; padding:20px; text-align:center; color:#fff; opacity:0.7;">Kazananlar<br>Protokol 32'ye<br>Yükselir</div></div>`;
         }
 
+        // AKILLI GÜNCELLEME VE İLERLETME MANTIĞI
         function updateScore(type, r, mIdx, team, val) {
-            let valNum = parseInt(val) || 0;
+            let valNum = parseInt(val);
+            if(isNaN(valNum)) valNum = 0;
+
             if(type === 'fed') {
                 localData.federasyon[r][mIdx][team] = valNum;
-                let match = localData.federasyon[r][mIdx];
-                if(match.s1 !== match.s2 && r < 4) {
-                    let winner = match.s1 > match.s2 ? match.t1 : match.t2;
-                    let nextMatchIdx = Math.floor(mIdx / 2);
-                    let nextTeamPos = mIdx % 2 === 0 ? 't1' : 't2';
-                    localData.federasyon[r+1][nextMatchIdx][nextTeamPos] = winner;
+                autoAdvance(localData.federasyon, r, mIdx);
+            } 
+            else if(type === 'protokol') {
+                localData[activeCup].protokol[r][mIdx][team] = valNum;
+                autoAdvance(localData[activeCup].protokol, r, mIdx);
+            } 
+            else if(type === 'giyotin') { 
+                localData[activeCup].giyotin[mIdx][team] = valNum;
+                // Giyotin kazananını Son 32'nin sonlarına ekleme mantığı (Opsiyonel, şu an manuel bırakıldı)
+            }
+        }
+
+        // Kazananı otomatik bir sonraki tura taşıma
+        function autoAdvance(bracketData, r, mIdx) {
+            let match = bracketData[r][mIdx];
+            // Eğer maç berabere değilse ve final değilse
+            if(match.s1 !== match.s2 && bracketData[r+1]) {
+                let winner = match.s1 > match.s2 ? match.t1 : match.t2;
+                let nextMatchIdx = Math.floor(mIdx / 2);
+                let nextTeamPos = mIdx % 2 === 0 ? 't1' : 't2';
+                
+                // Bir sonraki tura yaz
+                if(bracketData[r+1][nextMatchIdx]) {
+                    bracketData[r+1][nextMatchIdx][nextTeamPos] = winner;
                 }
-            } else if(type === 'qual') { localData[activeCup].qualifying[mIdx][team] = valNum; } 
-            else if(type === 'play') { localData[activeCup].playoffs[mIdx][team] = valNum; }
+            }
         }
 
         function showLogin() { document.getElementById('login-modal').style.display = 'flex'; }
         function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
         function login() {
-            if(document.getElementById('admin-pass').value === "1234") {
+            if(document.getElementById('admin-pass').value === "5261") {
                 isAdmin = true; document.getElementById('body-tag').classList.add('admin-active');
                 document.getElementById('save-btn').style.display = 'block'; closeLogin();
             } else { alert("Hatalı Şifre!"); }
         }
 
         function saveData() {
-            db.ref('tournamentData').set(localData).then(() => { alert("Yayın güncellendi!"); });
+            db.ref('tournamentDataV2').set(localData).then(() => { alert("Yayın güncellendi!"); });
         }
 
         function changeCup(cup, btn) {
             activeCup = cup;
+            currentView = cup === 'federasyon' ? 'league' : 'giyotin'; // Varsayılan görünümler
+            
             document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
@@ -306,7 +325,16 @@
             
             document.getElementById('main-title').innerText = th.t;
             document.getElementById('cup-logo').src = `../logolar/${cup}.png`;
-            document.getElementById('tab-area').style.display = cup === 'federasyon' ? 'none' : 'flex';
+            
+            // Tab butonlarını ayarla
+            const tabArea = document.getElementById('tab-area');
+            if(cup === 'federasyon') { tabArea.style.display = 'none'; } 
+            else { 
+                tabArea.style.display = 'flex'; 
+                // Tab butonlarını resetle
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('.tab-btn:first-child').classList.add('active');
+            }
             renderContent();
         }
 
