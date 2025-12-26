@@ -81,6 +81,9 @@
         .admin-trigger { position: fixed; bottom: 30px; right: 30px; background: #1a1a1a; color: white; padding: 15px 30px; border-radius: 50px; cursor: pointer; z-index: 2000; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s; }
         .admin-trigger:hover { transform: translateY(-5px); background: #333; }
         .save-btn { display: none; position: fixed; bottom: 30px; right: 220px; background: #00c853; color: white; padding: 15px 40px; border-radius: 50px; cursor: pointer; border: none; font-weight: 900; box-shadow: 0 10px 30px rgba(0,200,83,0.4); z-index: 2000; }
+        
+        /* SIFIRLAMA BUTONU */
+        .reset-btn { display: none; position: fixed; top: 20px; right: 20px; background: #d32f2f; color: white; padding: 10px 20px; border-radius: 12px; cursor: pointer; border: none; font-weight: 800; box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4); z-index: 2000; }
 
         #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(10px); }
     </style>
@@ -110,6 +113,7 @@
 
     <div class="admin-trigger" id="login-btn" onclick="showLogin()">YÖNETİCİ PANELİ</div>
     <button class="save-btn" id="save-btn" onclick="saveData()">DEĞİŞİKLİKLERİ YAYINLA</button>
+    <button class="reset-btn" id="reset-btn" onclick="resetDatabase()">⚠️ FİKSTÜRÜ SIFIRLA VE DÜZELT</button>
 
     <div id="login-modal">
         <div style="background: white; padding: 50px; border-radius: 30px; text-align: center; color: #333; max-width: 400px; width: 90%;">
@@ -141,7 +145,7 @@
         let localData = {};
 
         function getLogo(team) {
-            if(!team || team === 'Bekleniyor' || team.includes('Kazanan')) return '';
+            if(!team || team === 'Bekleniyor' || team.includes('Kazanan') || team.includes('Winner')) return '';
             let clean = team.replace('*', '').trim();
             // Logo hata verirse logolar2 klasörüne bak, o da yoksa boş dön
             return `<img src="../logolar/${clean}.png" class="team-logo" onerror="this.onerror=null; this.src='../logolar2/${clean}.png';">`;
@@ -251,7 +255,7 @@
                     <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('giyotin', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
                 </div>`;
             });
-            return html + `</div><div class="round" style="justify-content:center; padding:20px; text-align:center; color:#fff; opacity:0.7;">Kazananlar<br>Protokol 32'ye<br>Yükselir</div></div>`;
+            return html + `</div><div class="round" style="justify-content:center; padding:20px; text-align:center; color:#fff; opacity:0.7;">Kazananlar<br>Protokol 32<br>Son 4 Maç (Deplasman)</div></div>`;
         }
 
         // AKILLI GÜNCELLEME VE İLERLETME MANTIĞI
@@ -269,7 +273,15 @@
             } 
             else if(type === 'giyotin') { 
                 localData[activeCup].giyotin[mIdx][team] = valNum;
-                // Giyotin kazananını Son 32'nin sonlarına ekleme mantığı (Opsiyonel, şu an manuel bırakıldı)
+                // GIYOTIN KAZANANINI PROTOKOL 32'YE TAŞI (Son 4 maça: 12, 13, 14, 15)
+                let match = localData[activeCup].giyotin[mIdx];
+                if(match.s1 !== match.s2) {
+                    let winner = match.s1 > match.s2 ? match.t1 : match.t2;
+                    let targetMatchIndex = 12 + mIdx; // 0. maç kazananı -> 12. maçın deplasmanı
+                    if(localData[activeCup].protokol[0][targetMatchIndex]) {
+                        localData[activeCup].protokol[0][targetMatchIndex].t2 = winner;
+                    }
+                }
             }
         }
 
@@ -294,12 +306,25 @@
         function login() {
             if(document.getElementById('admin-pass').value === "5261") {
                 isAdmin = true; document.getElementById('body-tag').classList.add('admin-active');
-                document.getElementById('save-btn').style.display = 'block'; closeLogin();
+                document.getElementById('save-btn').style.display = 'block'; 
+                document.getElementById('reset-btn').style.display = 'block';
+                closeLogin();
             } else { alert("Hatalı Şifre!"); }
         }
 
         function saveData() {
             db.ref('tournamentDataV2').set(localData).then(() => { alert("Yayın güncellendi!"); });
+        }
+
+        function resetDatabase() {
+            if(!isAdmin) return;
+            if(confirm("Tüm verileri silip varsayılan temiz listeyi yüklemek üzeresiniz. Emin misiniz?")) {
+                let cleanData = initData();
+                db.ref('tournamentDataV2').set(cleanData).then(() => { 
+                    alert("Veritabanı sıfırlandı!"); 
+                    location.reload(); 
+                });
+            }
         }
 
         function changeCup(cup, btn) {
