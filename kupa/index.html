@@ -4,54 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anadolu Sigorta | Pro Broadcast Kupa Sistemi</title>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-
+    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+
         :root {
             --bg-base: #f5f7fa; --bg-detail: #c3cfe2; --accent: #003366;
             --text-color: #2c3e50; --card-bg: rgba(255, 255, 255, 0.9); --sidebar-bg: #ffffff;
             --transition-speed: 0.6s;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-
         body {
-            margin: 0; display: flex; font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-base);
             background-image: radial-gradient(circle at 15% 25%, var(--bg-detail) 0%, transparent 45%),
                               radial-gradient(circle at 85% 75%, var(--bg-detail) 0%, transparent 45%);
-            background-attachment: fixed; min-height: 100vh; color: var(--text-color);
-            transition: background-color var(--transition-speed), color 0.3s; overflow-x: auto;
+            background-attachment: fixed; min-height: 100vh; display: flex;
+            margin: 0; padding: 30px 15px 200px 15px; color: var(--text-color);
         }
 
-        /* SIDEBAR PRO */
+        /* SIDEBAR */
         .sidebar {
             width: 280px; background: var(--sidebar-bg); backdrop-filter: blur(30px);
             border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
-            padding: 40px 20px; height: 100vh; position: sticky; left: 0; z-index: 1000;
+            padding: 40px 20px; height: 100vh; position: sticky; left: 0; top: 0; z-index: 1000;
             box-shadow: 10px 0 30px rgba(0,0,0,0.05);
         }
-
-        .logo-box { margin-bottom: 50px; text-align: center; transition: transform 0.3s; }
-        .logo-box:hover { transform: scale(1.05); }
+        .logo-box { margin-bottom: 50px; text-align: center; }
         .logo-box img { max-width: 180px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); }
-
         .cup-btn {
             border: 1px solid rgba(0,0,0,0.05); padding: 15px 20px; border-radius: 16px;
             cursor: pointer; font-weight: 700; background: rgba(255,255,255,0.5);
-            margin-bottom: 12px; width: 100%; text-align: left; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 12px; width: 100%; text-align: left; transition: 0.3s;
             color: inherit; font-size: 14px; display: flex; align-items: center;
         }
-        .cup-btn:hover { background: rgba(255,255,255,0.8); transform: translateX(5px); }
         .cup-btn.active { background: var(--accent); color: white; border-color: transparent; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 
-        /* ANA İÇERİK */
-        .main-content { padding: 50px; min-width: 1400px; flex: 1; animation: fadeInUp 0.8s ease-out; }
-        
+        /* MAIN CONTENT */
+        .main-content { padding: 50px; min-width: 1400px; flex: 1; }
         .view-tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 40px; }
         .tab-btn {
             padding: 12px 30px; border-radius: 40px; border: 2px solid var(--accent);
@@ -60,32 +50,51 @@
         }
         .tab-btn.active { background: var(--accent); color: white; box-shadow: 0 0 20px var(--accent); }
 
-        /* BRACKET GRAFİKLERİ */
+        /* BRACKETS & TABLES */
         .bracket-wrapper { display: flex; gap: 40px; justify-content: center; }
         .round { display: flex; flex-direction: column; justify-content: space-around; }
-        
         .match-card {
             background: var(--card-bg); border-radius: 18px; margin: 15px 0;
-            border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1); min-width: 240px;
         }
-        .match-card:hover { transform: scale(1.03); box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-color: var(--accent); }
-        
         .team { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 800; }
-        .team img { width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; }
         
-        /* ADMIN ARAÇLARI */
-        .score-input { width: 45px; height: 30px; text-align: center; border: 2px solid var(--accent); border-radius: 8px; font-weight: 900; display: none; background: #fff; color: #000; }
+        /* TABLO LOGOLARI - PUAN DURUMU İÇİN ÖZEL */
+        .league-table .team-logo-btn { width: 50px; height: 50px; background-size: 70%; }
+        
+        .team-logo-btn {
+            width: 50px; height: 50px; background: white;
+            border: 2px solid var(--card-border); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background-size: 60%; background-position: center; background-repeat: no-repeat;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-right: 10px;
+        }
+
+        .league-table {
+            width: 100%; max-width: 1000px; margin: 0 auto; background: var(--card-bg);
+            border-radius: 24px; overflow: hidden; border-collapse: separate; border-spacing: 0;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        .league-table th { background: var(--accent); color: white; padding: 20px; }
+        .league-table td { padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 700; vertical-align: middle; }
+
+        /* ADMIN BUTTONS */
+        .admin-buttons-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 2000; align-items: flex-end; }
+        .admin-trigger { background: #1a1a1a; color: white; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .save-btn { display: none; background: #00c853; color: white; padding: 15px 40px; border-radius: 50px; cursor: pointer; border: none; font-weight: 900; box-shadow: 0 10px 30px rgba(0,200,83,0.4); }
+        .reset-btn { display: none; background: #d32f2f; color: white; padding: 10px 20px; border-radius: 12px; cursor: pointer; border: none; font-weight: 800; margin-right: 10px; box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4); }
+        .draw-btn { display: none; background: #e67e22; color: white; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: 800; box-shadow: 0 10px 30px rgba(230, 126, 34, 0.4); }
+
+        /* INPUTS */
+        .score-input { width: 40px; text-align: center; font-weight: 800; border: 2px solid var(--accent); border-radius: 5px; display: none; }
         .admin-active .score-input { display: inline-block; }
         .admin-active .score-display { display: none; }
-        .admin-trigger { position: fixed; bottom: 30px; right: 30px; background: #1a1a1a; color: white; padding: 15px 30px; border-radius: 50px; cursor: pointer; z-index: 2000; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s; }
-        .admin-trigger:hover { transform: translateY(-5px); background: #333; }
-        .save-btn { display: none; position: fixed; bottom: 30px; right: 220px; background: #00c853; color: white; padding: 15px 40px; border-radius: 50px; cursor: pointer; border: none; font-weight: 900; box-shadow: 0 10px 30px rgba(0,200,83,0.4); z-index: 2000; }
-        
-        /* SIFIRLAMA BUTONU */
-        .reset-btn { display: none; position: fixed; top: 20px; right: 20px; background: #d32f2f; color: white; padding: 10px 20px; border-radius: 12px; cursor: pointer; border: none; font-weight: 800; box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4); z-index: 2000; }
 
-        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(10px); }
+        /* MODALS */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(10px); }
+        .modal-content { background: white; padding: 40px; border-radius: 30px; width: 500px; max-width: 90%; text-align: center; color: #333; }
+        textarea { width: 100%; height: 200px; padding: 15px; border: 2px solid #eee; border-radius: 10px; margin: 20px 0; font-family: monospace; resize: vertical; box-sizing: border-box; }
     </style>
 </head>
 <body id="body-tag">
@@ -103,7 +112,7 @@
     </aside>
 
     <main class="main-content" id="main-content">
-        <h1 id="main-title" style="text-align:center; margin-bottom: 50px; font-size: 42px; font-weight: 900; letter-spacing: -1px; text-shadow: 0 10px 20px rgba(0,0,0,0.2);">Federasyon Kupası</h1>
+        <h1 id="main-title" style="text-align:center; margin-bottom: 50px;">Federasyon Kupası</h1>
         <div id="tab-area" class="view-tabs" style="display:none;">
             <button class="tab-btn active" onclick="switchView('giyotin', this)">GİYOTİN (PLAY-IN)</button>
             <button class="tab-btn" onclick="switchView('protokol', this)">PROTOKOL 32 (ELEME)</button>
@@ -111,266 +120,214 @@
         <div id="display-area"></div>
     </main>
 
-    <div class="admin-trigger" id="login-btn" onclick="showLogin()">YÖNETİCİ PANELİ</div>
-    <button class="save-btn" id="save-btn" onclick="saveData()">DEĞİŞİKLİKLERİ YAYINLA</button>
-    <button class="reset-btn" id="reset-btn" onclick="resetDatabase()">⚠️ FİKSTÜRÜ SIFIRLA VE DÜZELT</button>
+    <div class="admin-buttons-container">
+        <button class="reset-btn" id="reset-btn" onclick="resetDatabase()">⚠️ FİKSTÜRÜ SIFIRLA VE DÜZELT</button>
+        <div class="draw-btn" id="draw-btn" onclick="openDrawModal()">🎲 KURA ÇEK</div>
+        <button class="save-btn" id="save-btn" onclick="saveData()">DEĞİŞİKLİKLERİ YAYINLA</button>
+        <div class="admin-trigger" id="admin-toggle" onclick="toggleAdmin()">⚙️ YÖNETİCİ GİRİŞİ</div>
+    </div>
 
-    <div id="login-modal">
-        <div style="background: white; padding: 50px; border-radius: 30px; text-align: center; color: #333; max-width: 400px; width: 90%;">
-            <h2 style="margin-top:0; font-size: 28px;">Admin Girişi</h2>
-            <p style="opacity: 0.7; margin-bottom: 30px;">Turnuva skorlarını yönetmek için şifre girin.</p>
-            <input type="password" id="admin-pass" style="padding:15px; border-radius:12px; border:2px solid #eee; width:100%; margin-bottom:20px; font-size:20px; text-align:center; box-sizing: border-box;">
-            <button onclick="login()" style="background:#003366; color:white; padding:15px 40px; border-radius:15px; cursor:pointer; border:none; font-weight:bold; width: 100%; font-size: 16px;">SİSTEMİ AÇ</button>
-            <p onclick="closeLogin()" style="margin-top:20px; cursor:pointer; font-weight:bold; color: #999;">Geri Dön</p>
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Girişi</h2>
+            <input type="password" id="admin-pass" placeholder="Şifre" style="padding:15px; border-radius:12px; border:2px solid #eee; width:100%; margin:20px 0; font-size:20px; text-align:center;">
+            <button onclick="login()" style="background:#003366; color:white; padding:15px 40px; border-radius:15px; cursor:pointer; border:none; font-weight:bold; width: 100%;">GİRİŞ</button>
+            <p onclick="document.getElementById('login-modal').style.display='none'" style="margin-top:20px; cursor:pointer; color:#999;">Kapat</p>
         </div>
     </div>
 
-    <script>
-        // FIREBASE
+    <div id="draw-modal" class="modal">
+        <div class="modal-content">
+            <h2>🏆 Protokol 32 Kura Merkezi</h2>
+            <p style="color:#666; font-size:14px;">32 Takımın ismini alt alta yapıştırın.</p>
+            <textarea id="teams-input" placeholder="Takım 1&#10;Takım 2&#10;Takım 3..."></textarea>
+            <button onclick="performDraw()" style="background:#27ae60; color:white; padding:15px 30px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; font-size:16px;">EŞLEŞTİR</button>
+            <button onclick="document.getElementById('draw-modal').style.display='none'" style="background:#e74c3c; color:white; padding:15px 30px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">İPTAL</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyDj5s9VIvEWQmdEjCPHti7_ujdrg_1C_LA",
             authDomain: "kupalar-96dab.firebaseapp.com",
-            projectId: "kupalar-96dab",
             databaseURL: "https://kupalar-96dab-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "kupalar-96dab",
             storageBucket: "kupalar-96dab.firebasestorage.app",
             messagingSenderId: "929983415930",
             appId: "1:929983415930:web:b5f0b066b79422e1e5ddc3"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         let isAdmin = false;
+        const ADMIN_PASSWORD = "5261"; // YENİ ŞİFRE
         let activeCup = 'federasyon';
-        let currentView = 'giyotin';
+        let currentView = 'league'; // Federasyon için 'league', diğerleri için 'giyotin'
         let localData = {};
 
-        function getLogo(team) {
-            if(!team || team === 'Bekleniyor' || team.includes('Kazanan') || team.includes('Winner')) return '';
-            let clean = team.replace('*', '').trim();
-            // Logo hata verirse logolar2 klasörüne bak, o da yoksa boş dön
-            return `<img src="../logolar/${clean}.png" class="team-logo" onerror="this.onerror=null; this.src='../logolar2/${clean}.png';">`;
-        }
+        // 34 HAFTALIK DOĞRU FİKSTÜR (SABİT)
+        const defaultFixtureData = [
+            {w:1, h:"Fenerbahçe", a:"Antalyaspor", s:"ACIBADEM Stadı"}, {w:1, h:"Redbull Eyüpspor", a:"Arca Çorum FK", s:"VİAPORT Arena"}, {w:1, h:"Göztepe", a:"MKE Ankaragücü", s:"ZURICH Stadı"}, {w:1, h:"Konyaspor", a:"Sivasspor", s:"MEDAŞ Arena"}, {w:1, h:"Beşiktaş JK", a:"Alanyaspor", s:"VODAFONE Park"}, {w:1, h:"Trabzonspor", a:"Kasımpaşa", s:"VESTEL Stadı"}, {w:1, h:"Erzurumspor", a:"Galatasaray", s:"Türk Telekom Arena"}, {w:1, h:"Kocaelispor", a:"Çaykur Rizespor", s:"BRİSA Stadı"}, {w:1, h:"Kayserispor", a:"Samsunspor", s:"RHG Arena"},
+            {w:2, h:"Kayserispor", a:"Redbull Eyüpspor", s:"RHG Arena"}, {w:2, h:"Beşiktaş JK", a:"Sivasspor", s:"VODAFONE Park"}, {w:2, h:"Samsunspor", a:"Fenerbahçe", s:"YILPORT 19 Mayıs"}, {w:2, h:"Göztepe", a:"Kocaelispor", s:"ZURICH Stadı"}, {w:2, h:"Çaykur Rizespor", a:"Erzurumspor", s:"ÇAYKUR Didi"}, {w:2, h:"Galatasaray", a:"Kasımpaşa", s:"SOCAR Enerji Park"}, {w:2, h:"Alanyaspor", a:"Arca Çorum FK", s:"ANEX Arena"}, {w:2, h:"Konyaspor", a:"Trabzonspor", s:"MEDAŞ Arena"}, {w:2, h:"MKE Ankaragücü", a:"Antalyaspor", s:"TUSAŞ Başkent"},
+            {w:3, h:"Fenerbahçe", a:"Galatasaray", s:"ACIBADEM Stadı"}, {w:3, h:"Kayserispor", a:"Çaykur Rizespor", s:"RHG Arena"}, {w:3, h:"Arca Çorum FK", a:"Göztepe", s:"ARCA Gold Park"}, {w:3, h:"Kasımpaşa", a:"MKE Ankaragücü", s:"CİNER Stadyum"}, {w:3, h:"Samsunspor", a:"Konyaspor", s:"YILPORT 19 Mayıs"}, {w:3, h:"Erzurumspor", a:"Kocaelispor", s:"Türk Telekom Arena"}, {w:3, h:"Sivasspor", a:"Redbull Eyüpspor", s:"LİMAK"}, {w:3, h:"Alanyaspor", a:"Trabzonspor", s:"ANEX Arena"}, {w:3, h:"Antalyaspor", a:"Beşiktaş JK", s:"SUNEXPRESS"},
+            {w:4, h:"Beşiktaş JK", a:"Çaykur Rizespor", s:"VODAFONE Park"}, {w:4, h:"Konyaspor", a:"Göztepe", s:"MEDAŞ Arena"}, {w:4, h:"Redbull Eyüpspor", a:"Trabzonspor", s:"VİAPORT Arena"}, {w:4, h:"Samsunspor", a:"Alanyaspor", s:"YILPORT 19 Mayıs"}, {w:4, h:"MKE Ankaragücü", a:"Kocaelispor", s:"TUSAŞ Başkent"}, {w:4, h:"Galatasaray", a:"Arca Çorum FK", s:"SOCAR Enerji Park"}, {w:4, h:"Fenerbahçe", a:"Erzurumspor", s:"ACIBADEM Stadı"}, {w:4, h:"Kayserispor", a:"Kasımpaşa", s:"RHG Arena"}, {w:4, h:"Antalyaspor", a:"Sivasspor", s:"SUNEXPRESS"},
+            {w:5, h:"Alanyaspor", a:"Kasımpaşa", s:"ANEX Arena"}, {w:5, h:"Erzurumspor", a:"Sivasspor", s:"Türk Telekom Arena"}, {w:5, h:"Antalyaspor", a:"Göztepe", s:"SUNEXPRESS"}, {w:5, h:"Fenerbahçe", a:"Arca Çorum FK", s:"ACIBADEM Stadı"}, {w:5, h:"MKE Ankaragücü", a:"Beşiktaş JK", s:"TUSAŞ Başkent"}, {w:5, h:"Samsunspor", a:"Çaykur Rizespor", s:"YILPORT 19 Mayıs"}, {w:5, h:"Kocaelispor", a:"Konyaspor", s:"BRİSA Stadı"}, {w:5, h:"Trabzonspor", a:"Kayserispor", s:"VESTEL Stadı"}, {w:5, h:"Redbull Eyüpspor", a:"Galatasaray", s:"VİAPORT Arena"},
+            {w:6, h:"Antalyaspor", a:"Redbull Eyüpspor", s:"SUNEXPRESS"}, {w:6, h:"Alanyaspor", a:"Göztepe", s:"ANEX Arena"}, {w:6, h:"Samsunspor", a:"Trabzonspor", s:"YILPORT 19 Mayıs"}, {w:6, h:"Sivasspor", a:"Çaykur Rizespor", s:"LİMAK"}, {w:6, h:"Galatasaray", a:"Konyaspor", s:"SOCAR Enerji Park"}, {w:6, h:"Kayserispor", a:"Kocaelispor", s:"RHG Arena"}, {w:6, h:"Fenerbahçe", a:"MKE Ankaragücü", s:"ACIBADEM Stadı"}, {w:6, h:"Erzurumspor", a:"Arca Çorum FK", s:"Türk Telekom Arena"}, {w:6, h:"Beşiktaş JK", a:"Kasımpaşa", s:"VODAFONE Park"},
+            {w:7, h:"Fenerbahçe", a:"Alanyaspor", s:"ACIBADEM Stadı"}, {w:7, h:"Göztepe", a:"Kasımpaşa", s:"ZURICH Stadı"}, {w:7, h:"Trabzonspor", a:"Beşiktaş JK", s:"VESTEL Stadı"}, {w:7, h:"Sivasspor", a:"Kayserispor", s:"LİMAK"}, {w:7, h:"Arca Çorum FK", a:"Konyaspor", s:"ARCA Gold Park"}, {w:7, h:"Çaykur Rizespor", a:"Galatasaray", s:"ÇAYKUR Didi"}, {w:7, h:"Antalyaspor", a:"Erzurumspor", s:"SUNEXPRESS"}, {w:7, h:"MKE Ankaragücü", a:"Redbull Eyüpspor", s:"TUSAŞ Başkent"}, {w:7, h:"Samsunspor", a:"Kocaelispor", s:"YILPORT 19 Mayıs"},
+            {w:8, h:"Kasımpaşa", a:"Sivasspor", s:"CİNER Stadyum"}, {w:8, h:"Fenerbahçe", a:"Kayserispor", s:"ACIBADEM Stadı"}, {w:8, h:"Beşiktaş JK", a:"Kocaelispor", s:"VODAFONE Park"}, {w:8, h:"Göztepe", a:"Samsunspor", s:"ZURICH Stadı"}, {w:8, h:"Çaykur Rizespor", a:"Redbull Eyüpspor", s:"ÇAYKUR Didi"}, {w:8, h:"Trabzonspor", a:"Antalyaspor", s:"VESTEL Stadı"}, {w:8, h:"Galatasaray", a:"Alanyaspor", s:"SOCAR Enerji Park"}, {w:8, h:"Konyaspor", a:"Erzurumspor", s:"MEDAŞ Arena"}, {w:8, h:"Arca Çorum FK", a:"MKE Ankaragücü", s:"ARCA Gold Park"},
+            {w:9, h:"Fenerbahçe", a:"Redbull Eyüpspor", s:"ACIBADEM Stadı"}, {w:9, h:"Kocaelispor", a:"Antalyaspor", s:"BRİSA Stadı"}, {w:9, h:"Konyaspor", a:"Beşiktaş JK", s:"MEDAŞ Arena"}, {w:9, h:"Sivasspor", a:"Arca Çorum FK", s:"LİMAK"}, {w:9, h:"MKE Ankaragücü", a:"Samsunspor", s:"TUSAŞ Başkent"}, {w:9, h:"Göztepe", a:"Erzurumspor", s:"ZURICH Stadı"}, {w:9, h:"Galatasaray", a:"Trabzonspor", s:"SOCAR Enerji Park"}, {w:9, h:"Çaykur Rizespor", a:"Kasımpaşa", s:"ÇAYKUR Didi"}, {w:9, h:"Kayserispor", a:"Alanyaspor", s:"RHG Arena"},
+            {w:10, h:"Sivasspor", a:"Samsunspor", s:"LİMAK"}, {w:10, h:"Redbull Eyüpspor", a:"Alanyaspor", s:"VİAPORT Arena"}, {w:10, h:"Göztepe", a:"Beşiktaş JK", s:"ZURICH Stadı"}, {w:10, h:"Antalyaspor", a:"Konyaspor", s:"SUNEXPRESS"}, {w:10, h:"Kayserispor", a:"Galatasaray", s:"RHG Arena"}, {w:10, h:"Trabzonspor", a:"Kocaelispor", s:"VESTEL Stadı"}, {w:10, h:"Fenerbahçe", a:"Kasımpaşa", s:"ACIBADEM Stadı"}, {w:10, h:"Erzurumspor", a:"MKE Ankaragücü", s:"Türk Telekom Arena"}, {w:10, h:"Arca Çorum FK", a:"Çaykur Rizespor", s:"ARCA Gold Park"},
+            {w:11, h:"Kocaelispor", a:"Galatasaray", s:"BRİSA Stadı"}, {w:11, h:"Samsunspor", a:"Arca Çorum FK", s:"YILPORT 19 Mayıs"}, {w:11, h:"Kayserispor", a:"Antalyaspor", s:"RHG Arena"}, {w:11, h:"Konyaspor", a:"Alanyaspor", s:"MEDAŞ Arena"}, {w:11, h:"Kasımpaşa", a:"Erzurumspor", s:"CİNER Stadyum"}, {w:11, h:"Trabzonspor", a:"Sivasspor", s:"VESTEL Stadı"}, {w:11, h:"Fenerbahçe", a:"Göztepe", s:"ACIBADEM Stadı"}, {w:11, h:"Beşiktaş JK", a:"Redbull Eyüpspor", s:"VODAFONE Park"}, {w:11, h:"MKE Ankaragücü", a:"Çaykur Rizespor", s:"TUSAŞ Başkent"},
+            {w:12, h:"Trabzonspor", a:"Göztepe", s:"VESTEL Stadı"}, {w:12, h:"Arca Çorum FK", a:"Kayserispor", s:"ARCA Gold Park"}, {w:12, h:"Antalyaspor", a:"Çaykur Rizespor", s:"SUNEXPRESS"}, {w:12, h:"Kocaelispor", a:"Sivasspor", s:"BRİSA Stadı"}, {w:12, h:"Galatasaray", a:"Samsunspor", s:"SOCAR Enerji Park"}, {w:12, h:"Beşiktaş JK", a:"Fenerbahçe", s:"VODAFONE Park"}, {w:12, h:"Redbull Eyüpspor", a:"Kasımpaşa", s:"VİAPORT Arena"}, {w:12, h:"Erzurumspor", a:"Alanyaspor", s:"Türk Telekom Arena"}, {w:12, h:"MKE Ankaragücü", a:"Konyaspor", s:"TUSAŞ Başkent"},
+            {w:13, h:"Erzurumspor", a:"Trabzonspor", s:"Türk Telekom Arena"}, {w:13, h:"Antalyaspor", a:"Arca Çorum FK", s:"SUNEXPRESS"}, {w:13, h:"Beşiktaş JK", a:"Samsunspor", s:"VODAFONE Park"}, {w:13, h:"Kayserispor", a:"Göztepe", s:"RHG Arena"}, {w:13, h:"Kocaelispor", a:"Kasımpaşa", s:"BRİSA Stadı"}, {w:13, h:"Çaykur Rizespor", a:"Fenerbahçe", s:"ÇAYKUR Didi"}, {w:13, h:"Konyaspor", a:"Redbull Eyüpspor", s:"MEDAŞ Arena"}, {w:13, h:"MKE Ankaragücü", a:"Galatasaray", s:"TUSAŞ Başkent"}, {w:13, h:"Sivasspor", a:"Alanyaspor", s:"LİMAK"},
+            {w:14, h:"Alanyaspor", a:"MKE Ankaragücü", s:"ANEX Arena"}, {w:14, h:"Çaykur Rizespor", a:"Trabzonspor", s:"ÇAYKUR Didi"}, {w:14, h:"Antalyaspor", a:"Kasımpaşa", s:"SUNEXPRESS"}, {w:14, h:"Sivasspor", a:"Fenerbahçe", s:"LİMAK"}, {w:14, h:"Erzurumspor", a:"Samsunspor", s:"Türk Telekom Arena"}, {w:14, h:"Kocaelispor", a:"Redbull Eyüpspor", s:"BRİSA Stadı"}, {w:14, h:"Konyaspor", a:"Kayserispor", s:"MEDAŞ Arena"}, {w:14, h:"Galatasaray", a:"Göztepe", s:"SOCAR Enerji Park"}, {w:14, h:"Beşiktaş JK", a:"Arca Çorum FK", s:"VODAFONE Park"},
+            {w:15, h:"Fenerbahçe", a:"Trabzonspor", s:"ACIBADEM Stadı"}, {w:15, h:"Konyaspor", a:"Kasımpaşa", s:"MEDAŞ Arena"}, {w:15, h:"Antalyaspor", a:"Samsunspor", s:"SUNEXPRESS"}, {w:15, h:"Erzurumspor", a:"Beşiktaş JK", s:"Türk Telekom Arena"}, {w:15, h:"Göztepe", a:"Redbull Eyüpspor", s:"ZURICH Stadı"}, {w:15, h:"Galatasaray", a:"Sivasspor", s:"SOCAR Enerji Park"}, {w:15, h:"Çaykur Rizespor", a:"Alanyaspor", s:"ÇAYKUR Didi"}, {w:15, h:"Kayserispor", a:"MKE Ankaragücü", s:"RHG Arena"}, {w:15, h:"Kocaelispor", a:"Arca Çorum FK", s:"BRİSA Stadı"},
+            {w:16, h:"Trabzonspor", a:"Arca Çorum FK", s:"VESTEL Stadı"}, {w:16, h:"Kocaelispor", a:"Alanyaspor", s:"BRİSA Stadı"}, {w:16, h:"Konyaspor", a:"Fenerbahçe", s:"MEDAŞ Arena"}, {w:16, h:"Beşiktaş JK", a:"Kayserispor", s:"VODAFONE Park"}, {w:16, h:"Kasımpaşa", a:"Samsunspor", s:"CİNER Stadyum"}, {w:16, h:"Antalyaspor", a:"Galatasaray", s:"SUNEXPRESS"}, {w:16, h:"Çaykur Rizespor", a:"Göztepe", s:"ÇAYKUR Didi"}, {w:16, h:"MKE Ankaragücü", a:"Sivasspor", s:"TUSAŞ Başkent"}, {w:16, h:"Redbull Eyüpspor", a:"Erzurumspor", s:"VİAPORT Arena"},
+            {w:17, h:"Samsunspor", a:"Redbull Eyüpspor", s:"YILPORT 19 Mayıs"}, {w:17, h:"Antalyaspor", a:"Alanyaspor", s:"SUNEXPRESS"}, {w:17, h:"Kayserispor", a:"Erzurumspor", s:"RHG Arena"}, {w:17, h:"Arca Çorum FK", a:"Kasımpaşa", s:"ARCA Gold Park"}, {w:17, h:"Trabzonspor", a:"MKE Ankaragücü", s:"VESTEL Stadı"}, {w:17, h:"Sivasspor", a:"Göztepe", s:"LİMAK"}, {w:17, h:"Kocaelispor", a:"Fenerbahçe", s:"BRİSA Stadı"}, {w:17, h:"Konyaspor", a:"Çaykur Rizespor", s:"MEDAŞ Arena"}, {w:17, h:"Galatasaray", a:"Beşiktaş JK", s:"SOCAR Enerji Park"},
+            {w:18, h:"Antalyaspor", a:"Fenerbahçe", s:"SUNEXPRESS"}, {w:18, h:"Arca Çorum FK", a:"Redbull Eyüpspor", s:"ARCA Gold Park"}, {w:18, h:"MKE Ankaragücü", a:"Göztepe", s:"TUSAŞ Başkent"}, {w:18, h:"Sivasspor", a:"Konyaspor", s:"LİMAK"}, {w:18, h:"Alanyaspor", a:"Beşiktaş JK", s:"ANEX Arena"}, {w:18, h:"Kasımpaşa", a:"Trabzonspor", s:"CİNER Stadyum"}, {w:18, h:"Galatasaray", a:"Erzurumspor", s:"SOCAR Enerji Park"}, {w:18, h:"Çaykur Rizespor", a:"Kocaelispor", s:"ÇAYKUR Didi"}, {w:18, h:"Samsunspor", a:"Kayserispor", s:"YILPORT 19 Mayıs"},
+            {w:19, h:"Redbull Eyüpspor", a:"Kayserispor", s:"VİAPORT Arena"}, {w:19, h:"Sivasspor", a:"Beşiktaş JK", s:"LİMAK"}, {w:19, h:"Fenerbahçe", a:"Samsunspor", s:"ACIBADEM Stadı"}, {w:19, h:"Kocaelispor", a:"Göztepe", s:"BRİSA Stadı"}, {w:19, h:"Erzurumspor", a:"Çaykur Rizespor", s:"Türk Telekom Arena"}, {w:19, h:"Kasımpaşa", a:"Galatasaray", s:"CİNER Stadyum"}, {w:19, h:"Arca Çorum FK", a:"Alanyaspor", s:"ARCA Gold Park"}, {w:19, h:"Trabzonspor", a:"Konyaspor", s:"VESTEL Stadı"}, {w:19, h:"Antalyaspor", a:"MKE Ankaragücü", s:"SUNEXPRESS"},
+            {w:20, h:"Galatasaray", a:"Fenerbahçe", s:"SOCAR Enerji Park"}, {w:20, h:"Çaykur Rizespor", a:"Kayserispor", s:"ÇAYKUR Didi"}, {w:20, h:"Göztepe", a:"Arca Çorum FK", s:"ZURICH Stadı"}, {w:20, h:"MKE Ankaragücü", a:"Kasımpaşa", s:"TUSAŞ Başkent"}, {w:20, h:"Konyaspor", a:"Samsunspor", s:"MEDAŞ Arena"}, {w:20, h:"Kocaelispor", a:"Erzurumspor", s:"BRİSA Stadı"}, {w:20, h:"Redbull Eyüpspor", a:"Sivasspor", s:"VİAPORT Arena"}, {w:20, h:"Trabzonspor", a:"Alanyaspor", s:"VESTEL Stadı"}, {w:20, h:"Beşiktaş JK", a:"Antalyaspor", s:"VODAFONE Park"},
+            {w:21, h:"Çaykur Rizespor", a:"Beşiktaş JK", s:"ÇAYKUR Didi"}, {w:21, h:"Göztepe", a:"Konyaspor", s:"ZURICH Stadı"}, {w:21, h:"Trabzonspor", a:"Redbull Eyüpspor", s:"VESTEL Stadı"}, {w:21, h:"Alanyaspor", a:"Samsunspor", s:"ANEX Arena"}, {w:21, h:"Kocaelispor", a:"MKE Ankaragücü", s:"BRİSA Stadı"}, {w:21, h:"Arca Çorum FK", a:"Galatasaray", s:"ARCA Gold Park"}, {w:21, h:"Erzurumspor", a:"Fenerbahçe", s:"Türk Telekom Arena"}, {w:21, h:"Kasımpaşa", a:"Kayserispor", s:"CİNER Stadyum"}, {w:21, h:"Sivasspor", a:"Antalyaspor", s:"LİMAK"},
+            {w:22, h:"Kasımpaşa", a:"Alanyaspor", s:"CİNER Stadyum"}, {w:22, h:"Sivasspor", a:"Erzurumspor", s:"LİMAK"}, {w:22, h:"Göztepe", a:"Antalyaspor", s:"ZURICH Stadı"}, {w:22, h:"Arca Çorum FK", a:"Fenerbahçe", s:"ARCA Gold Park"}, {w:22, h:"Beşiktaş JK", a:"MKE Ankaragücü", s:"VODAFONE Park"}, {w:22, h:"Çaykur Rizespor", a:"Samsunspor", s:"ÇAYKUR Didi"}, {w:22, h:"Konyaspor", a:"Kocaelispor", s:"MEDAŞ Arena"}, {w:22, h:"Kayserispor", a:"Trabzonspor", s:"RHG Arena"}, {w:22, h:"Galatasaray", a:"Redbull Eyüpspor", s:"SOCAR Enerji Park"},
+            {w:23, h:"Redbull Eyüpspor", a:"Antalyaspor", s:"VİAPORT Arena"}, {w:23, h:"Göztepe", a:"Alanyaspor", s:"ZURICH Stadı"}, {w:23, h:"Trabzonspor", a:"Samsunspor", s:"VESTEL Stadı"}, {w:23, h:"Çaykur Rizespor", a:"Sivasspor", s:"ÇAYKUR Didi"}, {w:23, h:"Konyaspor", a:"Galatasaray", s:"MEDAŞ Arena"}, {w:23, h:"Kocaelispor", a:"Kayserispor", s:"BRİSA Stadı"}, {w:23, h:"MKE Ankaragücü", a:"Fenerbahçe", s:"TUSAŞ Başkent"}, {w:23, h:"Arca Çorum FK", a:"Erzurumspor", s:"ARCA Gold Park"}, {w:23, h:"Kasımpaşa", a:"Beşiktaş JK", s:"CİNER Stadyum"},
+            {w:24, h:"Alanyaspor", a:"Fenerbahçe", s:"ANEX Arena"}, {w:24, h:"Kasımpaşa", a:"Göztepe", s:"CİNER Stadyum"}, {w:24, h:"Beşiktaş JK", a:"Trabzonspor", s:"VODAFONE Park"}, {w:24, h:"Kayserispor", a:"Sivasspor", s:"RHG Arena"}, {w:24, h:"Konyaspor", a:"Arca Çorum FK", s:"MEDAŞ Arena"}, {w:24, h:"Galatasaray", a:"Çaykur Rizespor", s:"SOCAR Enerji Park"}, {w:24, h:"Erzurumspor", a:"Antalyaspor", s:"Türk Telekom Arena"}, {w:24, h:"Redbull Eyüpspor", a:"MKE Ankaragücü", s:"VİAPORT Arena"}, {w:24, h:"Kocaelispor", a:"Samsunspor", s:"BRİSA Stadı"},
+            {w:25, h:"Sivasspor", a:"Kasımpaşa", s:"LİMAK"}, {w:25, h:"Kayserispor", a:"Fenerbahçe", s:"RHG Arena"}, {w:25, h:"Kocaelispor", a:"Beşiktaş JK", s:"BRİSA Stadı"}, {w:25, h:"Samsunspor", a:"Göztepe", s:"YILPORT 19 Mayıs"}, {w:25, h:"Redbull Eyüpspor", a:"Çaykur Rizespor", s:"VİAPORT Arena"}, {w:25, h:"Antalyaspor", a:"Trabzonspor", s:"SUNEXPRESS"}, {w:25, h:"Alanyaspor", a:"Galatasaray", s:"ANEX Arena"}, {w:25, h:"Erzurumspor", a:"Konyaspor", s:"Türk Telekom Arena"}, {w:25, h:"MKE Ankaragücü", a:"Arca Çorum FK", s:"TUSAŞ Başkent"},
+            {w:26, h:"Redbull Eyüpspor", a:"Fenerbahçe", s:"VİAPORT Arena"}, {w:26, h:"Antalyaspor", a:"Kocaelispor", s:"SUNEXPRESS"}, {w:26, h:"Beşiktaş JK", a:"Konyaspor", s:"VODAFONE Park"}, {w:26, h:"Arca Çorum FK", a:"Sivasspor", s:"ARCA Gold Park"}, {w:26, h:"Samsunspor", a:"MKE Ankaragücü", s:"YILPORT 19 Mayıs"}, {w:26, h:"Erzurumspor", a:"Göztepe", s:"Türk Telekom Arena"}, {w:26, h:"Trabzonspor", a:"Galatasaray", s:"VESTEL Stadı"}, {w:26, h:"Kasımpaşa", a:"Çaykur Rizespor", s:"CİNER Stadyum"}, {w:26, h:"Alanyaspor", a:"Kayserispor", s:"ANEX Arena"},
+            {w:27, h:"Samsunspor", a:"Sivasspor", s:"YILPORT 19 Mayıs"}, {w:27, h:"Alanyaspor", a:"Redbull Eyüpspor", s:"ANEX Arena"}, {w:27, h:"Beşiktaş JK", a:"Göztepe", s:"VODAFONE Park"}, {w:27, h:"Konyaspor", a:"Antalyaspor", s:"MEDAŞ Arena"}, {w:27, h:"Galatasaray", a:"Kayserispor", s:"SOCAR Enerji Park"}, {w:27, h:"Kocaelispor", a:"Trabzonspor", s:"BRİSA Stadı"}, {w:27, h:"Kasımpaşa", a:"Fenerbahçe", s:"CİNER Stadyum"}, {w:27, h:"MKE Ankaragücü", a:"Erzurumspor", s:"TUSAŞ Başkent"}, {w:27, h:"Çaykur Rizespor", a:"Arca Çorum FK", s:"ÇAYKUR Didi"},
+            {w:28, h:"Galatasaray", a:"Kocaelispor", s:"SOCAR Enerji Park"}, {w:28, h:"Arca Çorum FK", a:"Samsunspor", s:"ARCA Gold Park"}, {w:28, h:"Antalyaspor", a:"Kayserispor", s:"SUNEXPRESS"}, {w:28, h:"Alanyaspor", a:"Konyaspor", s:"ANEX Arena"}, {w:28, h:"Erzurumspor", a:"Kasımpaşa", s:"Türk Telekom Arena"}, {w:28, h:"Sivasspor", a:"Trabzonspor", s:"LİMAK"}, {w:28, h:"Göztepe", a:"Fenerbahçe", s:"ZURICH Stadı"}, {w:28, h:"Redbull Eyüpspor", a:"Beşiktaş JK", s:"VİAPORT Arena"}, {w:28, h:"Çaykur Rizespor", a:"MKE Ankaragücü", s:"ÇAYKUR Didi"},
+            {w:29, h:"Göztepe", a:"Trabzonspor", s:"ZURICH Stadı"}, {w:29, h:"Kayserispor", a:"Arca Çorum FK", s:"RHG Arena"}, {w:29, h:"Çaykur Rizespor", a:"Antalyaspor", s:"ÇAYKUR Didi"}, {w:29, h:"Sivasspor", a:"Kocaelispor", s:"LİMAK"}, {w:29, h:"Samsunspor", a:"Galatasaray", s:"YILPORT 19 Mayıs"}, {w:29, h:"Fenerbahçe", a:"Beşiktaş JK", s:"ACIBADEM Stadı"}, {w:29, h:"Kasımpaşa", a:"Redbull Eyüpspor", s:"CİNER Stadyum"}, {w:29, h:"Alanyaspor", a:"Erzurumspor", s:"ANEX Arena"}, {w:29, h:"Konyaspor", a:"MKE Ankaragücü", s:"MEDAŞ Arena"},
+            {w:30, h:"Trabzonspor", a:"Erzurumspor", s:"VESTEL Stadı"}, {w:30, h:"Arca Çorum FK", a:"Antalyaspor", s:"ARCA Gold Park"}, {w:30, h:"Samsunspor", a:"Beşiktaş JK", s:"YILPORT 19 Mayıs"}, {w:30, h:"Göztepe", a:"Kayserispor", s:"ZURICH Stadı"}, {w:30, h:"Kasımpaşa", a:"Kocaelispor", s:"CİNER Stadyum"}, {w:30, h:"Fenerbahçe", a:"Çaykur Rizespor", s:"ACIBADEM Stadı"}, {w:30, h:"Redbull Eyüpspor", a:"Konyaspor", s:"VİAPORT Arena"}, {w:30, h:"Galatasaray", a:"MKE Ankaragücü", s:"SOCAR Enerji Park"}, {w:30, h:"Alanyaspor", a:"Sivasspor", s:"ANEX Arena"},
+            {w:31, h:"MKE Ankaragücü", a:"Alanyaspor", s:"TUSAŞ Başkent"}, {w:31, h:"Trabzonspor", a:"Çaykur Rizespor", s:"VESTEL Stadı"}, {w:31, h:"Kasımpaşa", a:"Antalyaspor", s:"CİNER Stadyum"}, {w:31, h:"Fenerbahçe", a:"Sivasspor", s:"ACIBADEM Stadı"}, {w:31, h:"Samsunspor", a:"Erzurumspor", s:"YILPORT 19 Mayıs"}, {w:31, h:"Redbull Eyüpspor", a:"Kocaelispor", s:"VİAPORT Arena"}, {w:31, h:"Kayserispor", a:"Konyaspor", s:"RHG Arena"}, {w:31, h:"Göztepe", a:"Galatasaray", s:"ZURICH Stadı"}, {w:31, h:"Arca Çorum FK", a:"Beşiktaş JK", s:"ARCA Gold Park"},
+            {w:32, h:"Trabzonspor", a:"Fenerbahçe", s:"VESTEL Stadı"}, {w:32, h:"Kasımpaşa", a:"Konyaspor", s:"CİNER Stadyum"}, {w:32, h:"Samsunspor", a:"Antalyaspor", s:"YILPORT 19 Mayıs"}, {w:32, h:"Beşiktaş JK", a:"Erzurumspor", s:"VODAFONE Park"}, {w:32, h:"Redbull Eyüpspor", a:"Göztepe", s:"VİAPORT Arena"}, {w:32, h:"Sivasspor", a:"Galatasaray", s:"LİMAK"}, {w:32, h:"Alanyaspor", a:"Çaykur Rizespor", s:"ANEX Arena"}, {w:32, h:"MKE Ankaragücü", a:"Kayserispor", s:"TUSAŞ Başkent"}, {w:32, h:"Arca Çorum FK", a:"Kocaelispor", s:"ARCA Gold Park"},
+            {w:33, h:"Arca Çorum FK", a:"Trabzonspor", s:"ARCA Gold Park"}, {w:33, h:"Alanyaspor", a:"Kocaelispor", s:"ANEX Arena"}, {w:33, h:"Fenerbahçe", a:"Konyaspor", s:"ACIBADEM Stadı"}, {w:33, h:"Kayserispor", a:"Beşiktaş JK", s:"RHG Arena"}, {w:33, h:"Samsunspor", a:"Kasımpaşa", s:"YILPORT 19 Mayıs"}, {w:33, h:"Galatasaray", a:"Antalyaspor", s:"SOCAR Enerji Park"}, {w:33, h:"Göztepe", a:"Çaykur Rizespor", s:"ZURICH Stadı"}, {w:33, h:"Sivasspor", a:"MKE Ankaragücü", s:"LİMAK"}, {w:33, h:"Erzurumspor", a:"Redbull Eyüpspor", s:"Türk Telekom Arena"},
+            {w:34, h:"Redbull Eyüpspor", a:"Samsunspor", s:"VİAPORT Arena"}, {w:34, h:"Alanyaspor", a:"Antalyaspor", s:"ANEX Arena"}, {w:34, h:"Erzurumspor", a:"Kayserispor", s:"Türk Telekom Arena"}, {w:34, h:"Kasımpaşa", a:"Arca Çorum FK", s:"CİNER Stadyum"}, {w:34, h:"MKE Ankaragücü", a:"Trabzonspor", s:"TUSAŞ Başkent"}, {w:34, h:"Göztepe", a:"Sivasspor", s:"ZURICH Stadı"}, {w:34, h:"Fenerbahçe", a:"Kocaelispor", s:"ACIBADEM Stadı"}, {w:34, h:"Çaykur Rizespor", a:"Konyaspor", s:"ÇAYKUR Didi"}, {w:34, h:"Beşiktaş JK", a:"Galatasaray", s:"VODAFONE Park"}
+        ];
 
-        function loadData() {
-            db.ref('tournamentDataV2').on('value', (snapshot) => {
-                const val = snapshot.val();
-                if (val) { localData = val; } 
-                else { localData = initData(); db.ref('tournamentDataV2').set(localData); }
-                renderContent();
-            });
-        }
+        let fixtureData = [];
+        const fixtureRef = ref(db, 'fixtures');
 
-        function initData() {
-            // BAŞLANGIÇ VERİLERİ - GİYOTİN VE PROTOKOL 32 SİSTEMİ
-            const blankMatch = {t1:'Bekleniyor', t2:'Bekleniyor', s1:0, s2:0};
-            return {
-                federasyon: {
-                    // Mevcut sistem (Son 32'den başlar)
-                    0: [["Galatasaray", "Kilis 1984 A.Ş."], ["Fenerbahçe", "Karaman FK"], ["Beşiktaş", "Malatya Yeşilyurt"], ["Trabzonspor", "Ağrı 1970 Spor"], ["Başakşehir FK", "Diyarbakır FK"], ["Eyüpspor", "Bursaspor"], ["Samsunspor", "Çorum FK"], ["Göztepe", "Sakaryaspor"], ["Konyaspor", "Erzurumspor"], ["Sivasspor", "Keçiörengücü"], ["Antalyaspor", "Kocaelispor"], ["Kasımpaşa", "Ümraniyespor"], ["Gaziantep FK", "Ankaragücü"], ["Rizespor", "Hatayspor"], ["Alanyaspor", "Kayserispor"], ["Adana Demirspor", "Bodrum FK"]].map(p => ({t1:p[0], t2:p[1], s1:0, s2:0})),
-                    1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch)
-                },
-                sampiyonlar: {
-                    giyotin: [ // 4 Eşleşme (8 Takım)
-                        {t1:"Fenerbahçe", t2:"Feyenoord", s1:0, s2:0}, 
-                        {t1:"Qarabağ", t2:"Ferençvaroş", s1:0, s2:0}, 
-                        {t1:"Copenhagen", t2:"Basel", s1:0, s2:0}, 
-                        {t1:"Club Brugge", t2:"Rangers", s1:0, s2:0}
-                    ], 
-                    protokol: { // Son 32 (16 Eşleşme)
-                        0: Array(16).fill(blankMatch), // Buraya 28 direkt takım + 4 Giyotin kazananı gelecek (Manuel veya Otomatik)
-                        1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch)
+        onValue(fixtureRef, (snapshot) => {
+            const data = snapshot.val();
+            // BURASI ÖNEMLİ: Eğer admin değilsek veya veritabanı normalse standart davran.
+            // SIFIRLAMAK İÇİN AŞAĞIDAKİ BUTONU KULLAN.
+            if (data) {
+                // Akıllı birleştirme: Doğru maçları al, varsa skorları eski veritabanından çek.
+                fixtureData = defaultFixtureData.map((correctMatch, i) => {
+                    const dbMatch = data[i];
+                    if (dbMatch && (dbMatch.hs !== undefined || dbMatch.as !== undefined)) {
+                        return { ...correctMatch, hs: dbMatch.hs, as: dbMatch.as };
                     }
-                },
-                uefa: {
-                    giyotin: [
-                        {t1:"Beşiktaş", t2:"Kups Kuopio", s1:0, s2:0}, 
-                        {t1:"Trabzonspor", t2:"AEK Larnaca", s1:0, s2:0}, 
-                        {t1:"Dinamo Kyiv", t2:"Tel Aviv", s1:0, s2:0}, 
-                        {t1:"Young Boys", t2:"Slovan Bratislava", s1:0, s2:0}
-                    ],
-                    protokol: { 0: Array(16).fill(blankMatch), 1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch) }
-                },
-                konferans: {
-                    giyotin: [
-                        {t1:"Samsunspor", t2:"Paksi", s1:0, s2:0}, 
-                        {t1:"Göztepe", t2:"Vikingur", s1:0, s2:0}, 
-                        {t1:"Mainz", t2:"Rosenborg", s1:0, s2:0}, 
-                        {t1:"Servette", t2:"Shakhtar", s1:0, s2:0}
-                    ],
-                    protokol: { 0: Array(16).fill(blankMatch), 1: Array(8).fill(blankMatch), 2: Array(4).fill(blankMatch), 3: Array(2).fill(blankMatch), 4: Array(1).fill(blankMatch) }
-                }
-            };
-        }
-
-        function renderContent() {
-            const area = document.getElementById('display-area');
-            area.style.animation = 'none'; area.offsetHeight; area.style.animation = 'fadeInUp 0.6s ease-out';
-            
-            if(activeCup === 'federasyon') { 
-                area.innerHTML = renderBracket(localData.federasyon, 'fed'); 
-            } else { 
-                if(currentView === 'giyotin') { area.innerHTML = renderGiyotin(); }
-                else { area.innerHTML = renderBracket(localData[activeCup].protokol, 'protokol'); }
-            }
-        }
-
-        // Federasyon ve Protokol 32 için ortak Ağaç Yapısı
-        function renderBracket(data, type) {
-            const rounds = [{id: 'Son 32', c: 16}, {id: 'Son 16', c: 8}, {id: 'Çeyrek Final', c: 4}, {id: 'Yarı Final', c: 2}, {id: 'Büyük Final', c: 1}];
-            let html = `<div class="bracket-wrapper">`;
-            
-            // Eğer veri eksikse (örn: yeni eklenen protokol yapısı)
-            if(!data) return "<h3 style='text-align:center'>Turnuva verisi yükleniyor...</h3>";
-
-            rounds.forEach((r, rIdx) => {
-                // Eğer tur verisi yoksa atla
-                if(!data[rIdx]) return;
-
-                html += `<div class="round"><h4 style="text-align:center; color: var(--accent); font-size: 14px; text-transform: uppercase; margin-bottom:15px; font-weight:900; letter-spacing:1px;">${r.id}</h4>`;
-                
-                data[rIdx].forEach((match, mIdx) => {
-                    html += `<div class="match-card">
-                        <div class="team">
-                            <span>${getLogo(match.t1)} ${match.t1}</span> 
-                            <span class="score-display">${match.s1}</span>
-                            <input type="number" class="score-input" value="${match.s1}" onchange="updateScore('${type}', ${rIdx}, ${mIdx}, 's1', this.value)">
-                        </div>
-                        <div class="team">
-                            <span>${getLogo(match.t2)} ${match.t2}</span> 
-                            <span class="score-display">${match.s2}</span>
-                            <input type="number" class="score-input" value="${match.s2}" onchange="updateScore('${type}', ${rIdx}, ${mIdx}, 's2', this.value)">
-                        </div>
-                    </div>`;
+                    return correctMatch;
                 });
-                html += `</div>`;
-            });
-            return html + `</div>`;
-        }
-
-        function renderGiyotin() {
-            let html = `<div class="bracket-wrapper"><div class="round"><h4 style="text-align:center; color: var(--accent);">GİYOTİN (PLAY-IN)</h4>`;
-            localData[activeCup].giyotin.forEach((m, i) => {
-                html += `<div class="match-card">
-                    <div class="team"><span>${getLogo(m.t1)} ${m.t1}</span> <input type="number" class="score-input" value="${m.s1}" onchange="updateScore('giyotin', 0, ${i}, 's1', this.value)"><span class="score-display">${m.s1}</span></div>
-                    <div class="team"><span>${getLogo(m.t2)} ${m.t2}</span> <input type="number" class="score-input" value="${m.s2}" onchange="updateScore('giyotin', 0, ${i}, 's2', this.value)"><span class="score-display">${m.s2}</span></div>
-                </div>`;
-            });
-            return html + `</div><div class="round" style="justify-content:center; padding:20px; text-align:center; color:#fff; opacity:0.7;">Kazananlar<br>Protokol 32<br>Son 4 Maç (Deplasman)</div></div>`;
-        }
-
-        // AKILLI GÜNCELLEME VE İLERLETME MANTIĞI
-        function updateScore(type, r, mIdx, team, val) {
-            let valNum = parseInt(val);
-            if(isNaN(valNum)) valNum = 0;
-
-            if(type === 'fed') {
-                localData.federasyon[r][mIdx][team] = valNum;
-                autoAdvance(localData.federasyon, r, mIdx);
-            } 
-            else if(type === 'protokol') {
-                localData[activeCup].protokol[r][mIdx][team] = valNum;
-                autoAdvance(localData[activeCup].protokol, r, mIdx);
-            } 
-            else if(type === 'giyotin') { 
-                localData[activeCup].giyotin[mIdx][team] = valNum;
-                // GIYOTIN KAZANANINI PROTOKOL 32'YE TAŞI (Son 4 maça: 12, 13, 14, 15)
-                let match = localData[activeCup].giyotin[mIdx];
-                if(match.s1 !== match.s2) {
-                    let winner = match.s1 > match.s2 ? match.t1 : match.t2;
-                    let targetMatchIndex = 12 + mIdx; // 0. maç kazananı -> 12. maçın deplasmanı
-                    if(localData[activeCup].protokol[0][targetMatchIndex]) {
-                        localData[activeCup].protokol[0][targetMatchIndex].t2 = winner;
-                    }
-                }
+            } else {
+                fixtureData = JSON.parse(JSON.stringify(defaultFixtureData));
+                set(fixtureRef, fixtureData);
             }
-        }
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('main-view').style.display = 'block';
+            renderAll();
+        });
 
-        // Kazananı otomatik bir sonraki tura taşıma
-        function autoAdvance(bracketData, r, mIdx) {
-            let match = bracketData[r][mIdx];
-            // Eğer maç berabere değilse ve final değilse
-            if(match.s1 !== match.s2 && bracketData[r+1]) {
-                let winner = match.s1 > match.s2 ? match.t1 : match.t2;
-                let nextMatchIdx = Math.floor(mIdx / 2);
-                let nextTeamPos = mIdx % 2 === 0 ? 't1' : 't2';
-                
-                // Bir sonraki tura yaz
-                if(bracketData[r+1][nextMatchIdx]) {
-                    bracketData[r+1][nextMatchIdx][nextTeamPos] = winner;
-                }
-            }
-        }
-
-        function showLogin() { document.getElementById('login-modal').style.display = 'flex'; }
-        function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
-        function login() {
-            if(document.getElementById('admin-pass').value === "5261") {
-                isAdmin = true; document.getElementById('body-tag').classList.add('admin-active');
-                document.getElementById('save-btn').style.display = 'block'; 
-                document.getElementById('reset-btn').style.display = 'block';
-                closeLogin();
-            } else { alert("Hatalı Şifre!"); }
-        }
-
-        function saveData() {
-            db.ref('tournamentDataV2').set(localData).then(() => { alert("Yayın güncellendi!"); });
-        }
-
-        function resetDatabase() {
+        window.setScore = function(index, side, val) {
             if(!isAdmin) return;
-            if(confirm("Tüm verileri silip varsayılan temiz listeyi yüklemek üzeresiniz. Emin misiniz?")) {
-                let cleanData = initData();
-                db.ref('tournamentDataV2').set(cleanData).then(() => { 
-                    alert("Veritabanı sıfırlandı!"); 
-                    location.reload(); 
-                });
+            const newValue = val === "" ? null : parseInt(val);
+            set(ref(db, 'fixtures/' + index + '/' + side), newValue);
+        }
+
+        window.showTeam = function(name) {
+            const team = teamDetails.find(t => t.name === name);
+            if(!team) return;
+            document.getElementById('selected-team-name').innerText = name;
+            const teamMatches = fixtureData.filter(m => m.h === name || m.a === name);
+            document.getElementById('team-fixture-list').innerHTML = teamMatches.map(m => {
+                const isHome = m.h === name; const opponent = isHome ? m.a : m.h; const icon = isHome ? "🏠" : "✈️";
+                let displayContent = (m.hs != null && m.as != null) ? `<span style="display:inline-block; width:30px; height:30px; line-height:30px; background:${((isHome && m.hs>m.as)||(!isHome && m.as>m.hs))?'#2ecc71':(m.hs==m.as?'#95a5a6':'#e74c3c')}; color:white; border-radius:5px; text-align:center; font-weight:bold;">${(m.hs==m.as?'B':((isHome && m.hs>m.as)||(!isHome && m.as>m.hs)?'G':'M'))}</span>` : `<span style="color:#aaa; font-weight:bold; font-size:0.9em;">VS</span>`;
+                return `<div class="gs-match-card"><div class="card-left"><div class="week-badge" style="background:var(--pink-accent); color:white; padding:5px; margin-right:10px;">${m.w}.</div><div class="location-icon" style="margin-right:10px;">${icon}</div><div class="match-details" style="flex:1;">${opponent}</div></div><div class="stadium-info-list" style="display:flex; align-items:center;"><span class="stadium-icon">🏟️</span> <span style="font-size:0.7em; margin-right:15px; width:100px; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.s || ''}</span>${displayContent}</div></div>`;
+            }).join('');
+            showView('team');
+        }
+
+        // ... Diğer fonksiyonlar aynı (renderAll, switchView, vb.) ...
+        
+        function renderAll() {
+            const scrollPos = window.scrollY;
+            const activeId = document.activeElement ? document.activeElement.id : null;
+            const grid = document.getElementById('main-fixture-grid');
+            grid.innerHTML = "";
+            let currentWeek = 0;
+            let weekHtml = "";
+
+            fixtureData.forEach((m, i) => {
+                if (m.w !== currentWeek) {
+                    if (currentWeek !== 0) { weekHtml += `</div></div>`; grid.innerHTML += weekHtml; }
+                    currentWeek = m.w;
+                    weekHtml = `<div class="week-card"><div class="week-header"><span class="week-number">${currentWeek}</span><span class="week-label">Hafta</span></div><div class="match-list">`;
+                }
+                let center = isAdmin ? `<div style="display:flex;justify-content:center;align-items:center"><input type="number" id="hs-${i}" class="score-input" value="${m.hs ?? ''}" oninput="setScore(${i},'hs',this.value)"> <span class="vs">-</span> <input type="number" id="as-${i}" class="score-input" value="${m.as ?? ''}" oninput="setScore(${i},'as',this.value)"></div>` : `<span class="vs">${(m.hs != null && m.as != null) ? m.hs + ' - ' + m.as : 'VS'}</span>`;
+                weekHtml += `<div class="match-row"><div class="match-info" style="justify-content:flex-start; flex:1;">${m.h}</div><div style="flex:0 0 100px; text-align:center;">${center}</div><div class="match-info" style="justify-content:flex-end; flex:1;">${m.a}</div><div class="stadium-info">${m.s}</div></div>`;
+                if (i === fixtureData.length - 1) { weekHtml += `</div></div>`; grid.innerHTML += weekHtml; }
+            });
+
+            let statsMap = {};
+            teamDetails.forEach(t => { statsMap[t.name] = { name: t.name, logo: t.logo, om:0, g:0, b:0, m:0, ag:0, yg:0, av:0, p:0 }; });
+            fixtureData.forEach(m => {
+                if (m.hs != null && m.as != null) {
+                    let h = statsMap[m.h]; let a = statsMap[m.a];
+                    if(h && a) {
+                        h.om++; a.om++; h.ag += parseInt(m.hs); h.yg += parseInt(m.as); a.ag += parseInt(m.as); a.yg += parseInt(m.hs);
+                        if (m.hs > m.as) { h.g++; h.p += 3; a.m++; } else if (m.as > m.hs) { a.g++; a.p += 3; h.m++; } else { h.b++; h.p++; a.b++; a.p++; }
+                        h.av = h.ag - h.yg; a.av = a.ag - a.yg;
+                    }
+                }
+            });
+
+            let sortedStats = Object.values(statsMap).sort((a, b) => b.p - a.p || b.av - a.av || b.ag - a.ag);
+            document.getElementById('standings-body').innerHTML = sortedStats.map((t, i) => {
+                const rank = i + 1;
+                let barColor = "transparent";
+                if (rank <= 2) barColor = "#0E1E5B"; else if (rank <= 4) barColor = "#D85C00"; else if (rank === 5) barColor = "#06c222"; else if (rank > sortedStats.length - 3) barColor = "red";
+                return `<tr style="box-shadow: inset 5px 0 0 0 ${barColor};"><td>${rank}</td><td style="text-align:left; display:flex; align-items:center;"><div class="team-logo-btn" style="width:50px; height:50px; background-size:70%; margin-right:10px; border:none; background-image:url('${t.logo}'); background-color:#eee;" onclick="showTeam('${t.name}')"></div>${t.name}</td><td>${t.om}</td><td>${t.g}</td><td>${t.b}</td><td>${t.m}</td><td>${t.av}</td><td style="color:var(--pink-accent); font-weight:800;">${t.p}</td></tr>`;
+            }).join('');
+
+            window.scrollTo(0, scrollPos);
+            if(activeId) { const el = document.getElementById(activeId); if(el) el.focus(); }
+        }
+
+        window.showView = function(view, el) {
+            ['main-view', 'standings-view', 'team-view'].forEach(id => document.getElementById(id).style.display = 'none');
+            if(el) { document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active')); el.classList.add('active'); }
+            if(view === 'main') { document.getElementById('main-view').style.display = 'block'; document.querySelector('.team-selector-container').style.display = 'block'; }
+            if(view === 'standings') { document.getElementById('standings-view').style.display = 'block'; document.querySelector('.team-selector-container').style.display = 'none'; }
+            if(view === 'team') { document.getElementById('team-view').style.display = 'block'; document.querySelector('.team-selector-container').style.display = 'block'; }
+        }
+
+        window.showMainView = function() { showView('main', document.querySelector('.nav-btn:first-child')); }
+
+        window.toggleAdmin = function() {
+            if (isAdmin) { isAdmin = false; } 
+            else { let input = prompt("Lütfen Yönetici Şifresini Girin:"); if (input === ADMIN_PASSWORD) isAdmin = true; else return; }
+            const btn = document.getElementById('admin-toggle');
+            btn.innerText = isAdmin ? "⚙️ DÜZENLEME MODU: AÇIK" : "⚙️ YÖNETİCİ GİRİŞİ";
+            btn.classList.toggle('on', isAdmin);
+            
+            document.getElementById('reset-db-btn').style.display = isAdmin ? 'block' : 'none';
+            renderAll();
+        }
+
+        window.resetDatabase = function() {
+            if(!isAdmin) return;
+            if(confirm("DİKKAT: Tüm skorlar ve fikstür sıfırlanıp varsayılan listeye dönecek. Bu işlem geri alınamaz!")) {
+                set(ref(db, 'fixtures'), defaultFixtureData);
+                alert("Veritabanı sıfırlandı!");
+                location.reload();
             }
         }
 
-        function changeCup(cup, btn) {
-            activeCup = cup;
-            currentView = cup === 'federasyon' ? 'league' : 'giyotin'; // Varsayılan görünümler
-            
-            document.querySelectorAll('.cup-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const themes = {
-                'federasyon': { b: '#f5f7fa', d: '#c3cfe2', a: '#003366', t: 'FEDERASYON KUPASI' },
-                'sampiyonlar': { b: '#091442', d: '#3562A6', a: '#3562A6', t: 'CHAMPIONS LEAGUE' },
-                'uefa': { b: '#0D0D0D', d: '#F47E01', a: '#F47E01', t: 'EUROPA LEAGUE' },
-                'konferans': { b: '#000000', d: '#03c221', a: '#03c221', t: 'CONFERENCE LEAGUE' }
-            };
-            const th = themes[cup];
-            document.documentElement.style.setProperty('--bg-base', th.b);
-            document.documentElement.style.setProperty('--bg-detail', th.d);
-            document.documentElement.style.setProperty('--accent', th.a);
-            document.documentElement.style.setProperty('--text-color', cup === 'federasyon' ? '#2c3e50' : '#ffffff');
-            document.documentElement.style.setProperty('--card-bg', cup === 'federasyon' ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.08)');
-            document.documentElement.style.setProperty('--sidebar-bg', cup === 'federasyon' ? '#ffffff' : 'rgba(0,0,0,0.4)');
-            
-            document.getElementById('main-title').innerText = th.t;
-            document.getElementById('cup-logo').src = `../logolar/${cup}.png`;
-            
-            // Tab butonlarını ayarla
-            const tabArea = document.getElementById('tab-area');
-            if(cup === 'federasyon') { tabArea.style.display = 'none'; } 
-            else { 
-                tabArea.style.display = 'flex'; 
-                // Tab butonlarını resetle
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelector('.tab-btn:first-child').classList.add('active');
-            }
-            renderContent();
-        }
-
-        function switchView(view, btn) {
-            currentView = view;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderContent();
-        }
-
-        window.onload = loadData;
+        document.getElementById('logo-grid').innerHTML = teamDetails.sort((a,b) => a.name.localeCompare(b.name)).map(t => `<div class="team-logo-btn" style="background-image:url('${t.logo}')" onclick="showTeam('${t.name}')"></div>`).join('');
     </script>
 </body>
 </html>
