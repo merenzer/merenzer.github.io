@@ -6,37 +6,54 @@
     <title>Transfer Borsası</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <style>
-        body { background-color: #202225; color: #dcddde; font-family: sans-serif; margin: 0; padding: 20px; }
+        body { background-color: #202225; color: #dcddde; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         img.emoji { height: 1em; width: 1em; margin: 0 .05em 0 .1em; vertical-align: -0.1em; }
+        
         .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: #202225; padding: 10px 0; z-index: 100; border-bottom: 2px solid #2f3136; }
-        h1 { color: #5865F2; margin: 0 0 15px 0; text-transform: uppercase; }
-        .search-box { padding: 12px; width: 300px; border-radius: 5px; border: none; background-color: #40444b; color: white; font-size: 16px; outline: none; }
-        .filters { margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .filter-btn { background-color: #2f3136; border: 1px solid #5865F2; color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+        h1 { color: #5865F2; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .search-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .search-box { padding: 12px; width: 300px; border-radius: 8px; border: 1px solid #2f3136; background-color: #40444b; color: white; font-size: 16px; outline: none; }
+        
+        .filters { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .filter-btn { background-color: #2f3136; border: 1px solid #5865F2; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         .filter-btn:hover, .filter-btn.active { background-color: #5865F2; }
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background-color: #2f3136; border-radius: 8px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s; position: relative; overflow: hidden; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .player-id { font-size: 10px; color: #72767d; }
-        .flag-icon { font-size: 24px; }
-        .player-name { font-size: 18px; font-weight: bold; color: #fff; margin: 5px 0; }
-        .player-info { font-size: 13px; color: #b9bbbe; margin-bottom: 10px; }
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; margin-right: 5px; }
+
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        
+        .card { background-color: #2f3136; border-radius: 10px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .player-id { font-size: 11px; color: #72767d; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
+        .flag-icon { font-size: 22px; }
+        
+        .player-name { font-size: 18px; font-weight: bold; color: #fff; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-info { font-size: 13px; color: #b9bbbe; margin-bottom: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
+        
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
         .badge-pos { background-color: #5865F2; }
         .badge-age { background-color: #4f545c; }
-        .price-tag { margin-top: 15px; text-align: right; font-size: 16px; font-weight: bold; color: #3ba55c; }
+        
+        .comment { font-size: 12px; color: #96989d; font-style: italic; margin-top: auto; padding-top: 10px; border-top: 1px solid #383c42; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card:hover .comment { -webkit-line-clamp: 10; overflow: visible; background: #2f3136; position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; border-top: 2px solid #5865F2; z-index: 10; }
+
+        .price-tag { position: absolute; bottom: 15px; right: 15px; font-size: 16px; font-weight: bold; color: #3ba55c; background: #202225; padding: 4px 8px; border-radius: 4px; }
+        .card:hover .price-tag { display: none; } /* Hoverda yorum görünsün diye fiyatı gizle */
+
         .status-free { border-left-color: #ed4245; }
         .status-contract { border-left-color: #3ba55c; }
-        .comment { font-size: 12px; color: #aaa; font-style: italic; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card:hover .comment { white-space: normal; }
+        
+        #error-msg { text-align: center; width: 100%; color: #ed4245; margin-top: 50px; font-size: 18px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>🏆 Oyuncu Veritabanı</h1>
-        <input type="text" id="searchInput" class="search-box" placeholder="İsim ara..." onkeyup="filterPlayers()">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="İsim ara..." onkeyup="filterPlayers()">
+        </div>
         <div class="filters">
             <button class="filter-btn active" onclick="filterPosition('all')">Tümü</button>
             <button class="filter-btn" onclick="filterPosition('KL')">Kale</button>
@@ -46,16 +63,13 @@
         </div>
     </div>
 
+    <div id="error-msg">⚠️ Veriler yüklenemedi. Lütfen kodun içindeki veri alanını kontrol edin.</div>
+
     <div class="player-grid" id="grid">
-        <p style="text-align:center; width:100%; color:red;">Veriler yükleniyor... Eğer bu yazı kalıyorsa kod hatası vardır.</p>
+        <p style="text-align:center; width:100%; color:#888;">Veriler işleniyor...</p>
     </div>
 
-    <script>
-        // ============================================================
-        // AŞAĞIDAKİ TERS TIRNAKLARIN (`) İÇİNE LİSTEYİ YAPIŞTIR
-        // BAŞTAKİ VE SONDAKİ ` İŞARETİNİ SAKIN SİLME!
-        // ============================================================
-        const HAM_VERI = `
+    <textarea id="raw-data" style="display:none;">
 ID: 1 | Julián Cordoba
 Ülke: Bolivya 🇧🇴 Mevki: OOS (Ofansif Orta Saha) | Yaş: 22 | CA: 123 | PA: 124 Durum: (Sözleşmeli) Piyasa Değeri: €3.5 Milyon | Maaş: €400.000 / yıl Yorum: Bolivya'dan çıkan nadir yeteneklerden. Gelişimi neredeyse tamamlanmış (124 PA). Agresif yapısıyla rakip savunmayı rahatsız eder. İyi bir yedek 10 numara.
 
@@ -8580,18 +8594,21 @@ Teknik Refleksler82 HavaTopu80 BireBir80 ElleKontrol80 BölgeHakimiyeti78 Yumruk
 Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlılık75 Cesaret80 TakımOyunu75 Sezgi70 Çalışkanlık75 KararAlma70
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
-        `; 
-        // ============================================================
 
+    </textarea>
+    <script>
         function parseData() {
             try {
-                if(!HAM_VERI || HAM_VERI.length < 10) {
-                    console.error("Veri boş veya hatalı!");
-                    return;
+                // Veriyi gizli kutudan çekiyoruz (Hata riskini sıfırlar)
+                const rawDataInput = document.getElementById("raw-data").value;
+                
+                if(!rawDataInput || rawDataInput.length < 20) {
+                    throw new Error("Veri alanı boş!");
                 }
 
-                const rawList = HAM_VERI.split("ID: ");
+                const rawList = rawDataInput.split("ID: ");
                 let gridHTML = "";
+                let count = 0;
 
                 rawList.forEach(item => {
                     if(item.trim() === "") return;
@@ -8602,7 +8619,9 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let id = firstLine[0].trim();
                         let name = firstLine[1] ? firstLine[1].trim() : "İsimsiz";
 
+                        // Detayları Yakala
                         let fullText = item;
+                        
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
@@ -8619,7 +8638,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let durumClass = fullText.includes("SERBEST") ? "status-free" : "status-contract";
                         
                         let yorumMatch = fullText.match(/Yorum: (.*)/);
-                        let yorum = yorumMatch ? yorumMatch[1] : "";
+                        let yorum = yorumMatch ? yorumMatch[1] : "Yorum yok.";
 
                         // Pozisyon Gruplama
                         let posGroup = "all";
@@ -8628,31 +8647,40 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         else if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) posGroup = "OS";
                         else if(mevki.includes("SNT") || mevki.includes("Kanat")) posGroup = "SNT";
 
-                        gridHTML += \`
-                            <div class="card \${durumClass}" data-pos="\${posGroup}">
+                        gridHTML += `
+                            <div class="card ${durumClass}" data-pos="${posGroup}">
                                 <div class="card-header">
-                                    <span class="player-id">#\${id}</span>
-                                    <span class="flag-icon">\${flagEmoji}</span>
+                                    <span class="player-id">#${id}</span>
+                                    <span class="flag-icon">${flagEmoji}</span>
                                 </div>
-                                <div class="player-name">\${name}</div>
+                                <div class="player-name">${name}</div>
                                 <div class="player-info">
-                                    <span class="badge badge-pos">\${mevki}</span>
-                                    <span class="badge badge-age">\${yas} Yaş</span>
+                                    <span class="badge badge-pos">${mevki}</span>
+                                    <span class="badge badge-age">${yas} Yaş</span>
                                 </div>
-                                <div class="comment">\${yorum}</div>
-                                <div class="price-tag">\${deger}</div>
+                                <div class="comment">${yorum}</div>
+                                <div class="price-tag">${deger}</div>
                             </div>
-                        \`;
+                        `;
+                        count++;
                     } catch (err) {
-                        console.log("Bir oyuncu kartı oluşturulamadı (Hata önlendi): ", err);
+                        console.warn("Satır atlandı:", err);
                     }
                 });
 
-                document.getElementById("grid").innerHTML = gridHTML;
-                twemoji.parse(document.body);
+                if(count > 0) {
+                    document.getElementById("grid").innerHTML = gridHTML;
+                    twemoji.parse(document.body);
+                } else {
+                    throw new Error("Hiç oyuncu bulunamadı.");
+                }
 
             } catch (mainErr) {
-                alert("Veri işlenirken genel bir hata oldu: " + mainErr);
+                console.error(mainErr);
+                document.getElementById("grid").innerHTML = "";
+                const errorBox = document.getElementById("error-msg");
+                errorBox.style.display = "block";
+                errorBox.innerHTML = "⚠️ HATA: " + mainErr.message;
             }
         }
 
@@ -8661,7 +8689,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             let cards = document.getElementsByClassName("card");
             for (let i = 0; i < cards.length; i++) {
                 let name = cards[i].querySelector(".player-name").innerText;
-                if (name.toUpperCase().indexOf(input) > -1) cards[i].style.display = "";
+                if (name.toUpperCase().indexOf(input) > -1) cards[i].style.display = "flex";
                 else cards[i].style.display = "none";
             }
         }
@@ -8674,7 +8702,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
             for (let i = 0; i < cards.length; i++) {
                 let cardPos = cards[i].getAttribute("data-pos");
-                if (pos === 'all' || cardPos === pos) cards[i].style.display = "";
+                if (pos === 'all' || cardPos === pos) cards[i].style.display = "flex";
                 else cards[i].style.display = "none";
             }
         }
