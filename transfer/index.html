@@ -6,82 +6,184 @@
     <title>Transfer Borsası</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
  <style>
-        :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; }
-        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
+        :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; --gold: #faa61a; }
+        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; padding-bottom: 60px; /* Ticker için boşluk */ }
         
-        /* Emoji ve Bayrak Ayarları */
+        /* Temel Bileşenler */
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 2px; vertical-align: -0.2em; }
-        .custom-flag { height: 24px !important; width: auto !important; margin-left: 4px; vertical-align: middle; position: relative; top: -2px; }
+        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: var(--bg-dark); padding: 10px 0; z-index: 80; border-bottom: 2px solid #2f3136; display: flex; flex-direction: column; gap: 10px; }
+        h1 { color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         
-        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: var(--bg-dark); padding: 10px 0; z-index: 90; border-bottom: 2px solid #2f3136; }
-        h1 { color: var(--accent); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
+        /* Giriş Ekranı (Login Overlay) */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202225; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .login-box { background: #2f3136; padding: 40px; border-radius: 10px; text-align: center; border: 2px solid var(--accent); width: 300px; }
+        .login-input { padding: 10px; width: 80%; margin-bottom: 15px; border-radius: 5px; border: 1px solid #40444b; background: #202225; color: white; text-align: center; font-size: 16px; }
+        .login-btn { background: var(--success); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
         
-        .search-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        /* Admin Paneli & Üst Bar */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 10px; }
+        .user-info { font-weight: bold; color: var(--gold); }
+        .admin-controls { display: none; gap: 10px; } /* Varsayılan gizli */
+        .admin-btn { background: var(--danger); color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        
+        /* Grid ve Kartlar */
+        .search-container { display: flex; justify-content: center; gap: 10px; }
         .search-box { padding: 12px; width: 300px; border-radius: 8px; border: 1px solid #2f3136; background-color: #40444b; color: white; font-size: 16px; outline: none; }
         .filters { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
         .filter-btn { background-color: #2f3136; border: 1px solid var(--accent); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         .filter-btn:hover, .filter-btn.active { background-color: var(--accent); }
-
-        /* KART TASARIMI (LİSTE GÖRÜNÜMÜ) */
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: transform 0.2s, background 0.2s; display: flex; align-items: center; justify-content: space-between; }
+        
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: space-between; position: relative; }
         .card:hover { transform: translateY(-3px); background-color: #36393f; }
         .card-left { display: flex; flex-direction: column; gap: 5px; }
-        .card-right { text-align: right; }
         .player-name { font-size: 16px; font-weight: bold; color: #fff; }
         .player-meta { font-size: 12px; color: #b9bbbe; display: flex; align-items: center; gap: 5px; }
+        
+        /* Kayan Yazı (Ticker) */
+        .news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px 0; white-space: nowrap; overflow: hidden; z-index: 99; border-top: 2px solid #fff; }
+        .ticker-content { display: inline-block; padding-left: 100%; animation: ticker 20s linear infinite; font-weight: bold; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+        /* Modal Stilleri */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background-color: #2f3136; width: 90%; max-width: 700px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 20px; position: relative; border: 1px solid #40444b; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; }
+        
+        /* Profil Detayları */
+        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 15px; }
+        .profile-avatar { font-size: 40px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; }
+        .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #40444b; padding: 2px 0; }
+        .val-high { color: var(--success); font-weight: bold; }
+        .val-med { color: var(--gold); }
+        .val-low { color: var(--danger); }
+
+        .action-area { margin-top: 20px; text-align: center; }
+        .main-btn { background: var(--accent); color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px; }
+        .offer-input { padding: 10px; width: 60%; border-radius: 5px; border: 1px solid #444; background: #222; color: white; margin-right: 5px; display: none; } /* Başlangıçta gizli */
+        .confirm-btn { background: var(--success); padding: 10px; border: none; border-radius: 5px; color: white; cursor: pointer; display: none; }
+
         .status-free { border-left-color: var(--danger); }
         .status-contract { border-left-color: var(--success); }
         
-        /* MODAL (PROFIL PENCERESİ) TASARIMI */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background-color: #2f3136; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 12px; overflow-y: auto; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 1px solid #40444b; }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; z-index: 10; }
-        
-        /* Profil Başlık */
-        .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 25px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
-        .profile-avatar { width: 80px; height: 80px; background: #40444b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 2px solid var(--accent); }
-        .profile-info h2 { margin: 0; font-size: 24px; color: white; display: flex; align-items: center; gap: 10px; }
-        .profile-details { display: flex; gap: 15px; margin-top: 10px; font-size: 14px; color: #b9bbbe; flex-wrap: wrap; }
-        .detail-item { background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 4px; }
-        
-        /* Bulanık Alan (Scout Edilmemiş) */
-        .blur-container { padding: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
-        .blur-text { font-size: 18px; margin-bottom: 20px; color: #aaa; }
-        .scout-btn { background-color: var(--accent); color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; }
-        .scout-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
-        .scout-btn:disabled { background-color: #3ba55c; cursor: default; transform: none; box-shadow: none; }
-
-        /* Profil İçeriği (Scout Edilmiş) */
-        .full-profile { display: none; padding: 20px; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .stat-category h3 { color: var(--accent); border-bottom: 1px solid #40444b; padding-bottom: 5px; font-size: 16px; margin-bottom: 10px; }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
-        .stat-val { font-weight: bold; width: 25px; text-align: right; }
-        
-        /* Renkli Statlar */
-        .val-high { color: #3ba55c; } /* 16-20 */
-        .val-med { color: #faa61a; } /* 11-15 */
-        .val-low { color: #ed4245; } /* 1-10 */
-        .val-super { color: #5865F2; text-shadow: 0 0 5px #5865F2; } /* 80+ özel */
-
-        .report-box { background: #202225; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin-top: 20px; }
-        .report-title { font-weight: bold; margin-bottom: 5px; color: white; }
-        .report-text { font-style: italic; color: #dcddde; line-height: 1.5; font-size: 14px; }
-        
-        .market-info { display: flex; justify-content: space-between; background: #202225; padding: 15px; border-radius: 8px; margin-top: 20px; }
-        .market-item { text-align: center; width: 48%; }
-        .market-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
-        .market-value { font-size: 18px; font-weight: bold; color: var(--success); }
-
-        /* Yükleniyor Animasyonu */
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Teklif Listesi Tablosu */
+        .offer-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .offer-table th { text-align: left; color: var(--gold); border-bottom: 1px solid #555; padding: 5px; }
+        .offer-table td { padding: 8px 5px; border-bottom: 1px solid #444; }
     </style>
 </head>
 <body>
+<div id="loginScreen" class="login-overlay">
+        <div class="login-box">
+            <h2 style="color:#5865F2; margin-bottom:20px;">MENAJER GİRİŞİ</h2>
+            <p style="color:#aaa; font-size:12px; margin-bottom:15px;">Takım şifrenizi giriniz</p>
+            <input type="password" id="passwordInput" class="login-input" placeholder="Şifre...">
+            <button class="login-btn" onclick="loginSystem()">GİRİŞ YAP</button>
+            <p id="loginError" style="color:red; font-size:12px; margin-top:10px; display:none;">Hatalı şifre!</p>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="top-bar">
+            <div class="user-info" id="userDisplay">👤 Misafir</div>
+            <div class="admin-controls" id="adminPanel">
+                <button class="admin-btn" onclick="openOffersModal()">📋 Tüm Teklifler</button>
+                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTAYI İLERLET (BOTLAR)</button>
+            </div>
+        </div>
+        <h1>🏆 Transfer Borsası</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Oyuncu ara..." onkeyup="filterPlayers()">
+        </div>
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterPosition('all')">Tümü</button>
+            <button class="filter-btn" onclick="filterPosition('KL')">Kale</button>
+            <button class="filter-btn" onclick="filterPosition('STP')">Defans</button>
+            <button class="filter-btn" onclick="filterPosition('OS')">Orta Saha</button>
+            <button class="filter-btn" onclick="filterPosition('SNT')">Forvet</button>
+        </div>
+    </div>
+
+    <div id="error-msg">⚠️ Veri hatası! Lütfen kodun içindeki listeyi kontrol et.</div>
+
+    <div class="player-grid" id="grid">
+        <p style="text-align:center; width:100%; color:#888;">Veriler yükleniyor...</p>
+    </div>
+
+    <div class="news-ticker">
+        <div class="ticker-content" id="newsTicker">
+            🔥 TRANSFER BORSASI AÇILDI! TAKIMLAR TEKLİFLERİNİ HAZIRLIYOR... 🔥 SON DAKİKA: YILDIZ OYUNCULAR GÖRÜCÜYE ÇIKTI...
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal(null)">&times;</span>
+            <div class="profile-header">
+                <div class="profile-avatar" id="modalFlag">🌍</div>
+                <div>
+                    <h2 id="modalName" style="color:white; margin:0;">Oyuncu Adı</h2>
+                    <div style="color:#aaa; font-size:14px;" id="modalMeta">Mevki - Yaş</div>
+                </div>
+            </div>
+
+            <div id="unscoutedView" style="text-align:center; padding:30px;">
+                <p style="color:#aaa;">Bu oyuncu hakkında detaylı bilgiye sahip değilsiniz.</p>
+                <button class="main-btn" onclick="scoutCurrentPlayer()" id="btnScout">🕵️ Gözlemci Gönder</button>
+            </div>
+
+            <div id="scoutedView" style="display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; background:#222; padding:10px; border-radius:5px;">
+                    <div style="text-align:center;">
+                        <div style="font-size:11px; color:#aaa;">Değer</div>
+                        <div style="color:#3ba55c; font-weight:bold;" id="modalValue">?</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:11px; color:#aaa;">Maaş</div>
+                        <div style="color:#faa61a; font-weight:bold;" id="modalWage">?</div>
+                    </div>
+                </div>
+                
+                <div style="background:#222; padding:10px; border-radius:5px; margin-bottom:15px; font-style:italic; color:#ccc;" id="modalComment">...</div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <div><h4 style="color:#5865F2; border-bottom:1px solid #444;">Teknik</h4><div id="techStats"></div></div>
+                    <div><h4 style="color:#5865F2; border-bottom:1px solid #444;">Zihinsel</h4><div id="mentalStats"></div></div>
+                    <div><h4 style="color:#5865F2; border-bottom:1px solid #444;">Fiziksel</h4><div id="physStats"></div></div>
+                </div>
+
+                <div class="action-area" id="offerArea">
+                    <button class="main-btn" style="background:#2d7d46; margin-top:20px;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>
+                    <div id="offerInputs" style="display:none; margin-top:10px;">
+                        <input type="number" id="offerAmount" class="offer-input" placeholder="Bonservis (€)...">
+                        <button class="confirm-btn" onclick="submitOffer()">Gönder</button>
+                    </div>
+                    <p id="offerStatus" style="margin-top:10px; font-weight:bold;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="offersModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeOffersModal()">&times;</span>
+            <h2 style="color:white;">📋 Transfer Hareketleri</h2>
+            <table class="offer-table">
+                <thead>
+                    <tr>
+                        <th>Takım</th>
+                        <th>Oyuncu</th>
+                        <th>Teklif</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 <div id="profileModal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal(null)">&times;</span>
@@ -8688,7 +8790,109 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
     </textarea>
 
 <script>
-        // KAPSAMLI BAYRAK HARİTASI
+        // --- AYARLAR VE VERİTABANI ---
+        
+        // 1. TAKIM ŞİFRELERİ (Burayı Kafana Göre Düzenle)
+        const teamCredentials = {
+            "admin": { name: "YÖNETİCİ", role: "admin" },
+            "kayısı": { name: "Kayserispor", role: "user" },
+            "fırtına": { name: "Trabzonspor", role: "user" },
+            "kartal": { name: "Beşiktaş", role: "user" },
+            "aslan": { name: "Galatasaray", role: "user" },
+            "kanarya": { name: "Fenerbahçe", role: "user" },
+            "timsah": { name: "Bursaspor", role: "user" },
+            "şimşek": { name: "Adana Demirspor", role: "user" }
+        };
+
+        // Bot Takımlar (Sisteme kayıtlı olmayan ama teklif yapacak takımlar)
+        const botTeams = ["Başakşehir", "Konyaspor", "Antalyaspor", "Sivasspor", "Alanyaspor", "Kasımpaşa"];
+
+        // Oyun Durumu
+        let currentUser = null; // Giriş yapan kullanıcı
+        let playerDB = {};
+        let currentPlayerId = null;
+        let offersDB = []; // Yapılan tüm teklifler burada tutulur
+
+        // --- GİRİŞ SİSTEMİ ---
+        function loginSystem() {
+            const input = document.getElementById("passwordInput").value.toLowerCase();
+            const errorMsg = document.getElementById("loginError");
+
+            if (teamCredentials[input]) {
+                currentUser = teamCredentials[input];
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("userDisplay").innerText = "👤 " + currentUser.name;
+                
+                // Eğer Admin ise kontrol panelini aç
+                if (currentUser.role === "admin") {
+                    document.getElementById("adminPanel").style.display = "flex";
+                    document.getElementById("userDisplay").style.color = "#ed4245"; // Admin kırmızı görünür
+                }
+            } else {
+                errorMsg.style.display = "block";
+            }
+        }
+
+        // --- BOT SİSTEMİ VE HAFTAYI İLERLETME ---
+        function advanceGame() {
+            if (currentUser.role !== "admin") return;
+
+            // Rastgele Bot Teklifleri Oluştur
+            let newOffersCount = 0;
+            const keys = Object.keys(playerDB);
+            
+            // 3-5 arası rastgele bot teklifi oluştur
+            const numOffers = Math.floor(Math.random() * 3) + 3;
+
+            for(let i=0; i<numOffers; i++) {
+                // Rastgele oyuncu seç
+                const randId = keys[Math.floor(Math.random() * keys.length)];
+                const player = playerDB[randId];
+                // Rastgele takım seç
+                const randTeam = botTeams[Math.floor(Math.random() * botTeams.length)];
+                
+                // Rastgele fiyat (Değerin %80'i ile %150'si arası)
+                // Değeri metinden sayıya çevirmek zor olduğu için basit simülasyon yapıyoruz
+                let baseVal = player.ca * 100000; 
+                let offerVal = Math.floor(baseVal * (0.8 + Math.random() * 0.7));
+                let offerStr = `€${(offerVal/1000000).toFixed(1)}M`;
+
+                // Teklifi kaydet
+                offersDB.push({
+                    team: randTeam,
+                    playerName: player.name,
+                    playerId: player.id,
+                    offer: offerStr,
+                    status: "Bekliyor",
+                    isBot: true
+                });
+                newOffersCount++;
+            }
+
+            alert(`${newOffersCount} adet yeni bot teklifi oluşturuldu!`);
+            updateTicker();
+        }
+
+        // --- HABER BANDI (TICKER) GÜNCELLEME ---
+        function updateTicker() {
+            const ticker = document.getElementById("newsTicker");
+            if(offersDB.length === 0) return;
+
+            // Son 5 teklifi al ve bültene yaz
+            let latestOffers = offersDB.slice(-5).reverse();
+            let text = "";
+            latestOffers.forEach(o => {
+                text += ` 🔥 SON DAKİKA: ${o.team}, ${o.playerName} için ${o.offer} önerdi! `;
+            });
+            
+            ticker.innerHTML = text + text; // Döngü pürüzsüz olsun diye iki kere yaz
+        }
+
+        // --- OYUNCU İŞLEMLERİ ---
+        
+        // Bu kısım önceki kodların aynısı (ParseData vb.)
+        // Sadece RESİM YERİNE EMOJİ KULLANIMI entegre edildi.
+        
         const emojiMap = {
             "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱",
             "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪", "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽",
@@ -8709,10 +8913,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
-        let playerDB = {};
-        let currentPlayerId = null;
-
-        // Rastgele Fizik Üretici
         function generatePhysique(pos) {
             let height, weight;
             if (pos.includes("KL") || pos.includes("STP")) {
@@ -8742,77 +8942,54 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                     try {
                         let id = item.split("\n")[0].split("|")[0].trim();
                         let name = item.split("\n")[0].split("|")[1] ? item.split("\n")[0].split("|")[1].trim() : "İsimsiz";
-                        
                         let fullTextForStats = item.replace(/\n/g, " ");
 
-                        // YORUM AYRIŞTIRMA
                         let statsStartIndex = item.search(/(Teknik|Kalecilik|Zihinsel|Fiziksel|Duran)/);
                         let infoPart = statsStartIndex > -1 ? item.substring(0, statsStartIndex) : item;
                         let yorumMatch = infoPart.match(/Yorum:([\s\S]*?)$/);
                         let yorum = yorumMatch ? yorumMatch[1].trim() : "Rapor yok.";
 
-                        // TEMEL BİLGİLER
                         let mevkiMatch = item.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
                         let yasMatch = item.match(/Yaş: (\d+)/);
                         let yas = yasMatch ? yasMatch[1] : "--";
-                        
-                        // CA DEĞERİNİ YAKALA (Fiyat hesaplamak için lazım)
                         let caMatch = item.match(/CA: (\d+)/);
                         let ca = caMatch ? parseInt(caMatch[1]) : 100;
-
-                        // FİYAT VE MAAŞ KONTROLÜ
                         let degerMatch = item.match(/Değeri: (.*?) \|/);
                         let deger = degerMatch ? degerMatch[1].trim() : "Bilinmiyor";
-                        
                         let maasMatch = item.match(/Maaş: (.*?) (Yorum|GENÇ|$)/);
                         let maas = maasMatch ? maasMatch[1].replace("Yorum", "").trim() : "Bilinmiyor";
 
-                        // --- BAYRAK MANTIĞI (PNG İPTAL EDİLDİ, SADECE EMOJİ) ---
                         let displayFlag = "🌍"; 
                         let ulkeMatch = item.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeMatch ? ulkeMatch[1].trim() : "";
 
-                        if (ulkeRaw.length < 2) {
-                            displayFlag = "🇹🇷";
-                        } else {
+                        if (ulkeRaw.length < 2) { displayFlag = "🇹🇷"; } 
+                        else {
                             for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
-                                if (ulkeRaw.includes(countryName)) {
-                                    displayFlag = emojiCode;
-                                    break; 
-                                }
+                                if (ulkeRaw.includes(countryName)) { displayFlag = emojiCode; break; }
                             }
                         }
-                        // *BURADA ARTIK RESİM KODU YOK, SADECE EMOJİ KALIYOR*
 
-                        // ÖZELLİKLER
                         let attributes = {};
                         let attrRegex = /([a-zA-ZçÇğĞıİöÖşŞüÜ]+)(\d{2})/g;
                         let match;
                         while ((match = attrRegex.exec(fullTextForStats)) !== null) {
                             const blacklist = ["Teknik", "Zihinsel", "Fiziksel", "Kalecilik", "Duran", "Toplar"];
-                            if(!blacklist.includes(match[1])) {
-                                attributes[match[1]] = parseInt(match[2]);
-                            }
+                            if(!blacklist.includes(match[1])) { attributes[match[1]] = parseInt(match[2]); }
                         }
 
                         let physique = generatePhysique(mevki);
 
-                        // VERİTABANI
                         playerDB[id] = {
                             id, name, mevki, yas, ca,
                             flag: displayFlag,
-                            height: physique.h,
-                            weight: physique.w,
+                            height: physique.h, weight: physique.w,
                             status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
-                            value: deger,
-                            wage: maas,
-                            comment: yorum, 
-                            attributes: attributes,
-                            isScouted: false 
+                            value: deger, wage: maas, comment: yorum, 
+                            attributes: attributes, isScouted: false 
                         };
 
-                        // KART OLUŞTURMA
                         let contractColor = playerDB[id].status === "Serbest" ? "status-free" : "status-contract";
                         let freeBadge = playerDB[id].status === "Serbest" ? `<span style="color:#ed4245; font-size:12px; font-weight:bold;"> (Bedelsiz)</span>` : "";
 
@@ -8826,9 +9003,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                                         <span>${mevki}</span> • <span>${yas} Yaş</span>${freeBadge}
                                     </div>
                                 </div>
-                                <div class="card-right">
-                                    <span style="font-size:20px;">👉</span>
-                                </div>
+                                <div class="card-right"><span style="font-size:20px;">👉</span></div>
                             </div>
                         `;
                     } catch (err) { console.warn("Hata:", err); }
@@ -8843,7 +9018,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
-        // POZİSYON GRUPLAMA YARDIMCISI
         function posGroup(mevki) {
             if(mevki.includes("KL")) return "KL";
             if(mevki.includes("STP") || mevki.includes("Bek")) return "STP";
@@ -8852,31 +9026,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             return "all";
         }
 
-        // --- MODAL & GÖZLEMCİ SİSTEMİ ---
+        // --- PROFİL VE TEKLİF MANTIĞI ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
             
             document.getElementById("modalFlag").innerHTML = p.flag;
             document.getElementById("modalName").innerText = p.name;
-            document.getElementById("modalPos").innerText = p.mevki;
-            document.getElementById("modalAge").innerText = p.yas + " Yaş";
-            document.getElementById("modalHeight").innerText = p.height;
-            document.getElementById("modalWeight").innerText = p.weight;
-            document.getElementById("modalContract").innerText = p.status;
-            document.getElementById("modalContract").style.color = p.status === "Serbest" ? "#ed4245" : "#3ba55c";
+            document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight}`;
 
             if (p.isScouted) {
                 showScoutedData(p);
             } else {
-                document.getElementById("unscoutedView").style.display = "flex";
+                document.getElementById("unscoutedView").style.display = "block";
                 document.getElementById("scoutedView").style.display = "none";
-                
-                const btn = document.querySelector(".scout-btn");
-                btn.disabled = false;
-                btn.style.display = "block"; // Butonu görünür yap
-                document.getElementById("btnText").innerText = "🕵️ Gözlemci Gönder";
-                btn.style.backgroundColor = "#5865F2";
+                document.getElementById("btnScout").innerText = "🕵️ Gözlemci Gönder";
+                document.getElementById("btnScout").disabled = false;
             }
 
             document.getElementById("profileModal").style.display = "flex";
@@ -8889,12 +9054,14 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
+        function closeOffersModal() {
+            document.getElementById("offersModal").style.display = "none";
+        }
+
         function scoutCurrentPlayer() {
-            const btn = document.querySelector(".scout-btn");
-            const btnText = document.getElementById("btnText");
-            
+            const btn = document.getElementById("btnScout");
             btn.disabled = true;
-            btnText.innerHTML = `<span class="loader"></span> Rapor Hazırlanıyor...`;
+            btn.innerText = "Rapor Hazırlanıyor...";
 
             setTimeout(() => {
                 playerDB[currentPlayerId].isScouted = true;
@@ -8903,29 +9070,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }, 800); 
         }
 
-        // TEMSİLCİYLE GÖRÜŞME SİMÜLASYONU
         function contactAgent(btnElement) {
             const p = playerDB[currentPlayerId];
-            
-            // Yükleniyor efekti
-            btnElement.innerHTML = `<span class="loader" style="width:15px; height:15px; border-width:2px;"></span> Görüşülüyor...`;
+            btnElement.innerHTML = `Görüşülüyor...`;
             btnElement.disabled = true;
 
             setTimeout(() => {
-                // Fiyat Oluşturma Algoritması (CA'ya göre)
-                // CA 100 = 500K, CA 150 = 20M gibi basit bir oran
                 let baseVal = p.ca * 150000; 
-                if(p.ca > 130) baseVal = p.ca * 300000; // Yıldız oyuncu çarpanı
-                if(p.status === "Serbest") baseVal = baseVal * 0.1; // İmza parası
+                if(p.ca > 130) baseVal = p.ca * 300000;
+                if(p.status === "Serbest") baseVal = baseVal * 0.1;
 
                 let randomVal = Math.floor(baseVal + (Math.random() * 500000));
-                let randomWage = Math.floor(randomVal / 10); // Maaş genelde değerin 1/10'u
+                let randomWage = Math.floor(randomVal / 10);
 
-                // Formatlama (Milyon veya Bin)
-                let valStr = randomVal > 1000000 ? `€${(randomVal/1000000).toFixed(1)} Milyon` : `€${(randomVal/1000).toFixed(0)} Bin`;
-                let wageStr = randomWage > 1000000 ? `€${(randomWage/1000000).toFixed(1)} Milyon` : `€${(randomWage/1000).toFixed(0)} Bin`;
+                let valStr = randomVal > 1000000 ? `€${(randomVal/1000000).toFixed(1)}M` : `€${(randomVal/1000).toFixed(0)}K`;
+                let wageStr = randomWage > 1000000 ? `€${(randomWage/1000000).toFixed(1)}M` : `€${(randomWage/1000).toFixed(0)}K`;
 
-                // Ekrana Bas
                 if(p.status === "Serbest") {
                     document.getElementById("modalValue").innerHTML = `<span style="color:#ed4245">Bedelsiz</span>`;
                     document.getElementById("modalWage").innerHTML = `<span style="color:#faa61a">${wageStr} (İmza: ${valStr})</span>`;
@@ -8933,66 +9093,109 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                     document.getElementById("modalValue").innerText = valStr;
                     document.getElementById("modalWage").innerText = wageStr;
                 }
-
-                // Butonu kaldır
                 btnElement.style.display = "none";
-
             }, 1000);
         }
 
         function showScoutedData(p) {
             document.getElementById("scoutedView").style.display = "block";
             
-            // FİYAT VE MAAŞ KONTROLÜ (TEMSİLCİ BUTONU MANTIĞI)
             let valDiv = document.getElementById("modalValue");
             let wageDiv = document.getElementById("modalWage");
-            let agentBtnHTML = `<button onclick="contactAgent(this)" style="background:#faa61a; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; font-weight:bold; color:#202225; font-size:11px; margin-left:5px;">📞 Temsilci Ara</button>`;
+            let agentBtnHTML = `<button onclick="contactAgent(this)" style="background:#faa61a; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; font-weight:bold; color:#202225; font-size:11px;">📞 Temsilci</button>`;
 
-            // Değer Bilinmiyor mu?
             if (p.value === "Bilinmiyor" || p.value === "" || p.value.includes("-")) {
-                valDiv.innerHTML = `<span style="color:#888; font-size:12px;">Belirsiz</span> ${agentBtnHTML}`;
+                valDiv.innerHTML = agentBtnHTML;
             } else {
                 valDiv.innerText = p.status === "Serbest" ? "Bedelsiz" : p.value;
                 valDiv.style.color = p.status === "Serbest" ? "#ed4245" : "#3ba55c";
             }
 
-            // Maaş Bilinmiyor mu?
             if (p.wage === "Bilinmiyor" || p.wage === "" || p.wage.includes("-")) {
-                wageDiv.innerHTML = `<span style="color:#888; font-size:12px;">Belirsiz</span> ${agentBtnHTML}`;
+                wageDiv.innerHTML = agentBtnHTML;
             } else {
                 wageDiv.innerText = p.wage;
             }
             
-            // Yorum
             document.getElementById("modalComment").innerText = `"${p.comment}"`;
 
-            // Özellikleri Renklendirme ve Listeleme
+            // Özellikler HTML
             let techHTML = "", mentalHTML = "", physHTML = "";
             const mentalKeys = ["Kararlılık","Liderlik","TakımOyunu","Çalışkanlık","Cesaret","Agresiflik","Soğukkanlılık","Konsantrasyon","PozisyonAlma","Sezgi","KararAlma","Vizyon","ÖzelYetenek","Hırs","Mücadele","Sadakat"];
             const physKeys = ["Hız","Hızlanma","Güç","Dayanıklılık","Denge","Çeviklik","Zıplama","VücutZindeliği"];
 
             for (const [key, val] of Object.entries(p.attributes)) {
                 let colorClass = "val-low";
-                if(val > 80) colorClass = "val-super";
-                else if(val > 70) colorClass = "val-high";
+                if(val > 80) colorClass = "val-high";
                 else if(val > 55) colorClass = "val-med";
-                else if(val > 10) colorClass = "val-med";
 
-                let rowHTML = `
-                    <div class="stat-row">
-                        <span>${key}</span>
-                        <span class="stat-val ${colorClass}">${val}</span>
-                    </div>
-                `;
+                let rowHTML = `<div class="stat-row"><span>${key}</span><span class="${colorClass}">${val}</span></div>`;
 
                 if (physKeys.includes(key)) physHTML += rowHTML;
                 else if (mentalKeys.includes(key)) mentalHTML += rowHTML;
                 else techHTML += rowHTML;
             }
 
-            document.getElementById("techStats").innerHTML = techHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
-            document.getElementById("mentalStats").innerHTML = mentalHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
-            document.getElementById("physStats").innerHTML = physHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
+            document.getElementById("techStats").innerHTML = techHTML || "Veri yok";
+            document.getElementById("mentalStats").innerHTML = mentalHTML || "Veri yok";
+            document.getElementById("physStats").innerHTML = physHTML || "Veri yok";
+
+            // Teklif Alanını Sıfırla
+            document.getElementById("offerInputs").style.display = "none";
+            document.getElementById("btnMakeOffer").style.display = "block";
+            document.getElementById("offerStatus").innerText = "";
+        }
+
+        // --- TEKLİF YAPMA ---
+        function showOfferInputs() {
+            document.getElementById("btnMakeOffer").style.display = "none";
+            document.getElementById("offerInputs").style.display = "flex";
+        }
+
+        function submitOffer() {
+            const amount = document.getElementById("offerAmount").value;
+            if(!amount) return alert("Lütfen bir miktar girin!");
+
+            const p = playerDB[currentPlayerId];
+            
+            // Teklifi Kaydet
+            offersDB.push({
+                team: currentUser.name,
+                playerName: p.name,
+                playerId: p.id,
+                offer: `€${amount}`,
+                status: "Bekliyor",
+                isBot: false
+            });
+
+            document.getElementById("offerInputs").style.display = "none";
+            const statusText = document.getElementById("offerStatus");
+            statusText.innerText = `✅ ${currentUser.name} olarak teklifiniz iletildi!`;
+            statusText.style.color = "#3ba55c";
+
+            updateTicker();
+        }
+
+        // --- ADMİN: TÜM TEKLİFLERİ GÖR ---
+        function openOffersModal() {
+            const tbody = document.getElementById("offersTableBody");
+            tbody.innerHTML = "";
+
+            if(offersDB.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4'>Henüz teklif yok.</td></tr>";
+            } else {
+                offersDB.forEach(o => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${o.team}</td>
+                            <td>${o.playerName}</td>
+                            <td>${o.offer}</td>
+                            <td style="color:${o.status==='Bekliyor'?'#faa61a':'#3ba55c'}">${o.status}</td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById("offersModal").style.display = "flex";
         }
 
         // Filtreleme
