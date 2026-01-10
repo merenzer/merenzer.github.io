@@ -8,12 +8,20 @@
     <style>
         body { background-color: #202225; color: #dcddde; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
-        /* Emojilerin boyutu ve hizası */
+        /* Twemoji tarafından oluşturulan emojiler */
         img.emoji {
-            height: 1.5em; /* Bayrakları biraz büyüttüm */
+            height: 1.5em;
             width: 1.5em;
             margin: 0 .1em 0 .1em;
             vertical-align: -0.3em;
+        }
+
+        /* BİZİM EKLEDİĞİMİZ TÜRKİYE PNG'Sİ İÇİN AYAR */
+        .custom-flag {
+            height: 1.5em; /* Emoji ile aynı boy */
+            width: auto;
+            margin: 0 .1em;
+            vertical-align: -0.3em; /* Metin hizası */
         }
         
         .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: #202225; padding: 10px 0; z-index: 100; border-bottom: 2px solid #2f3136; }
@@ -78,7 +86,7 @@
     </div>
 
     <textarea id="raw-data" style="display:none;">
-ID: 1 | Julián Cordoba
+    ID: 1 | Julián Cordoba
 Ülke: Bolivya 🇧🇴 Mevki: OOS (Ofansif Orta Saha) | Yaş: 22 | CA: 123 | PA: 124 Durum: (Sözleşmeli) Piyasa Değeri: €3.5 Milyon | Maaş: €400.000 / yıl Yorum: Bolivya'dan çıkan nadir yeteneklerden. Gelişimi neredeyse tamamlanmış (124 PA). Agresif yapısıyla rakip savunmayı rahatsız eder. İyi bir yedek 10 numara.
 
 Teknik Pas75 Teknik72 Dribbling70 UzaktanŞut65 İlkKontrol70 Bitiricilik60 Falso70 OrtaYapma65 TopKapma50 Markaj45
@@ -8602,8 +8610,8 @@ Teknik Refleksler82 HavaTopu80 BireBir80 ElleKontrol80 BölgeHakimiyeti78 Yumruk
 Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlılık75 Cesaret80 TakımOyunu75 Sezgi70 Çalışkanlık75 KararAlma70
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
-
     </textarea>
+
     <script>
         // KAPSAMLI BAYRAK HARİTASI
         const emojiMap = {
@@ -8648,19 +8656,26 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
-                        // YENİ ALGORİTMA: Metin içinde ülke ismini ara
-                        let foundEmoji = "🌍";
+                        // VARSAYILAN EMOJİ
+                        let displayFlag = "🌍";
                         
                         // Metnin içindeki "Ülke: X" kısmını alalım
                         let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
 
-                        // Listeden kelime kelime kontrol et
+                        // ÜLKE TESPİTİ YAP
+                        let detectedCountry = "";
                         for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
                             if (ulkeRaw.includes(countryName)) {
-                                foundEmoji = emojiCode;
+                                detectedCountry = countryName;
+                                displayFlag = emojiCode; // Eşleşen emojiyi al
                                 break; 
                             }
+                        }
+
+                        // ÖZEL DURUM: Eğer ülke Türkiye ise PNG kullan
+                        if (detectedCountry === "Türkiye" || detectedCountry === "Turkey" || detectedCountry === "Turkiye") {
+                            displayFlag = `<img src="33464-turkey.png" class="custom-flag" alt="TR">`;
                         }
 
                         let yasMatch = fullText.match(/Yaş: (\d+)/);
@@ -8683,7 +8698,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                             <div class="card ${durumClass}" data-pos="${posGroup}">
                                 <div class="card-header">
                                     <span class="player-id">#${id}</span>
-                                    <span class="flag-icon">${foundEmoji}</span>
+                                    <span class="flag-icon">${displayFlag}</span>
                                 </div>
                                 <div class="player-name">${name}</div>
                                 <div class="player-info">
@@ -8700,7 +8715,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 if(count > 0) {
                     document.getElementById("grid").innerHTML = gridHTML;
-                    // SİHİRLİ KOD: Twemoji'yi zorla çalıştır
+                    // Twemoji'yi çalıştır (Sadece standart emojiler için çalışır, img etiketine dokunmaz)
                     setTimeout(() => { twemoji.parse(document.body); }, 100);
                 }
 
