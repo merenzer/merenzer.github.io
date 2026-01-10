@@ -6,15 +6,6 @@
     <title>Transfer Borsası</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <style>
-/* TÜRKİYE BAYRAĞI İÇİN KESİN AYAR */
-        .custom-flag {
-            height: 24px !important; /* 20 piksel sabit boyut verdik */
-            width: auto !important;
-            margin-left: 4px;
-            vertical-align: middle;
-            position: relative;
-            top: -2px; /* Hizayı ortalamak için ince ayar */
-        }
         body { background-color: #202225; color: #dcddde; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
         /* Twemoji tarafından oluşturulan emojiler */
@@ -8665,34 +8656,25 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
-                        // --- ÜLKE VE BAYRAK AYARLAMA KISMI ---
-                        let displayFlag = "🌍"; // Varsayılan
-                        let detectedCountry = "";
-
-                        // Metnin içindeki "Ülke: X" kısmını alalım
+                        // --- VARSAYILAN DEĞERLER ---
+                        let displayFlag = "🌍"; 
+                        
+                        // Ülke ismini metin içinden bulalım
                         let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
 
-                        // EĞER "ÜLKE:" YAZMIYORSA VEYA BOŞSA, OYUNCUYU DİREKT TÜRK KABUL ET
+                        // Eğer ülke ismi boşsa veya bulunamadıysa TÜRKİYE kabul et
                         if (ulkeRaw.length < 2) {
-                            detectedCountry = "Türkiye";
+                            displayFlag = "🇹🇷"; 
                         } else {
-                            // Listeden kelime kelime kontrol et
+                            // Haritadan eşleştir
                             for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
                                 if (ulkeRaw.includes(countryName)) {
-                                    detectedCountry = countryName;
-                                    displayFlag = emojiCode; // Normal emoji
+                                    displayFlag = emojiCode;
                                     break; 
                                 }
                             }
                         }
-
-                        // EĞER ÜLKE TÜRKİYE İSE PNG RESMİNİ BAS
-                        if (detectedCountry === "Türkiye" || detectedCountry === "Turkey" || detectedCountry === "Turkiye") {
-                            // PNG DOSYANIN ADI BURADA
-                            displayFlag = `<img src="33464-turkey.png" class="custom-flag" alt="TR">`;
-                        }
-                        // ----------------------------------------------------
 
                         let yasMatch = fullText.match(/Yaş: (\d+)/);
                         let yas = yasMatch ? yasMatch[1] : "--";
@@ -8731,6 +8713,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 if(count > 0) {
                     document.getElementById("grid").innerHTML = gridHTML;
+                    // Twemoji kütüphanesini tetikle ki emojileri düzgün göstersin
                     setTimeout(() => { twemoji.parse(document.body); }, 100);
                 }
 
