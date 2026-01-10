@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfer Borsası</title>
-    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <style>
         body { background-color: #202225; color: #dcddde; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
-        /* Bayrak Resmi Ayarı */
+        /* Emojilerin Discord gibi görünmesi için ayar */
         img.emoji {
-            height: 1.2em;
-            width: 1.2em;
+            height: 1.3em;
+            width: 1.3em;
             margin: 0 .1em 0 .1em;
-            vertical-align: -0.2em;
+            vertical-align: -0.3em;
         }
         
         .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: #202225; padding: 10px 0; z-index: 100; border-bottom: 2px solid #2f3136; }
@@ -31,10 +31,11 @@
         .card { background-color: #2f3136; border-radius: 10px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
         
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .player-id { font-size: 11px; color: #72767d; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
         
-        .flag-icon { font-size: 24px; line-height: 1; } /* Bayrak alanı */
+        /* Bayrak Emojisi Boyutu */
+        .flag-icon { font-size: 26px; line-height: 1; } 
         
         .player-name { font-size: 18px; font-weight: bold; color: #fff; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .player-info { font-size: 13px; color: #b9bbbe; margin-bottom: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
@@ -8605,6 +8606,37 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
     </textarea>
     <script>
+        // Ülke İsimleri -> GERÇEK EMOJİLER (Resim URL değil, Unicode)
+        const emojiMap = {
+            "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱",
+            "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪",
+            "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Türkiye": "🇹🇷", "Meksika": "🇲🇽",
+            "Kanada": "🇨🇦", "Jamaika": "🇯🇲", "Martinik": "🇲🇶", "Guadeloupe": "🇬🇵",
+            "Trinidad": "🇹🇹", "ABD": "🇺🇸", "Panama": "🇵🇦", "Kosta Rika": "🇨🇷",
+            "Honduras": "🇭🇳", "Çin": "🇨🇳", "Güney Kore": "🇰🇷", "Kuzey Kore": "🇰🇵",
+            "Japonya": "🇯🇵", "Avustralya": "🇦🇺", "Özbekistan": "🇺🇿", "Kazakistan": "🇰🇿",
+            "İran": "🇮🇷", "Vietnam": "🇻🇳", "Suriye": "🇸🇾", "Endonezya": "🇮🇩",
+            "Umman": "🇴🇲", "Afganistan": "🇦🇫", "Ürdün": "🇯🇴", "Malezya": "🇲🇾",
+            "Tayland": "🇹🇭", "BAE": "🇦🇪", "Katar": "🇶🇦", "Kırgızistan": "🇰🇬",
+            "Nijerya": "🇳🇬", "Kamerun": "🇨🇲", "Gana": "🇬🇭", "Fildişi": "🇨🇮",
+            "Senegal": "🇸🇳", "Mısır": "🇪🇬", "Fas": "🇲🇦", "Cezayir": "🇩🇿",
+            "Tunus": "🇹🇳", "Libya": "🇱🇾", "Zambiya": "🇿🇲", "Zimbabve": "🇿🇼",
+            "Güney Afrika": "🇿🇦", "Tanzanya": "🇹🇿", "Kenya": "🇰🇪", "Kongo": "🇨🇬",
+            "DR Kongo": "🇨🇩", "Gine": "🇬🇳", "Mali": "🇲🇱", "İtalya": "🇮🇹",
+            "İspanya": "🇪🇸", "Portekiz": "🇵🇹", "Fransa": "🇫🇷", "Almanya": "🇩🇪",
+            "Hollanda": "🇳🇱", "Belçika": "🇧🇪", "İngiltere": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "İskoçya": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "Galler": "🏴󠁧󠁢󠁷󠁬󠁳󠁿", "Kuzey İrlanda": "🇯🇪", "İrlanda": "🇮🇪", "İsviçre": "🇨🇭",
+            "Avusturya": "🇦🇹", "Polonya": "🇵🇱", "Macaristan": "🇭🇺", "Çekya": "🇨🇿",
+            "Slovakya": "🇸🇰", "Rusya": "🇷🇺", "Ukrayna": "🇺🇦", "Belarus": "🇧🇾",
+            "Romanya": "🇷🇴", "Bulgaristan": "🇧🇬", "Yunanistan": "🇬🇷", "Güney Kıbrıs": "🇨🇾",
+            "Kuzey Kıbrıs": "🇹🇷", "Sırbistan": "🇷🇸", "Hırvatistan": "🇭🇷", "Bosna": "🇧🇦",
+            "Slovenya": "🇸🇮", "Kuzey Makedonya": "🇲🇰", "Karadağ": "🇲🇪", "Kosova": "🇽🇰",
+            "Arnavutluk": "🇦🇱", "Finlandiya": "🇫🇮", "İsveç": "🇸🇪", "Norveç": "🇳🇴",
+            "Danimarka": "🇩🇰", "İzlanda": "🇮🇸", "Faroe": "🇫🇴", "Moldova": "🇲🇩",
+            "San Marino": "🇸🇲", "Cebelitarık": "🇬🇮", "Andorra": "🇦🇩", "Lihtenştayn": "🇱🇮",
+            "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
+        };
+
         function parseData() {
             try {
                 const rawDataInput = document.getElementById("raw-data").value;
@@ -8627,12 +8659,29 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
-                        // BAYRAK ÇEKME (Emojiyi yakalar)
-                        let ulkeLineMatch = fullText.match(/Ülke: (.*?) Mevki/);
-                        let ulkeText = ulkeLineMatch ? ulkeLineMatch[1] : "";
-                        // Regex ile emoji aralığını bul
-                        let flagEmoji = ulkeText.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/);
-                        let displayFlag = flagEmoji ? flagEmoji[0] : "🌍";
+                        // 1. Önce metnin içindeki orijinal emojiyi (varsa) yakalamayı dene
+                        let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s])/);
+                        let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
+                        
+                        let foundEmoji = null;
+                        
+                        // Metindeki emojiyi regex ile tara
+                        let emojiRegex = /\uD83C[\uDDE6-\uDDFF]\uD83C[\uDDE6-\uDDFF]/;
+                        let match = ulkeRaw.match(emojiRegex);
+                        if(match) {
+                            foundEmoji = match[0];
+                        } else {
+                            // Metinde emoji yoksa, Ülke İsmine göre haritadan bul
+                            for (const [key, value] of Object.entries(emojiMap)) {
+                                if (ulkeRaw.includes(key)) {
+                                    foundEmoji = value;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Hiçbiri yoksa Dünya emojisi
+                        let displayEmoji = foundEmoji || "🌍";
 
                         let yasMatch = fullText.match(/Yaş: (\d+)/);
                         let yas = yasMatch ? yasMatch[1] : "--";
@@ -8644,7 +8693,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let yorumMatch = fullText.match(/Yorum: (.*)/);
                         let yorum = yorumMatch ? yorumMatch[1] : "Yorum yok.";
 
-                        // Pozisyon Gruplama
                         let posGroup = "all";
                         if(mevki.includes("KL")) posGroup = "KL";
                         else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
@@ -8655,7 +8703,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                             <div class="card ${durumClass}" data-pos="${posGroup}">
                                 <div class="card-header">
                                     <span class="player-id">#${id}</span>
-                                    <span class="flag-icon">${displayFlag}</span>
+                                    <span class="flag-icon">${displayEmoji}</span>
                                 </div>
                                 <div class="player-name">${name}</div>
                                 <div class="player-info">
@@ -8671,13 +8719,9 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 });
 
                 if(count > 0) {
-                    const grid = document.getElementById("grid");
-                    grid.innerHTML = gridHTML;
-                    
-                    // ÖNEMLİ: DOM yüklendikten hemen sonra bayrakları resme çevir
-                    setTimeout(() => {
-                        twemoji.parse(document.body); 
-                    }, 100);
+                    document.getElementById("grid").innerHTML = gridHTML;
+                    // Discord tarzı görünüm için Twemoji'yi çalıştır
+                    setTimeout(() => { twemoji.parse(document.body); }, 50);
                 }
 
             } catch (mainErr) {
