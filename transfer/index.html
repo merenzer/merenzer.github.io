@@ -5,85 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfer Borsası</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-    <style>
-        body { background-color: #202225; color: #dcddde; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
+ <style>
+        :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; }
+        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
-        /* Emoji Ayarı */
-        img.emoji {
-            height: 1.5em;
-            width: 1.5em;
-            margin: 0 .1em;
-            vertical-align: -0.3em;
-        }
+        /* Emoji ve Bayrak Ayarları */
+        img.emoji { height: 1.2em; width: 1.2em; margin: 0 2px; vertical-align: -0.2em; }
+        .custom-flag { height: 24px !important; width: auto !important; margin-left: 4px; vertical-align: middle; position: relative; top: -2px; }
         
-        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: #202225; padding: 10px 0; z-index: 100; border-bottom: 2px solid #2f3136; }
-        h1 { color: #5865F2; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: var(--bg-dark); padding: 10px 0; z-index: 90; border-bottom: 2px solid #2f3136; }
+        h1 { color: var(--accent); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
         
         .search-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .search-box { padding: 12px; width: 300px; border-radius: 8px; border: 1px solid #2f3136; background-color: #40444b; color: white; font-size: 16px; outline: none; }
-        
         .filters { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .filter-btn { background-color: #2f3136; border: 1px solid #5865F2; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        .filter-btn:hover, .filter-btn.active { background-color: #5865F2; }
+        .filter-btn { background-color: #2f3136; border: 1px solid var(--accent); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+        .filter-btn:hover, .filter-btn.active { background-color: var(--accent); }
 
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        /* KART TASARIMI (LİSTE GÖRÜNÜMÜ) */
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: transform 0.2s, background 0.2s; display: flex; align-items: center; justify-content: space-between; }
+        .card:hover { transform: translateY(-3px); background-color: #36393f; }
+        .card-left { display: flex; flex-direction: column; gap: 5px; }
+        .card-right { text-align: right; }
+        .player-name { font-size: 16px; font-weight: bold; color: #fff; }
+        .player-meta { font-size: 12px; color: #b9bbbe; display: flex; align-items: center; gap: 5px; }
+        .status-free { border-left-color: var(--danger); }
+        .status-contract { border-left-color: var(--success); }
         
-        .card { background-color: #2f3136; border-radius: 10px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s; display: flex; flex-direction: column; gap: 10px; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        /* MODAL (PROFIL PENCERESİ) TASARIMI */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background-color: #2f3136; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 12px; overflow-y: auto; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 1px solid #40444b; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; z-index: 10; }
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .player-id { font-size: 11px; color: #72767d; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
+        /* Profil Başlık */
+        .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 25px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
+        .profile-avatar { width: 80px; height: 80px; background: #40444b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 2px solid var(--accent); }
+        .profile-info h2 { margin: 0; font-size: 24px; color: white; display: flex; align-items: center; gap: 10px; }
+        .profile-details { display: flex; gap: 15px; margin-top: 10px; font-size: 14px; color: #b9bbbe; flex-wrap: wrap; }
+        .detail-item { background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 4px; }
         
-        .player-name { font-size: 18px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* Temel Bilgiler (Görünür Kısım) */
-        .basic-info { display: flex; gap: 5px; flex-wrap: wrap; }
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
-        .badge-pos { background-color: #5865F2; }
-        .badge-age { background-color: #4f545c; }
-        .badge-free { background-color: #2d7d46; color: #fff; display: none; } /* Başlangıçta gizli, JS ile açacağız */
+        /* Bulanık Alan (Scout Edilmemiş) */
+        .blur-container { padding: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
+        .blur-text { font-size: 18px; margin-bottom: 20px; color: #aaa; }
+        .scout-btn { background-color: var(--accent); color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; }
+        .scout-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
+        .scout-btn:disabled { background-color: #3ba55c; cursor: default; transform: none; box-shadow: none; }
 
-        /* Gizli Bilgiler (Gözlemcilik Sonrası) */
-        .scout-data { 
-            display: none; /* Varsayılan olarak GİZLİ */
-            background-color: #292b2f;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 13px;
-            color: #b9bbbe;
-            border-top: 2px solid #5865F2;
-        }
-
-        .data-row { margin-bottom: 6px; }
-        .label { color: #8e9297; font-weight: bold; margin-right: 5px; }
-        .price-val { color: #3ba55c; font-weight: bold; font-size: 14px; }
-        .comment-text { font-style: italic; color: #dcddde; line-height: 1.4; }
-
-        /* Gözlemci Butonu */
-        .scout-btn {
-            background-color: #5865F2;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-            margin-top: auto; /* Kartın en altına it */
-        }
-        .scout-btn:hover { background-color: #4752c4; }
-        .scout-btn:disabled { background-color: #36393f; color: #72767d; cursor: default; }
-
-        /* Durum Renkleri */
-        .status-free { border-left-color: #ed4245; } /* Serbestse Kırmızı */
-        .status-contract { border-left-color: #3ba55c; } /* Sözleşmeliyse Yeşil */
+        /* Profil İçeriği (Scout Edilmiş) */
+        .full-profile { display: none; padding: 20px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        #error-msg { text-align: center; width: 100%; color: #ed4245; margin-top: 50px; font-size: 18px; display: none; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-category h3 { color: var(--accent); border-bottom: 1px solid #40444b; padding-bottom: 5px; font-size: 16px; margin-bottom: 10px; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+        .stat-val { font-weight: bold; width: 25px; text-align: right; }
+        
+        /* Renkli Statlar */
+        .val-high { color: #3ba55c; } /* 16-20 */
+        .val-med { color: #faa61a; } /* 11-15 */
+        .val-low { color: #ed4245; } /* 1-10 */
+        .val-super { color: #5865F2; text-shadow: 0 0 5px #5865F2; } /* 80+ özel */
+
+        .report-box { background: #202225; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin-top: 20px; }
+        .report-title { font-weight: bold; margin-bottom: 5px; color: white; }
+        .report-text { font-style: italic; color: #dcddde; line-height: 1.5; font-size: 14px; }
+        
+        .market-info { display: flex; justify-content: space-between; background: #202225; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .market-item { text-align: center; width: 48%; }
+        .market-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .market-value { font-size: 18px; font-weight: bold; color: var(--success); }
+
+        /* Yükleniyor Animasyonu */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+<div id="profileModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal(null)">&times;</span>
+            
+            <div class="profile-header">
+                <div class="profile-avatar" id="modalFlag">🌍</div>
+                <div class="profile-info">
+                    <h2 id="modalName">Oyuncu Adı</h2>
+                    <div class="profile-details">
+                        <div class="detail-item" id="modalPos">Mevki</div>
+                        <div class="detail-item" id="modalAge">Yaş</div>
+                        <div class="detail-item" id="modalHeight">Boy</div> <div class="detail-item" id="modalWeight">Kilo</div> <div class="detail-item" id="modalContract">Sözleşme</div>
+                    </div>
+                </div>
+            </div>
 
+            <div id="unscoutedView" class="blur-container">
+                <div class="blur-text">🔒 Bu oyuncunun detaylı profili henüz oluşturulmadı.</div>
+                <button class="scout-btn" onclick="scoutCurrentPlayer()">
+                    <span id="btnText">🕵️ Gözlemci Gönder</span>
+                </button>
+            </div>
+
+            <div id="scoutedView" class="full-profile">
+                <div class="market-info">
+                    <div class="market-item">
+                        <span class="market-label">Piyasa Değeri</span>
+                        <span class="market-value" id="modalValue">???</span>
+                    </div>
+                    <div class="market-item">
+                        <span class="market-label">Maaş Talebi</span>
+                        <span class="market-value" id="modalWage">???</span>
+                    </div>
+                </div>
+
+                <div class="report-box">
+                    <div class="report-title">📝 Gözlemci Notu</div>
+                    <div class="report-text" id="modalComment">...</div>
+                </div>
+
+                <h3 style="margin-top:20px; border-bottom:1px solid gray;">Özellik Analizi</h3>
+                <div class="stats-grid">
+                    <div class="stat-category">
+                        <h3>Teknik</h3>
+                        <div id="techStats"></div>
+                    </div>
+                    <div class="stat-category">
+                        <h3>Zihinsel</h3>
+                        <div id="mentalStats"></div>
+                    </div>
+                    <div class="stat-category">
+                        <h3>Fiziksel</h3>
+                        <div id="physStats"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="header">
         <h1>🏆 Transfer Borsası</h1>
         <div class="search-container">
@@ -8653,6 +8709,27 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
+        // Oyuncu Veritabanı (Parsed)
+        let playerDB = {};
+        let currentPlayerId = null; // O an açık olan oyuncu
+
+        // Rastgele Boy Kilo Üretici (Mevkiye Göre)
+        function generatePhysique(pos) {
+            let height, weight;
+            if (pos.includes("KL") || pos.includes("STP")) {
+                height = Math.floor(Math.random() * (198 - 182 + 1) + 182); // 1.82 - 1.98
+                weight = Math.floor(Math.random() * (95 - 78 + 1) + 78);
+            } else if (pos.includes("DOS") || pos.includes("OS")) {
+                height = Math.floor(Math.random() * (188 - 175 + 1) + 175); // 1.75 - 1.88
+                weight = Math.floor(Math.random() * (85 - 70 + 1) + 70);
+            } else { // Kanat ve Forvet
+                height = Math.floor(Math.random() * (185 - 168 + 1) + 168); // 1.68 - 1.85
+                weight = Math.floor(Math.random() * (82 - 65 + 1) + 65);
+            }
+            return { h: (height/100).toFixed(2) + " m", w: weight + " kg" };
+        }
+
+        // Veriyi Parse Eden Fonksiyon (Sayfa Yüklenince Çalışır)
         function parseData() {
             try {
                 const rawDataInput = document.getElementById("raw-data").value;
@@ -8660,28 +8737,40 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 const rawList = rawDataInput.split("ID: ");
                 let gridHTML = "";
-                let count = 0;
-
-                rawList.forEach((item, index) => {
+                
+                rawList.forEach(item => {
                     if(item.trim() === "") return;
 
                     try {
+                        // 1. Temel Parçalama
                         let lines = item.split("\n");
                         let firstLine = lines[0].split("|");
                         let id = firstLine[0].trim();
                         let name = firstLine[1] ? firstLine[1].trim() : "İsimsiz";
+                        let fullText = item.replace(/\n/g, " "); // Tek satıra indir
 
-                        let fullText = item;
+                        // 2. Regex ile Veri Çekme
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
+                        
+                        let yasMatch = fullText.match(/Yaş: (\d+)/);
+                        let yas = yasMatch ? yasMatch[1] : "--";
 
-                        // --- ÜLKE MANTIĞI ---
+                        let degerMatch = fullText.match(/Değeri: (.*?) \|/);
+                        let deger = degerMatch ? degerMatch[1].trim() : "Bilinmiyor";
+                        
+                        let maasMatch = fullText.match(/Maaş: (.*?) (Yorum|GENÇ|$)/);
+                        let maas = maasMatch ? maasMatch[1].replace("Yorum", "").trim() : "Bilinmiyor";
+
+                        let yorumMatch = fullText.match(/Yorum: (.*)/);
+                        let yorum = yorumMatch ? yorumMatch[1] : "Rapor yok.";
+
+                        // 3. Ülke Tespiti
                         let displayFlag = "🌍"; 
                         let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
-
                         if (ulkeRaw.length < 2) {
-                            displayFlag = "🇹🇷"; // Ülke yazmıyorsa Türk
+                            displayFlag = "🇹🇷";
                         } else {
                             for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
                                 if (ulkeRaw.includes(countryName)) {
@@ -8690,65 +8779,68 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                                 }
                             }
                         }
-                        // --------------------
+                        if (displayFlag === "🇹🇷") displayFlag = `<img src="33464-turkey.png" class="custom-flag" alt="TR">`;
 
-                        let yasMatch = fullText.match(/Yaş: (\d+)/);
-                        let yas = yasMatch ? yasMatch[1] : "--";
+                        // 4. Özellikleri Ayıklama (Teknik Pas75 Teknik72...)
+                        // Regex: Kelime ve bitişik sayı (Örn: Pas75, Hız80)
+                        let attributes = {};
+                        let attrRegex = /([a-zA-ZçÇğĞıİöÖşŞüÜ]+)(\d{2})/g;
+                        let match;
+                        while ((match = attrRegex.exec(fullText)) !== null) {
+                            // "Teknik75" gibi ana başlıkları atla, alt özellikleri al
+                            if(match[1] !== "Teknik" && match[1] !== "Zihinsel" && match[1] !== "Fiziksel" && match[1] !== "Kalecilik") {
+                                attributes[match[1]] = parseInt(match[2]);
+                            }
+                        }
 
-                        let degerMatch = fullText.match(/Değeri: (.*?) \|/);
-                        let deger = degerMatch ? degerMatch[1].trim() : "Bilinmiyor";
+                        // 5. Boy Kilo Simülasyonu
+                        let physique = generatePhysique(mevki);
 
-                        let yorumMatch = fullText.match(/Yorum: (.*)/);
-                        let yorum = yorumMatch ? yorumMatch[1] : "Rapor yok.";
+                        // 6. Veritabanına Kaydet
+                        playerDB[id] = {
+                            id, name, mevki, yas, 
+                            flag: displayFlag,
+                            height: physique.h,
+                            weight: physique.w,
+                            status: fullText.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
+                            value: deger,
+                            wage: maas,
+                            comment: yorum,
+                            attributes: attributes,
+                            isScouted: false // Başlangıçta gözlemlenmemiş
+                        };
 
-                        // SERBEST OYUNCU KONTROLÜ
-                        let isFree = fullText.includes("SERBEST");
-                        let durumClass = isFree ? "status-free" : "status-contract";
-                        let freeBadgeDisplay = isFree ? "inline-block" : "none"; // Sadece serbestse rozet göster
-
-                        // POZİSYON FİLTRELEME İÇİN
+                        // 7. Grid HTML Oluştur (Sadece Temel Bilgi)
                         let posGroup = "all";
                         if(mevki.includes("KL")) posGroup = "KL";
                         else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
                         else if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) posGroup = "OS";
                         else if(mevki.includes("SNT") || mevki.includes("Kanat")) posGroup = "SNT";
 
-                        // KART HTML YAPISI
-                        // Not: unique ID'ler veriyoruz ki JS ile açabilelim (card-1, card-2 vs)
+                        let contractColor = playerDB[id].status === "Serbest" ? "status-free" : "status-contract";
+                        let freeBadge = playerDB[id].status === "Serbest" ? `<span style="color:#ed4245; font-size:12px; font-weight:bold;"> (Bedelsiz)</span>` : "";
+
                         gridHTML += `
-                            <div class="card ${durumClass}" data-pos="${posGroup}" id="card-${count}">
-                                <div class="card-header">
-                                    <span class="player-id">#${id}</span>
-                                    <span class="flag-icon">${displayFlag}</span>
-                                </div>
-                                
-                                <div class="player-name">${name}</div>
-                                
-                                <div class="basic-info">
-                                    <span class="badge badge-pos">${mevki}</span>
-                                    <span class="badge badge-age">${yas} Yaş</span>
-                                    <span class="badge badge-free" style="display:${freeBadgeDisplay}">Bedelsiz</span>
-                                </div>
-
-                                <button class="scout-btn" onclick="revealPlayer('card-${count}')">🕵️ Gözlemci Gönder</button>
-
-                                <div class="scout-data">
-                                    ${!isFree ? `<div class="data-row"><span class="label">Bonservis:</span><span class="price-val">${deger}</span></div>` : ''}
-                                    <div class="data-row">
-                                        <div class="label">Gözlemci Raporu:</div>
-                                        <div class="comment-text">"${yorum}"</div>
+                            <div class="card ${contractColor}" data-pos="${posGroup}" onclick="openProfile('${id}')">
+                                <div class="card-left">
+                                    <div class="player-name">
+                                        <span class="flag-icon">${displayFlag}</span> ${name}
                                     </div>
+                                    <div class="player-meta">
+                                        <span>${mevki}</span> • <span>${yas} Yaş</span>${freeBadge}
                                     </div>
+                                </div>
+                                <div class="card-right">
+                                    <span style="font-size:20px;">👉</span>
+                                </div>
                             </div>
                         `;
-                        count++;
+
                     } catch (err) { console.warn("Hata:", err); }
                 });
 
-                if(count > 0) {
-                    document.getElementById("grid").innerHTML = gridHTML;
-                    setTimeout(() => { twemoji.parse(document.body); }, 100);
-                }
+                document.getElementById("grid").innerHTML = gridHTML;
+                setTimeout(() => { twemoji.parse(document.body); }, 100);
 
             } catch (mainErr) {
                 console.error(mainErr);
@@ -8756,21 +8848,119 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
-        // GÖZLEMCİ GÖNDERME FONKSİYONU
-        function revealPlayer(cardId) {
-            const card = document.getElementById(cardId);
-            const hiddenData = card.querySelector('.scout-data');
-            const btn = card.querySelector('.scout-btn');
+        // --- MODAL İŞLEMLERİ ---
 
-            // Gizli veriyi aç
-            hiddenData.style.display = 'block';
+        function openProfile(id) {
+            currentPlayerId = id;
+            const p = playerDB[id];
             
-            // Butonu güncelle
-            btn.innerHTML = "✅ Rapor Hazır";
-            btn.disabled = true; // Tekrar tıklanamasın
-            btn.style.backgroundColor = "#2d7d46"; // Yeşil yap
+            // Temel Bilgileri Doldur
+            document.getElementById("modalFlag").innerHTML = p.flag;
+            document.getElementById("modalName").innerText = p.name;
+            document.getElementById("modalPos").innerText = p.mevki;
+            document.getElementById("modalAge").innerText = p.yas + " Yaş";
+            document.getElementById("modalHeight").innerText = p.height;
+            document.getElementById("modalWeight").innerText = p.weight;
+            document.getElementById("modalContract").innerText = p.status;
+            document.getElementById("modalContract").style.color = p.status === "Serbest" ? "#ed4245" : "#3ba55c";
+
+            // Scout Durumuna Göre Görünüm
+            if (p.isScouted) {
+                showScoutedData(p);
+            } else {
+                document.getElementById("unscoutedView").style.display = "flex";
+                document.getElementById("scoutedView").style.display = "none";
+                
+                // Butonu sıfırla
+                const btn = document.querySelector(".scout-btn");
+                btn.disabled = false;
+                document.getElementById("btnText").innerText = "🕵️ Gözlemci Gönder";
+                btn.style.backgroundColor = "#5865F2";
+            }
+
+            // Modalı Aç
+            document.getElementById("profileModal").style.display = "flex";
+            setTimeout(() => { twemoji.parse(document.getElementById("modalFlag")); }, 50);
         }
 
+        function closeModal(e) {
+            // Sadece overlay'e veya X'e tıklanınca kapat
+            if (e === null || e.target.classList.contains("modal-overlay")) {
+                document.getElementById("profileModal").style.display = "none";
+            }
+        }
+
+        function scoutCurrentPlayer() {
+            const btn = document.querySelector(".scout-btn");
+            const btnText = document.getElementById("btnText");
+            
+            // Simülasyon: Yükleniyor...
+            btn.disabled = true;
+            btnText.innerHTML = `<span class="loader"></span> Rapor Hazırlanıyor...`;
+
+            setTimeout(() => {
+                // Oyuncuyu scout edildi olarak işaretle
+                playerDB[currentPlayerId].isScouted = true;
+                
+                // Verileri göster
+                document.getElementById("unscoutedView").style.display = "none";
+                showScoutedData(playerDB[currentPlayerId]);
+                
+            }, 1000); // 1 saniye bekleme süresi (gerçekçi his)
+        }
+
+        function showScoutedData(p) {
+            document.getElementById("scoutedView").style.display = "block";
+            
+            // Finansal
+            if (p.status === "Serbest") {
+                document.getElementById("modalValue").innerText = "Bedelsiz";
+                document.getElementById("modalValue").style.color = "#ed4245";
+            } else {
+                document.getElementById("modalValue").innerText = p.value;
+                document.getElementById("modalValue").style.color = "#3ba55c";
+            }
+            document.getElementById("modalWage").innerText = p.wage;
+            
+            // Yorum
+            document.getElementById("modalComment").innerText = `"${p.comment}"`;
+
+            // Özellikleri Dağıt (Teknik, Zihinsel, Fiziksel)
+            let techHTML = "", mentalHTML = "", physHTML = "";
+            
+            // Özellikleri kategorilere ayır (Basit bir mantıkla)
+            // Not: Veride kategori ayrımı olmadığı için anahtar kelimelere göre basit filtre yapıyoruz
+            // Gerçek FM datası gibi kesin ayrım zor ama görsel olarak ayırabiliriz.
+            
+            const mentalKeys = ["Kararlılık","Liderlik","TakımOyunu","Çalışkanlık","Cesaret","Agresiflik","Soğukkanlılık","Konsantrasyon","PozisyonAlma","Sezgi","KararAlma","Vizyon","ÖzelYetenek","Hırs"];
+            const physKeys = ["Hız","Hızlanma","Güç","Dayanıklılık","Denge","Çeviklik","Zıplama","VücutZindeliği"];
+
+            for (const [key, val] of Object.entries(p.attributes)) {
+                let colorClass = "val-low";
+                if(val > 80) colorClass = "val-super"; // FM skalası 1-20 değil 1-100 ise
+                else if(val > 15 && val <= 20) colorClass = "val-high"; // FM 20'lik sistemse
+                else if(val > 70) colorClass = "val-high"; // 100'lük sistem
+                else if(val > 55) colorClass = "val-med";
+                else if(val > 10) colorClass = "val-med"; // 20'lik sistem
+
+                let rowHTML = `
+                    <div class="stat-row">
+                        <span>${key}</span>
+                        <span class="stat-val ${colorClass}">${val}</span>
+                    </div>
+                `;
+
+                if (physKeys.includes(key)) physHTML += rowHTML;
+                else if (mentalKeys.includes(key)) mentalHTML += rowHTML;
+                else techHTML += rowHTML; // Geri kalanlar teknik
+            }
+
+            document.getElementById("techStats").innerHTML = techHTML;
+            document.getElementById("mentalStats").innerHTML = mentalHTML;
+            document.getElementById("physStats").innerHTML = physHTML;
+        }
+
+        // Filtreleme Fonksiyonları
         function filterPlayers() {
             let input = document.getElementById("searchInput").value.toUpperCase();
             let cards = document.getElementsByClassName("card");
