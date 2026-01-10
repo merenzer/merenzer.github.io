@@ -8709,27 +8709,26 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
-        // Oyuncu Veritabanı (Parsed)
+        // Oyuncu Veritabanı
         let playerDB = {};
-        let currentPlayerId = null; // O an açık olan oyuncu
+        let currentPlayerId = null;
 
-        // Rastgele Boy Kilo Üretici (Mevkiye Göre)
+        // Rastgele Fizik Özellikleri (Simülasyon)
         function generatePhysique(pos) {
             let height, weight;
             if (pos.includes("KL") || pos.includes("STP")) {
-                height = Math.floor(Math.random() * (198 - 182 + 1) + 182); // 1.82 - 1.98
+                height = Math.floor(Math.random() * (198 - 182 + 1) + 182); // 1.82 - 1.98 m
                 weight = Math.floor(Math.random() * (95 - 78 + 1) + 78);
             } else if (pos.includes("DOS") || pos.includes("OS")) {
-                height = Math.floor(Math.random() * (188 - 175 + 1) + 175); // 1.75 - 1.88
+                height = Math.floor(Math.random() * (188 - 175 + 1) + 175); // 1.75 - 1.88 m
                 weight = Math.floor(Math.random() * (85 - 70 + 1) + 70);
-            } else { // Kanat ve Forvet
-                height = Math.floor(Math.random() * (185 - 168 + 1) + 168); // 1.68 - 1.85
+            } else { 
+                height = Math.floor(Math.random() * (185 - 168 + 1) + 168); // 1.68 - 1.85 m
                 weight = Math.floor(Math.random() * (82 - 65 + 1) + 65);
             }
             return { h: (height/100).toFixed(2) + " m", w: weight + " kg" };
         }
 
-        // Veriyi Parse Eden Fonksiyon (Sayfa Yüklenince Çalışır)
         function parseData() {
             try {
                 const rawDataInput = document.getElementById("raw-data").value;
@@ -8737,38 +8736,50 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 const rawList = rawDataInput.split("ID: ");
                 let gridHTML = "";
-                
+                let count = 0;
+
                 rawList.forEach(item => {
                     if(item.trim() === "") return;
 
                     try {
-                        // 1. Temel Parçalama
                         let lines = item.split("\n");
                         let firstLine = lines[0].split("|");
                         let id = firstLine[0].trim();
                         let name = firstLine[1] ? firstLine[1].trim() : "İsimsiz";
-                        let fullText = item.replace(/\n/g, " "); // Tek satıra indir
+                        
+                        // Metnin tamamını tek satır yapalım (Özellikleri çekmek için kolaylık)
+                        let fullTextForStats = item.replace(/\n/g, " ");
 
-                        // 2. Regex ile Veri Çekme
-                        let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
+                        // --- 1. YORUMU TEMİZ ÇEKME ALGORİTMASI ---
+                        // Yorum kısmını özelliklerden ayırmak için "header" kısmını buluyoruz.
+                        // Özelliklerin başladığı ilk anahtar kelimeyi bul (Teknik, Kalecilik, Zihinsel vb.)
+                        let statsStartIndex = item.search(/(Teknik|Kalecilik|Zihinsel|Fiziksel|Duran)/);
+                        
+                        // Sadece özelliklerin öncesindeki kısmı al (Burada ID, isim, maaş ve Yorum var)
+                        let infoPart = statsStartIndex > -1 ? item.substring(0, statsStartIndex) : item;
+                        
+                        // Şimdi bu temizlenmiş kısım içinden Yorum'u çek
+                        let yorumMatch = infoPart.match(/Yorum:([\s\S]*?)$/); // Satır sonuna kadar al
+                        let yorum = yorumMatch ? yorumMatch[1].trim() : "Rapor yok.";
+                        // ---------------------------------------------
+
+                        let mevkiMatch = item.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
                         
-                        let yasMatch = fullText.match(/Yaş: (\d+)/);
+                        let yasMatch = item.match(/Yaş: (\d+)/);
                         let yas = yasMatch ? yasMatch[1] : "--";
 
-                        let degerMatch = fullText.match(/Değeri: (.*?) \|/);
+                        let degerMatch = item.match(/Değeri: (.*?) \|/);
                         let deger = degerMatch ? degerMatch[1].trim() : "Bilinmiyor";
                         
-                        let maasMatch = fullText.match(/Maaş: (.*?) (Yorum|GENÇ|$)/);
+                        let maasMatch = item.match(/Maaş: (.*?) (Yorum|GENÇ|$)/); // Yorum'a veya GENÇ notuna kadar al
                         let maas = maasMatch ? maasMatch[1].replace("Yorum", "").trim() : "Bilinmiyor";
 
-                        let yorumMatch = fullText.match(/Yorum: (.*)/);
-                        let yorum = yorumMatch ? yorumMatch[1] : "Rapor yok.";
-
-                        // 3. Ülke Tespiti
+                        // --- BAYRAK AYARLARI ---
                         let displayFlag = "🌍"; 
-                        let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
-                        let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
+                        let ulkeMatch = item.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
+                        let ulkeRaw = ulkeMatch ? ulkeMatch[1].trim() : "";
+
                         if (ulkeRaw.length < 2) {
                             displayFlag = "🇹🇷";
                         } else {
@@ -8781,36 +8792,36 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         }
                         if (displayFlag === "🇹🇷") displayFlag = `<img src="33464-turkey.png" class="custom-flag" alt="TR">`;
 
-                        // 4. Özellikleri Ayıklama (Teknik Pas75 Teknik72...)
-                        // Regex: Kelime ve bitişik sayı (Örn: Pas75, Hız80)
+                        // --- ÖZELLİKLERİ ÇEKME ---
                         let attributes = {};
+                        // Özelliklerin ismi ve yanındaki sayıyı yakala (Örn: Hız80)
                         let attrRegex = /([a-zA-ZçÇğĞıİöÖşŞüÜ]+)(\d{2})/g;
                         let match;
-                        while ((match = attrRegex.exec(fullText)) !== null) {
-                            // "Teknik75" gibi ana başlıkları atla, alt özellikleri al
-                            if(match[1] !== "Teknik" && match[1] !== "Zihinsel" && match[1] !== "Fiziksel" && match[1] !== "Kalecilik") {
+                        while ((match = attrRegex.exec(fullTextForStats)) !== null) {
+                            // Başlıkları (Teknik, Zihinsel vs) özellik gibi kaydetme
+                            const blacklist = ["Teknik", "Zihinsel", "Fiziksel", "Kalecilik", "Duran", "Toplar"];
+                            if(!blacklist.includes(match[1])) {
                                 attributes[match[1]] = parseInt(match[2]);
                             }
                         }
 
-                        // 5. Boy Kilo Simülasyonu
                         let physique = generatePhysique(mevki);
 
-                        // 6. Veritabanına Kaydet
+                        // Veritabanına Ekle
                         playerDB[id] = {
                             id, name, mevki, yas, 
                             flag: displayFlag,
                             height: physique.h,
                             weight: physique.w,
-                            status: fullText.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
+                            status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
                             value: deger,
                             wage: maas,
-                            comment: yorum,
+                            comment: yorum, // Artık temiz
                             attributes: attributes,
-                            isScouted: false // Başlangıçta gözlemlenmemiş
+                            isScouted: false 
                         };
 
-                        // 7. Grid HTML Oluştur (Sadece Temel Bilgi)
+                        // HTML Oluştur
                         let posGroup = "all";
                         if(mevki.includes("KL")) posGroup = "KL";
                         else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
@@ -8835,12 +8846,15 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                                 </div>
                             </div>
                         `;
+                        count++;
 
                     } catch (err) { console.warn("Hata:", err); }
                 });
 
-                document.getElementById("grid").innerHTML = gridHTML;
-                setTimeout(() => { twemoji.parse(document.body); }, 100);
+                if(count > 0) {
+                    document.getElementById("grid").innerHTML = gridHTML;
+                    setTimeout(() => { twemoji.parse(document.body); }, 100);
+                }
 
             } catch (mainErr) {
                 console.error(mainErr);
@@ -8848,13 +8862,11 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
-        // --- MODAL İŞLEMLERİ ---
-
+        // --- MODAL FONKSİYONLARI ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
             
-            // Temel Bilgileri Doldur
             document.getElementById("modalFlag").innerHTML = p.flag;
             document.getElementById("modalName").innerText = p.name;
             document.getElementById("modalPos").innerText = p.mevki;
@@ -8864,27 +8876,23 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("modalContract").innerText = p.status;
             document.getElementById("modalContract").style.color = p.status === "Serbest" ? "#ed4245" : "#3ba55c";
 
-            // Scout Durumuna Göre Görünüm
             if (p.isScouted) {
                 showScoutedData(p);
             } else {
                 document.getElementById("unscoutedView").style.display = "flex";
                 document.getElementById("scoutedView").style.display = "none";
                 
-                // Butonu sıfırla
                 const btn = document.querySelector(".scout-btn");
                 btn.disabled = false;
                 document.getElementById("btnText").innerText = "🕵️ Gözlemci Gönder";
                 btn.style.backgroundColor = "#5865F2";
             }
 
-            // Modalı Aç
             document.getElementById("profileModal").style.display = "flex";
             setTimeout(() => { twemoji.parse(document.getElementById("modalFlag")); }, 50);
         }
 
         function closeModal(e) {
-            // Sadece overlay'e veya X'e tıklanınca kapat
             if (e === null || e.target.classList.contains("modal-overlay")) {
                 document.getElementById("profileModal").style.display = "none";
             }
@@ -8894,25 +8902,19 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             const btn = document.querySelector(".scout-btn");
             const btnText = document.getElementById("btnText");
             
-            // Simülasyon: Yükleniyor...
             btn.disabled = true;
             btnText.innerHTML = `<span class="loader"></span> Rapor Hazırlanıyor...`;
 
             setTimeout(() => {
-                // Oyuncuyu scout edildi olarak işaretle
                 playerDB[currentPlayerId].isScouted = true;
-                
-                // Verileri göster
                 document.getElementById("unscoutedView").style.display = "none";
                 showScoutedData(playerDB[currentPlayerId]);
-                
-            }, 1000); // 1 saniye bekleme süresi (gerçekçi his)
+            }, 1000); 
         }
 
         function showScoutedData(p) {
             document.getElementById("scoutedView").style.display = "block";
             
-            // Finansal
             if (p.status === "Serbest") {
                 document.getElementById("modalValue").innerText = "Bedelsiz";
                 document.getElementById("modalValue").style.color = "#ed4245";
@@ -8922,26 +8924,18 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
             document.getElementById("modalWage").innerText = p.wage;
             
-            // Yorum
             document.getElementById("modalComment").innerText = `"${p.comment}"`;
 
-            // Özellikleri Dağıt (Teknik, Zihinsel, Fiziksel)
             let techHTML = "", mentalHTML = "", physHTML = "";
-            
-            // Özellikleri kategorilere ayır (Basit bir mantıkla)
-            // Not: Veride kategori ayrımı olmadığı için anahtar kelimelere göre basit filtre yapıyoruz
-            // Gerçek FM datası gibi kesin ayrım zor ama görsel olarak ayırabiliriz.
-            
-            const mentalKeys = ["Kararlılık","Liderlik","TakımOyunu","Çalışkanlık","Cesaret","Agresiflik","Soğukkanlılık","Konsantrasyon","PozisyonAlma","Sezgi","KararAlma","Vizyon","ÖzelYetenek","Hırs"];
+            const mentalKeys = ["Kararlılık","Liderlik","TakımOyunu","Çalışkanlık","Cesaret","Agresiflik","Soğukkanlılık","Konsantrasyon","PozisyonAlma","Sezgi","KararAlma","Vizyon","ÖzelYetenek","Hırs","Mücadele","Sadakat"];
             const physKeys = ["Hız","Hızlanma","Güç","Dayanıklılık","Denge","Çeviklik","Zıplama","VücutZindeliği"];
 
             for (const [key, val] of Object.entries(p.attributes)) {
                 let colorClass = "val-low";
-                if(val > 80) colorClass = "val-super"; // FM skalası 1-20 değil 1-100 ise
-                else if(val > 15 && val <= 20) colorClass = "val-high"; // FM 20'lik sistemse
-                else if(val > 70) colorClass = "val-high"; // 100'lük sistem
+                if(val > 80) colorClass = "val-super";
+                else if(val > 70) colorClass = "val-high";
                 else if(val > 55) colorClass = "val-med";
-                else if(val > 10) colorClass = "val-med"; // 20'lik sistem
+                else if(val > 10) colorClass = "val-med";
 
                 let rowHTML = `
                     <div class="stat-row">
@@ -8952,15 +8946,14 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 if (physKeys.includes(key)) physHTML += rowHTML;
                 else if (mentalKeys.includes(key)) mentalHTML += rowHTML;
-                else techHTML += rowHTML; // Geri kalanlar teknik
+                else techHTML += rowHTML;
             }
 
-            document.getElementById("techStats").innerHTML = techHTML;
-            document.getElementById("mentalStats").innerHTML = mentalHTML;
-            document.getElementById("physStats").innerHTML = physHTML;
+            document.getElementById("techStats").innerHTML = techHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
+            document.getElementById("mentalStats").innerHTML = mentalHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
+            document.getElementById("physStats").innerHTML = physHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
         }
 
-        // Filtreleme Fonksiyonları
         function filterPlayers() {
             let input = document.getElementById("searchInput").value.toUpperCase();
             let cards = document.getElementsByClassName("card");
