@@ -8,20 +8,12 @@
     <style>
         body { background-color: #202225; color: #dcddde; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
-        /* Twemoji tarafından oluşturulan emojiler */
+        /* Emoji Ayarı */
         img.emoji {
             height: 1.5em;
             width: 1.5em;
-            margin: 0 .1em 0 .1em;
-            vertical-align: -0.3em;
-        }
-
-        /* BİZİM EKLEDİĞİMİZ TÜRKİYE PNG'Sİ İÇİN AYAR */
-        .custom-flag {
-            height: 1.5em; /* Emoji ile aynı boy */
-            width: auto;
             margin: 0 .1em;
-            vertical-align: -0.3em; /* Metin hizası */
+            vertical-align: -0.3em;
         }
         
         .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: #202225; padding: 10px 0; z-index: 100; border-bottom: 2px solid #2f3136; }
@@ -34,31 +26,58 @@
         .filter-btn { background-color: #2f3136; border: 1px solid #5865F2; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         .filter-btn:hover, .filter-btn.active { background-color: #5865F2; }
 
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
         
-        .card { background-color: #2f3136; border-radius: 10px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .card { background-color: #2f3136; border-radius: 10px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s; display: flex; flex-direction: column; gap: 10px; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
         .player-id { font-size: 11px; color: #72767d; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
         
-        .flag-icon { font-size: 28px; line-height: 1; } 
+        .player-name { font-size: 18px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .player-name { font-size: 18px; font-weight: bold; color: #fff; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .player-info { font-size: 13px; color: #b9bbbe; margin-bottom: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
-        
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
+        /* Temel Bilgiler (Görünür Kısım) */
+        .basic-info { display: flex; gap: 5px; flex-wrap: wrap; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
         .badge-pos { background-color: #5865F2; }
         .badge-age { background-color: #4f545c; }
-        
-        .comment { font-size: 12px; color: #96989d; font-style: italic; margin-top: auto; padding-top: 10px; border-top: 1px solid #383c42; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .card:hover .comment { -webkit-line-clamp: 10; overflow: visible; background: #2f3136; position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; border-top: 2px solid #5865F2; z-index: 10; }
+        .badge-free { background-color: #2d7d46; color: #fff; display: none; } /* Başlangıçta gizli, JS ile açacağız */
 
-        .price-tag { position: absolute; bottom: 15px; right: 15px; font-size: 16px; font-weight: bold; color: #3ba55c; background: #202225; padding: 4px 8px; border-radius: 4px; }
-        .card:hover .price-tag { display: none; }
+        /* Gizli Bilgiler (Gözlemcilik Sonrası) */
+        .scout-data { 
+            display: none; /* Varsayılan olarak GİZLİ */
+            background-color: #292b2f;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #b9bbbe;
+            border-top: 2px solid #5865F2;
+        }
 
-        .status-free { border-left-color: #ed4245; }
-        .status-contract { border-left-color: #3ba55c; }
+        .data-row { margin-bottom: 6px; }
+        .label { color: #8e9297; font-weight: bold; margin-right: 5px; }
+        .price-val { color: #3ba55c; font-weight: bold; font-size: 14px; }
+        .comment-text { font-style: italic; color: #dcddde; line-height: 1.4; }
+
+        /* Gözlemci Butonu */
+        .scout-btn {
+            background-color: #5865F2;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: auto; /* Kartın en altına it */
+        }
+        .scout-btn:hover { background-color: #4752c4; }
+        .scout-btn:disabled { background-color: #36393f; color: #72767d; cursor: default; }
+
+        /* Durum Renkleri */
+        .status-free { border-left-color: #ed4245; } /* Serbestse Kırmızı */
+        .status-contract { border-left-color: #3ba55c; } /* Sözleşmeliyse Yeşil */
         
         #error-msg { text-align: center; width: 100%; color: #ed4245; margin-top: 50px; font-size: 18px; display: none; }
     </style>
@@ -8643,7 +8662,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 let gridHTML = "";
                 let count = 0;
 
-                rawList.forEach(item => {
+                rawList.forEach((item, index) => {
                     if(item.trim() === "") return;
 
                     try {
@@ -8656,18 +8675,14 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
-                        // --- VARSAYILAN DEĞERLER ---
+                        // --- ÜLKE MANTIĞI ---
                         let displayFlag = "🌍"; 
-                        
-                        // Ülke ismini metin içinden bulalım
                         let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
 
-                        // Eğer ülke ismi boşsa veya bulunamadıysa TÜRKİYE kabul et
                         if (ulkeRaw.length < 2) {
-                            displayFlag = "🇹🇷"; 
+                            displayFlag = "🇹🇷"; // Ülke yazmıyorsa Türk
                         } else {
-                            // Haritadan eşleştir
                             for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
                                 if (ulkeRaw.includes(countryName)) {
                                     displayFlag = emojiCode;
@@ -8675,36 +8690,55 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                                 }
                             }
                         }
+                        // --------------------
 
                         let yasMatch = fullText.match(/Yaş: (\d+)/);
                         let yas = yasMatch ? yasMatch[1] : "--";
 
                         let degerMatch = fullText.match(/Değeri: (.*?) \|/);
-                        let deger = degerMatch ? degerMatch[1].trim() : "Belirsiz";
+                        let deger = degerMatch ? degerMatch[1].trim() : "Bilinmiyor";
 
-                        let durumClass = fullText.includes("SERBEST") ? "status-free" : "status-contract";
                         let yorumMatch = fullText.match(/Yorum: (.*)/);
-                        let yorum = yorumMatch ? yorumMatch[1] : "Yorum yok.";
+                        let yorum = yorumMatch ? yorumMatch[1] : "Rapor yok.";
 
+                        // SERBEST OYUNCU KONTROLÜ
+                        let isFree = fullText.includes("SERBEST");
+                        let durumClass = isFree ? "status-free" : "status-contract";
+                        let freeBadgeDisplay = isFree ? "inline-block" : "none"; // Sadece serbestse rozet göster
+
+                        // POZİSYON FİLTRELEME İÇİN
                         let posGroup = "all";
                         if(mevki.includes("KL")) posGroup = "KL";
                         else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
                         else if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) posGroup = "OS";
                         else if(mevki.includes("SNT") || mevki.includes("Kanat")) posGroup = "SNT";
 
+                        // KART HTML YAPISI
+                        // Not: unique ID'ler veriyoruz ki JS ile açabilelim (card-1, card-2 vs)
                         gridHTML += `
-                            <div class="card ${durumClass}" data-pos="${posGroup}">
+                            <div class="card ${durumClass}" data-pos="${posGroup}" id="card-${count}">
                                 <div class="card-header">
                                     <span class="player-id">#${id}</span>
                                     <span class="flag-icon">${displayFlag}</span>
                                 </div>
+                                
                                 <div class="player-name">${name}</div>
-                                <div class="player-info">
+                                
+                                <div class="basic-info">
                                     <span class="badge badge-pos">${mevki}</span>
                                     <span class="badge badge-age">${yas} Yaş</span>
+                                    <span class="badge badge-free" style="display:${freeBadgeDisplay}">Bedelsiz</span>
                                 </div>
-                                <div class="comment">${yorum}</div>
-                                <div class="price-tag">${deger}</div>
+
+                                <button class="scout-btn" onclick="revealPlayer('card-${count}')">🕵️ Gözlemci Gönder</button>
+
+                                <div class="scout-data">
+                                    ${!isFree ? `<div class="data-row"><span class="label">Bonservis:</span><span class="price-val">${deger}</span></div>` : ''}
+                                    <div class="data-row">
+                                        <div class="label">Gözlemci Raporu:</div>
+                                        <div class="comment-text">"${yorum}"</div>
+                                    </div>
+                                    </div>
                             </div>
                         `;
                         count++;
@@ -8713,7 +8747,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 if(count > 0) {
                     document.getElementById("grid").innerHTML = gridHTML;
-                    // Twemoji kütüphanesini tetikle ki emojileri düzgün göstersin
                     setTimeout(() => { twemoji.parse(document.body); }, 100);
                 }
 
@@ -8721,6 +8754,21 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 console.error(mainErr);
                 document.getElementById("error-msg").style.display = "block";
             }
+        }
+
+        // GÖZLEMCİ GÖNDERME FONKSİYONU
+        function revealPlayer(cardId) {
+            const card = document.getElementById(cardId);
+            const hiddenData = card.querySelector('.scout-data');
+            const btn = card.querySelector('.scout-btn');
+
+            // Gizli veriyi aç
+            hiddenData.style.display = 'block';
+            
+            // Butonu güncelle
+            btn.innerHTML = "✅ Rapor Hazır";
+            btn.disabled = true; // Tekrar tıklanamasın
+            btn.style.backgroundColor = "#2d7d46"; // Yeşil yap
         }
 
         function filterPlayers() {
