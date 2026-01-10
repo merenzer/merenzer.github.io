@@ -8709,21 +8709,20 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
-        // Oyuncu Veritabanı
         let playerDB = {};
         let currentPlayerId = null;
 
-        // Rastgele Fizik Özellikleri (Simülasyon)
+        // Rastgele Fizik Üretici
         function generatePhysique(pos) {
             let height, weight;
             if (pos.includes("KL") || pos.includes("STP")) {
-                height = Math.floor(Math.random() * (198 - 182 + 1) + 182); // 1.82 - 1.98 m
+                height = Math.floor(Math.random() * (198 - 182 + 1) + 182);
                 weight = Math.floor(Math.random() * (95 - 78 + 1) + 78);
             } else if (pos.includes("DOS") || pos.includes("OS")) {
-                height = Math.floor(Math.random() * (188 - 175 + 1) + 175); // 1.75 - 1.88 m
+                height = Math.floor(Math.random() * (188 - 175 + 1) + 175);
                 weight = Math.floor(Math.random() * (85 - 70 + 1) + 70);
             } else { 
-                height = Math.floor(Math.random() * (185 - 168 + 1) + 168); // 1.68 - 1.85 m
+                height = Math.floor(Math.random() * (185 - 168 + 1) + 168);
                 weight = Math.floor(Math.random() * (82 - 65 + 1) + 65);
             }
             return { h: (height/100).toFixed(2) + " m", w: weight + " kg" };
@@ -8736,46 +8735,40 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 const rawList = rawDataInput.split("ID: ");
                 let gridHTML = "";
-                let count = 0;
-
+                
                 rawList.forEach(item => {
                     if(item.trim() === "") return;
 
                     try {
-                        let lines = item.split("\n");
-                        let firstLine = lines[0].split("|");
-                        let id = firstLine[0].trim();
-                        let name = firstLine[1] ? firstLine[1].trim() : "İsimsiz";
+                        let id = item.split("\n")[0].split("|")[0].trim();
+                        let name = item.split("\n")[0].split("|")[1] ? item.split("\n")[0].split("|")[1].trim() : "İsimsiz";
                         
-                        // Metnin tamamını tek satır yapalım (Özellikleri çekmek için kolaylık)
                         let fullTextForStats = item.replace(/\n/g, " ");
 
-                        // --- 1. YORUMU TEMİZ ÇEKME ALGORİTMASI ---
-                        // Yorum kısmını özelliklerden ayırmak için "header" kısmını buluyoruz.
-                        // Özelliklerin başladığı ilk anahtar kelimeyi bul (Teknik, Kalecilik, Zihinsel vb.)
+                        // YORUM AYRIŞTIRMA
                         let statsStartIndex = item.search(/(Teknik|Kalecilik|Zihinsel|Fiziksel|Duran)/);
-                        
-                        // Sadece özelliklerin öncesindeki kısmı al (Burada ID, isim, maaş ve Yorum var)
                         let infoPart = statsStartIndex > -1 ? item.substring(0, statsStartIndex) : item;
-                        
-                        // Şimdi bu temizlenmiş kısım içinden Yorum'u çek
-                        let yorumMatch = infoPart.match(/Yorum:([\s\S]*?)$/); // Satır sonuna kadar al
+                        let yorumMatch = infoPart.match(/Yorum:([\s\S]*?)$/);
                         let yorum = yorumMatch ? yorumMatch[1].trim() : "Rapor yok.";
-                        // ---------------------------------------------
 
+                        // TEMEL BİLGİLER
                         let mevkiMatch = item.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
-                        
                         let yasMatch = item.match(/Yaş: (\d+)/);
                         let yas = yasMatch ? yasMatch[1] : "--";
+                        
+                        // CA DEĞERİNİ YAKALA (Fiyat hesaplamak için lazım)
+                        let caMatch = item.match(/CA: (\d+)/);
+                        let ca = caMatch ? parseInt(caMatch[1]) : 100;
 
+                        // FİYAT VE MAAŞ KONTROLÜ
                         let degerMatch = item.match(/Değeri: (.*?) \|/);
                         let deger = degerMatch ? degerMatch[1].trim() : "Bilinmiyor";
                         
-                        let maasMatch = item.match(/Maaş: (.*?) (Yorum|GENÇ|$)/); // Yorum'a veya GENÇ notuna kadar al
+                        let maasMatch = item.match(/Maaş: (.*?) (Yorum|GENÇ|$)/);
                         let maas = maasMatch ? maasMatch[1].replace("Yorum", "").trim() : "Bilinmiyor";
 
-                        // --- BAYRAK AYARLARI ---
+                        // --- BAYRAK MANTIĞI (PNG İPTAL EDİLDİ, SADECE EMOJİ) ---
                         let displayFlag = "🌍"; 
                         let ulkeMatch = item.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeMatch ? ulkeMatch[1].trim() : "";
@@ -8790,15 +8783,13 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                                 }
                             }
                         }
-                        if (displayFlag === "🇹🇷") displayFlag = `<img src="33464-turkey.png" class="custom-flag" alt="TR">`;
+                        // *BURADA ARTIK RESİM KODU YOK, SADECE EMOJİ KALIYOR*
 
-                        // --- ÖZELLİKLERİ ÇEKME ---
+                        // ÖZELLİKLER
                         let attributes = {};
-                        // Özelliklerin ismi ve yanındaki sayıyı yakala (Örn: Hız80)
                         let attrRegex = /([a-zA-ZçÇğĞıİöÖşŞüÜ]+)(\d{2})/g;
                         let match;
                         while ((match = attrRegex.exec(fullTextForStats)) !== null) {
-                            // Başlıkları (Teknik, Zihinsel vs) özellik gibi kaydetme
                             const blacklist = ["Teknik", "Zihinsel", "Fiziksel", "Kalecilik", "Duran", "Toplar"];
                             if(!blacklist.includes(match[1])) {
                                 attributes[match[1]] = parseInt(match[2]);
@@ -8807,32 +8798,26 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                         let physique = generatePhysique(mevki);
 
-                        // Veritabanına Ekle
+                        // VERİTABANI
                         playerDB[id] = {
-                            id, name, mevki, yas, 
+                            id, name, mevki, yas, ca,
                             flag: displayFlag,
                             height: physique.h,
                             weight: physique.w,
                             status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
                             value: deger,
                             wage: maas,
-                            comment: yorum, // Artık temiz
+                            comment: yorum, 
                             attributes: attributes,
                             isScouted: false 
                         };
 
-                        // HTML Oluştur
-                        let posGroup = "all";
-                        if(mevki.includes("KL")) posGroup = "KL";
-                        else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
-                        else if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) posGroup = "OS";
-                        else if(mevki.includes("SNT") || mevki.includes("Kanat")) posGroup = "SNT";
-
+                        // KART OLUŞTURMA
                         let contractColor = playerDB[id].status === "Serbest" ? "status-free" : "status-contract";
                         let freeBadge = playerDB[id].status === "Serbest" ? `<span style="color:#ed4245; font-size:12px; font-weight:bold;"> (Bedelsiz)</span>` : "";
 
                         gridHTML += `
-                            <div class="card ${contractColor}" data-pos="${posGroup}" onclick="openProfile('${id}')">
+                            <div class="card ${contractColor}" data-pos="${posGroup(mevki)}" onclick="openProfile('${id}')">
                                 <div class="card-left">
                                     <div class="player-name">
                                         <span class="flag-icon">${displayFlag}</span> ${name}
@@ -8846,15 +8831,11 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                                 </div>
                             </div>
                         `;
-                        count++;
-
                     } catch (err) { console.warn("Hata:", err); }
                 });
 
-                if(count > 0) {
-                    document.getElementById("grid").innerHTML = gridHTML;
-                    setTimeout(() => { twemoji.parse(document.body); }, 100);
-                }
+                document.getElementById("grid").innerHTML = gridHTML;
+                setTimeout(() => { twemoji.parse(document.body); }, 100);
 
             } catch (mainErr) {
                 console.error(mainErr);
@@ -8862,7 +8843,16 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
-        // --- MODAL FONKSİYONLARI ---
+        // POZİSYON GRUPLAMA YARDIMCISI
+        function posGroup(mevki) {
+            if(mevki.includes("KL")) return "KL";
+            if(mevki.includes("STP") || mevki.includes("Bek")) return "STP";
+            if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) return "OS";
+            if(mevki.includes("SNT") || mevki.includes("Kanat")) return "SNT";
+            return "all";
+        }
+
+        // --- MODAL & GÖZLEMCİ SİSTEMİ ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
@@ -8884,6 +8874,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 
                 const btn = document.querySelector(".scout-btn");
                 btn.disabled = false;
+                btn.style.display = "block"; // Butonu görünür yap
                 document.getElementById("btnText").innerText = "🕵️ Gözlemci Gönder";
                 btn.style.backgroundColor = "#5865F2";
             }
@@ -8909,23 +8900,73 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 playerDB[currentPlayerId].isScouted = true;
                 document.getElementById("unscoutedView").style.display = "none";
                 showScoutedData(playerDB[currentPlayerId]);
-            }, 1000); 
+            }, 800); 
+        }
+
+        // TEMSİLCİYLE GÖRÜŞME SİMÜLASYONU
+        function contactAgent(btnElement) {
+            const p = playerDB[currentPlayerId];
+            
+            // Yükleniyor efekti
+            btnElement.innerHTML = `<span class="loader" style="width:15px; height:15px; border-width:2px;"></span> Görüşülüyor...`;
+            btnElement.disabled = true;
+
+            setTimeout(() => {
+                // Fiyat Oluşturma Algoritması (CA'ya göre)
+                // CA 100 = 500K, CA 150 = 20M gibi basit bir oran
+                let baseVal = p.ca * 150000; 
+                if(p.ca > 130) baseVal = p.ca * 300000; // Yıldız oyuncu çarpanı
+                if(p.status === "Serbest") baseVal = baseVal * 0.1; // İmza parası
+
+                let randomVal = Math.floor(baseVal + (Math.random() * 500000));
+                let randomWage = Math.floor(randomVal / 10); // Maaş genelde değerin 1/10'u
+
+                // Formatlama (Milyon veya Bin)
+                let valStr = randomVal > 1000000 ? `€${(randomVal/1000000).toFixed(1)} Milyon` : `€${(randomVal/1000).toFixed(0)} Bin`;
+                let wageStr = randomWage > 1000000 ? `€${(randomWage/1000000).toFixed(1)} Milyon` : `€${(randomWage/1000).toFixed(0)} Bin`;
+
+                // Ekrana Bas
+                if(p.status === "Serbest") {
+                    document.getElementById("modalValue").innerHTML = `<span style="color:#ed4245">Bedelsiz</span>`;
+                    document.getElementById("modalWage").innerHTML = `<span style="color:#faa61a">${wageStr} (İmza: ${valStr})</span>`;
+                } else {
+                    document.getElementById("modalValue").innerText = valStr;
+                    document.getElementById("modalWage").innerText = wageStr;
+                }
+
+                // Butonu kaldır
+                btnElement.style.display = "none";
+
+            }, 1000);
         }
 
         function showScoutedData(p) {
             document.getElementById("scoutedView").style.display = "block";
             
-            if (p.status === "Serbest") {
-                document.getElementById("modalValue").innerText = "Bedelsiz";
-                document.getElementById("modalValue").style.color = "#ed4245";
+            // FİYAT VE MAAŞ KONTROLÜ (TEMSİLCİ BUTONU MANTIĞI)
+            let valDiv = document.getElementById("modalValue");
+            let wageDiv = document.getElementById("modalWage");
+            let agentBtnHTML = `<button onclick="contactAgent(this)" style="background:#faa61a; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; font-weight:bold; color:#202225; font-size:11px; margin-left:5px;">📞 Temsilci Ara</button>`;
+
+            // Değer Bilinmiyor mu?
+            if (p.value === "Bilinmiyor" || p.value === "" || p.value.includes("-")) {
+                valDiv.innerHTML = `<span style="color:#888; font-size:12px;">Belirsiz</span> ${agentBtnHTML}`;
             } else {
-                document.getElementById("modalValue").innerText = p.value;
-                document.getElementById("modalValue").style.color = "#3ba55c";
+                valDiv.innerText = p.status === "Serbest" ? "Bedelsiz" : p.value;
+                valDiv.style.color = p.status === "Serbest" ? "#ed4245" : "#3ba55c";
             }
-            document.getElementById("modalWage").innerText = p.wage;
+
+            // Maaş Bilinmiyor mu?
+            if (p.wage === "Bilinmiyor" || p.wage === "" || p.wage.includes("-")) {
+                wageDiv.innerHTML = `<span style="color:#888; font-size:12px;">Belirsiz</span> ${agentBtnHTML}`;
+            } else {
+                wageDiv.innerText = p.wage;
+            }
             
+            // Yorum
             document.getElementById("modalComment").innerText = `"${p.comment}"`;
 
+            // Özellikleri Renklendirme ve Listeleme
             let techHTML = "", mentalHTML = "", physHTML = "";
             const mentalKeys = ["Kararlılık","Liderlik","TakımOyunu","Çalışkanlık","Cesaret","Agresiflik","Soğukkanlılık","Konsantrasyon","PozisyonAlma","Sezgi","KararAlma","Vizyon","ÖzelYetenek","Hırs","Mücadele","Sadakat"];
             const physKeys = ["Hız","Hızlanma","Güç","Dayanıklılık","Denge","Çeviklik","Zıplama","VücutZindeliği"];
@@ -8954,6 +8995,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("physStats").innerHTML = physHTML || "<div style='color:#666; font-size:12px;'>Veri yok</div>";
         }
 
+        // Filtreleme
         function filterPlayers() {
             let input = document.getElementById("searchInput").value.toUpperCase();
             let cards = document.getElementsByClassName("card");
