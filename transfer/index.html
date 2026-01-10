@@ -8602,11 +8602,12 @@ Teknik Refleksler82 HavaTopu80 BireBir80 ElleKontrol80 BölgeHakimiyeti78 Yumruk
 Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlılık75 Cesaret80 TakımOyunu75 Sezgi70 Çalışkanlık75 KararAlma70
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
+
     </textarea>
     <script>
-        // Ülke İsimleri -> GERÇEK EMOJİLER (GÜNCELLENDİ)
+        // İSİM -> EMOJİ HARİTASI (Tüm olası varyasyonlar eklendi)
         const emojiMap = {
-            "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", // Türkiye için her varyasyonu ekledim
+            "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", 
             "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱",
             "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪",
             "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽",
@@ -8658,20 +8659,21 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
-                        // 1. Ülke Adını Yakala
+                        // 1. Ülke İsmini Yakala
                         let ulkeLineMatch = fullText.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeLineMatch ? ulkeLineMatch[1].trim() : "";
                         
                         let foundEmoji = null;
                         
-                        // 2. Metindeki orijinal emojiyi (varsa) regex ile tara
+                        // 2. Önce metin içinde hali hazırda emoji var mı bak (varsa onu kullan)
                         let emojiRegex = /\uD83C[\uDDE6-\uDDFF]\uD83C[\uDDE6-\uDDFF]/;
                         let match = ulkeRaw.match(emojiRegex);
                         if(match) {
                             foundEmoji = match[0];
                         } else {
-                            // 3. Emoji yoksa, Ülke İsmine göre haritadan bul
+                            // 3. Emoji yoksa, haritadan ismi bul
                             for (const [key, value] of Object.entries(emojiMap)) {
+                                // "Türkiye" kelimesi geçiyor mu?
                                 if (ulkeRaw.includes(key)) {
                                     foundEmoji = value;
                                     break;
@@ -8679,7 +8681,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                             }
                         }
                         
-                        // Hiçbiri yoksa Dünya emojisi
+                        // Bulunamazsa Dünya emojisi
                         let displayEmoji = foundEmoji || "🌍";
 
                         let yasMatch = fullText.match(/Yaş: (\d+)/);
@@ -8692,6 +8694,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let yorumMatch = fullText.match(/Yorum: (.*)/);
                         let yorum = yorumMatch ? yorumMatch[1] : "Yorum yok.";
 
+                        // Pozisyon Gruplama
                         let posGroup = "all";
                         if(mevki.includes("KL")) posGroup = "KL";
                         else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
@@ -8719,8 +8722,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                 if(count > 0) {
                     document.getElementById("grid").innerHTML = gridHTML;
-                    // Discord tarzı görünüm için Twemoji'yi çalıştır
-                    setTimeout(() => { twemoji.parse(document.body); }, 50);
+                    // SİHİRLİ KOD: Sayfa yüklendikten sonra "TR" gibi harfleri resme çevirir
+                    setTimeout(() => { twemoji.parse(document.body); }, 100);
                 }
 
             } catch (mainErr) {
