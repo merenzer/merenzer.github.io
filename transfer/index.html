@@ -6,129 +6,29 @@
     <title>Transfer Borsası</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <style>
-        /* GENEL TASARIM */
-        body {
-            background-color: #202225;
-            color: #dcddde;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-
-        /* EMOJİ RESİM AYARI (Twemoji için) */
-        img.emoji {
-            height: 1em;
-            width: 1em;
-            margin: 0 .05em 0 .1em;
-            vertical-align: -0.1em;
-        }
-
-        /* ÜST KISIM */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: sticky;
-            top: 0;
-            background-color: #202225;
-            padding: 10px 0;
-            z-index: 100;
-            border-bottom: 2px solid #2f3136;
-        }
-
+        body { background-color: #202225; color: #dcddde; font-family: sans-serif; margin: 0; padding: 20px; }
+        img.emoji { height: 1em; width: 1em; margin: 0 .05em 0 .1em; vertical-align: -0.1em; }
+        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: #202225; padding: 10px 0; z-index: 100; border-bottom: 2px solid #2f3136; }
         h1 { color: #5865F2; margin: 0 0 15px 0; text-transform: uppercase; }
-
-        .search-box {
-            padding: 12px;
-            width: 300px;
-            border-radius: 5px;
-            border: none;
-            background-color: #40444b;
-            color: white;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .filters {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            background-color: #2f3136;
-            border: 1px solid #5865F2;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
+        .search-box { padding: 12px; width: 300px; border-radius: 5px; border: none; background-color: #40444b; color: white; font-size: 16px; outline: none; }
+        .filters { margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .filter-btn { background-color: #2f3136; border: 1px solid #5865F2; color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
         .filter-btn:hover, .filter-btn.active { background-color: #5865F2; }
-
-        /* KART IZGARASI */
-        .player-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* OYUNCU KARTI */
-        .card {
-            background-color: #2f3136;
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 5px solid gray;
-            transition: transform 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: #2f3136; border-radius: 8px; padding: 15px; border-left: 5px solid gray; transition: transform 0.2s; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-
         .card-header { display: flex; justify-content: space-between; align-items: center; }
         .player-id { font-size: 10px; color: #72767d; }
-        .flag-icon { font-size: 24px; } /* Bayrak boyutu */
-        
+        .flag-icon { font-size: 24px; }
         .player-name { font-size: 18px; font-weight: bold; color: #fff; margin: 5px 0; }
         .player-info { font-size: 13px; color: #b9bbbe; margin-bottom: 10px; }
-        
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-            margin-right: 5px;
-        }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; margin-right: 5px; }
         .badge-pos { background-color: #5865F2; }
         .badge-age { background-color: #4f545c; }
-
-        .price-tag {
-            margin-top: 15px;
-            text-align: right;
-            font-size: 16px;
-            font-weight: bold;
-            color: #3ba55c;
-        }
-
+        .price-tag { margin-top: 15px; text-align: right; font-size: 16px; font-weight: bold; color: #3ba55c; }
         .status-free { border-left-color: #ed4245; }
         .status-contract { border-left-color: #3ba55c; }
-
-        .comment {
-            font-size: 12px;
-            color: #aaa;
-            font-style: italic;
-            margin-top: 10px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .comment { font-size: 12px; color: #aaa; font-style: italic; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card:hover .comment { white-space: normal; }
     </style>
 </head>
@@ -137,7 +37,6 @@
     <div class="header">
         <h1>🏆 Oyuncu Veritabanı</h1>
         <input type="text" id="searchInput" class="search-box" placeholder="İsim ara..." onkeyup="filterPlayers()">
-        
         <div class="filters">
             <button class="filter-btn active" onclick="filterPosition('all')">Tümü</button>
             <button class="filter-btn" onclick="filterPosition('KL')">Kale</button>
@@ -147,12 +46,15 @@
         </div>
     </div>
 
-    <div class="player-grid" id="grid"></div>
+    <div class="player-grid" id="grid">
+        <p style="text-align:center; width:100%; color:red;">Veriler yükleniyor... Eğer bu yazı kalıyorsa kod hatası vardır.</p>
+    </div>
 
     <script>
-        // ==========================================
-        // BURAYA O UZUN LİSTEYİ TEKRAR YAPIŞTIR
-        // ==========================================
+        // ============================================================
+        // AŞAĞIDAKİ TERS TIRNAKLARIN (`) İÇİNE LİSTEYİ YAPIŞTIR
+        // BAŞTAKİ VE SONDAKİ ` İŞARETİNİ SAKIN SİLME!
+        // ============================================================
         const HAM_VERI = `
 ID: 1 | Julián Cordoba
 Ülke: Bolivya 🇧🇴 Mevki: OOS (Ofansif Orta Saha) | Yaş: 22 | CA: 123 | PA: 124 Durum: (Sözleşmeli) Piyasa Değeri: €3.5 Milyon | Maaş: €400.000 / yıl Yorum: Bolivya'dan çıkan nadir yeteneklerden. Gelişimi neredeyse tamamlanmış (124 PA). Agresif yapısıyla rakip savunmayı rahatsız eder. İyi bir yedek 10 numara.
@@ -8678,73 +8580,80 @@ Teknik Refleksler82 HavaTopu80 BireBir80 ElleKontrol80 BölgeHakimiyeti78 Yumruk
 Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlılık75 Cesaret80 TakımOyunu75 Sezgi70 Çalışkanlık75 KararAlma70
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
-
         `; 
-        // ------------------------------------------
+        // ============================================================
 
         function parseData() {
-            const rawList = HAM_VERI.split("ID: ");
-            let gridHTML = "";
+            try {
+                if(!HAM_VERI || HAM_VERI.length < 10) {
+                    console.error("Veri boş veya hatalı!");
+                    return;
+                }
 
-            rawList.forEach(item => {
-                if(item.trim() === "") return;
+                const rawList = HAM_VERI.split("ID: ");
+                let gridHTML = "";
 
-                let lines = item.split("\n");
-                let firstLine = lines[0].split("|");
-                let id = firstLine[0].trim();
-                let name = firstLine[1] ? firstLine[1].trim() : "İsimsiz";
+                rawList.forEach(item => {
+                    if(item.trim() === "") return;
 
-                // Detayları Yakala
-                let fullText = item;
-                
-                let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
-                let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
+                    try {
+                        let lines = item.split("\n");
+                        let firstLine = lines[0].split("|");
+                        let id = firstLine[0].trim();
+                        let name = firstLine[1] ? firstLine[1].trim() : "İsimsiz";
 
-                // Bayrağı Yakala (Ülke satırındaki emojiyi bulur)
-                let ulkeLineMatch = fullText.match(/Ülke: (.*?) Mevki/);
-                let ulkeText = ulkeLineMatch ? ulkeLineMatch[1] : "";
-                // Sadece emojiyi al (Regex ile emoji aralığı)
-                let flagEmoji = ulkeText.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/) || ["🌍"];
+                        let fullText = item;
+                        let mevkiMatch = fullText.match(/Mevki: (.*?) \|/);
+                        let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
 
-                let yasMatch = fullText.match(/Yaş: (\d+)/);
-                let yas = yasMatch ? yasMatch[1] : "--";
+                        let ulkeLineMatch = fullText.match(/Ülke: (.*?) Mevki/);
+                        let ulkeText = ulkeLineMatch ? ulkeLineMatch[1] : "";
+                        let flagEmoji = ulkeText.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/) || ["🌍"];
 
-                let degerMatch = fullText.match(/Değeri: (.*?) \|/);
-                let deger = degerMatch ? degerMatch[1].trim() : "Belirsiz";
+                        let yasMatch = fullText.match(/Yaş: (\d+)/);
+                        let yas = yasMatch ? yasMatch[1] : "--";
 
-                let durumClass = fullText.includes("SERBEST") ? "status-free" : "status-contract";
-                
-                let yorumMatch = fullText.match(/Yorum: (.*)/);
-                let yorum = yorumMatch ? yorumMatch[1] : "";
+                        let degerMatch = fullText.match(/Değeri: (.*?) \|/);
+                        let deger = degerMatch ? degerMatch[1].trim() : "Belirsiz";
 
-                // Gruplama
-                let posGroup = "all";
-                if(mevki.includes("KL")) posGroup = "KL";
-                else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
-                else if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) posGroup = "OS";
-                else if(mevki.includes("SNT") || mevki.includes("Kanat")) posGroup = "SNT";
+                        let durumClass = fullText.includes("SERBEST") ? "status-free" : "status-contract";
+                        
+                        let yorumMatch = fullText.match(/Yorum: (.*)/);
+                        let yorum = yorumMatch ? yorumMatch[1] : "";
 
-                gridHTML += \`
-                    <div class="card \${durumClass}" data-pos="\${posGroup}">
-                        <div class="card-header">
-                            <span class="player-id">#\${id}</span>
-                            <span class="flag-icon">\${flagEmoji}</span>
-                        </div>
-                        <div class="player-name">\${name}</div>
-                        <div class="player-info">
-                            <span class="badge badge-pos">\${mevki}</span>
-                            <span class="badge badge-age">\${yas} Yaş</span>
-                        </div>
-                        <div class="comment">\${yorum}</div>
-                        <div class="price-tag">\${deger}</div>
-                    </div>
-                \`;
-            });
+                        // Pozisyon Gruplama
+                        let posGroup = "all";
+                        if(mevki.includes("KL")) posGroup = "KL";
+                        else if(mevki.includes("STP") || mevki.includes("Bek")) posGroup = "STP";
+                        else if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) posGroup = "OS";
+                        else if(mevki.includes("SNT") || mevki.includes("Kanat")) posGroup = "SNT";
 
-            document.getElementById("grid").innerHTML = gridHTML;
-            
-            // SİHİRLİ DOKUNUŞ: Emojileri Resme Çevir
-            twemoji.parse(document.body);
+                        gridHTML += \`
+                            <div class="card \${durumClass}" data-pos="\${posGroup}">
+                                <div class="card-header">
+                                    <span class="player-id">#\${id}</span>
+                                    <span class="flag-icon">\${flagEmoji}</span>
+                                </div>
+                                <div class="player-name">\${name}</div>
+                                <div class="player-info">
+                                    <span class="badge badge-pos">\${mevki}</span>
+                                    <span class="badge badge-age">\${yas} Yaş</span>
+                                </div>
+                                <div class="comment">\${yorum}</div>
+                                <div class="price-tag">\${deger}</div>
+                            </div>
+                        \`;
+                    } catch (err) {
+                        console.log("Bir oyuncu kartı oluşturulamadı (Hata önlendi): ", err);
+                    }
+                });
+
+                document.getElementById("grid").innerHTML = gridHTML;
+                twemoji.parse(document.body);
+
+            } catch (mainErr) {
+                alert("Veri işlenirken genel bir hata oldu: " + mainErr);
+            }
         }
 
         function filterPlayers() {
