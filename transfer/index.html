@@ -3,15 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v3.0 (Simülasyon)</title>
+    <title>Transfer Borsası Pro v3.5</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
-        :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; --gold: #faa61a; --gk: #d35400; --def: #2980b9; --mid: #27ae60; --fwd: #c0392b; }
+        :root { 
+            --bg-dark: #202225; 
+            --card-bg: #2f3136; 
+            --accent: #5865F2; 
+            --text: #dcddde; 
+            --success: #3ba55c; 
+            --danger: #ed4245; 
+            --gold: #faa61a; 
+            /* Mevki Renkleri */
+            --gk-color: #d35400; /* Turuncu */
+            --def-color: #2980b9; /* Mavi */
+            --mid-color: #27ae60; /* Yeşil */
+            --fwd-color: #c0392b; /* Kırmızı */
+        }
         body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; padding-bottom: 60px; }
+        
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
 
-        /* TOAST BİLDİRİM (YENİ) */
+        /* TOAST BİLDİRİM */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; border-left: 5px solid gray; min-width: 250px; }
         .toast.success { border-left-color: var(--success); }
@@ -32,32 +46,32 @@
         .header { background-color: var(--card-bg); padding: 15px 20px; border-bottom: 2px solid #202225; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 90; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .header-left h1 { margin: 0; color: var(--accent); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
         .header-right { display: flex; align-items: center; gap: 15px; }
+        
         .user-badge { display: flex; align-items: center; gap: 10px; background: #202225; padding: 5px 15px; border-radius: 20px; border: 1px solid #40444b; }
-        .team-logo { width: 30px; height: 30px; object-fit: contain; }
+        .team-logo { width: 30px; height: 30px; object-fit: contain; display: block; } /* Logo görünürlüğü */
+        
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; } /* Herkese açık buton */
 
-        /* FİLTRE */
+        /* FILTER BAR */
         .filter-bar { background: #292b2f; padding: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #40444b; }
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
         .filter-label { font-size: 11px; color: #aaa; font-weight: bold; text-transform: uppercase; }
         .filter-select, .filter-input { padding: 8px; background: #202225; border: 1px solid #40444b; color: white; border-radius: 5px; outline: none; min-width: 120px; }
 
-        /* GRID ve MEVKİ RENKLERİ (YENİ) */
+        /* GRID */
         .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
         .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         
         .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-3px); background-color: #36393f; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         
-        /* MEVKİ RENKLERİ */
-        .pos-kl { border-left-color: var(--gk) !important; }
-        .pos-stp, .pos-bek { border-left-color: var(--def) !important; }
-        .pos-os, .pos-dos, .pos-oos { border-left-color: var(--mid) !important; }
-        .pos-snt, .pos-kanat { border-left-color: var(--fwd) !important; }
+        /* MEVKİ RENKLERİ (ÖNEMLİ: !important ile baskın yapıyoruz) */
+        .pos-kl { border-left-color: var(--gk-color) !important; }
+        .pos-def { border-left-color: var(--def-color) !important; }
+        .pos-mid { border-left-color: var(--mid-color) !important; }
+        .pos-fwd { border-left-color: var(--fwd-color) !important; }
         
-        /* Satılmış Oyuncu */
-        .card.sold { opacity: 0.6; filter: grayscale(100%); border-left-color: #555 !important; }
-
         .card-header { display: flex; justify-content: space-between; align-items: center; }
         .player-name { font-size: 16px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .player-meta { font-size: 12px; color: #b9bbbe; display: flex; gap: 8px; align-items: center; }
@@ -73,9 +87,11 @@
         .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
         .profile-avatar { font-size: 50px; background: #202225; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid var(--accent); }
         .profile-body { padding: 25px; }
+        
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
         .stat-box h4 { color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
         .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #36393f; padding: 4px 0; font-size: 13px; }
+        
         .val-high { color: var(--success); font-weight: bold; }
         .val-med { color: var(--gold); }
         .val-low { color: var(--danger); }
@@ -88,8 +104,8 @@
         .news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px 0; white-space: nowrap; overflow: hidden; z-index: 99; border-top: 3px solid #202225; font-size: 14px; font-weight: 500; }
         .ticker-content { display: inline-block; padding-left: 100%; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
-
-        /* TRANSFER HUB */
+        
+        /* TRANSFER HUB STYLE */
         .hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
         .hub-box { background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; height: 350px; overflow-y: auto; }
         .hub-title { color: var(--gold); border-bottom: 1px solid #555; padding-bottom: 5px; margin-bottom: 10px; font-size: 16px; }
@@ -98,6 +114,7 @@
         .t-team { color: #aaa; font-size: 12px; }
         .t-price { color: var(--success); font-weight: bold; }
         .sign-btn { background: linear-gradient(45deg, #3ba55c, #2d7d46); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 165, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0); } }
         
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -127,18 +144,22 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v3.0</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v3.5</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
-                <img src="" id="headerLogo" class="team-logo" onerror="this.style.display='none'">
+                <img src="" id="headerLogo" class="team-logo" style="display:none;">
                 <span id="userDisplay"></span>
             </div>
-            <div id="adminPanel" style="display:none; gap:10px;">
-                <button class="admin-btn" style="background:#5865F2;" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
-                <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
-                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
-                <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️ Sıfırla</button>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
+                
+                <div id="adminPanel" style="display:none; gap:10px;">
+                    <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
+                    <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
+                    <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️ Sıfırla</button>
+                </div>
             </div>
         </div>
     </div>
@@ -238,7 +259,6 @@
                         <div class="stat-box"><h4>Fiziksel</h4><div id="physStats"></div></div>
                     </div>
                     <div class="action-area" id="offerArea"></div>
-                    
                     <div id="offerInputs" style="display:none; flex-direction:column; align-items:center; gap:10px; margin-top:10px;">
                         <input type="number" id="offerAmount" class="offer-input" placeholder="Tutar (€)...">
                         <div style="display:flex; gap:10px;">
@@ -246,16 +266,15 @@
                             <button class="confirm-btn" style="background:#ed4245;" onclick="hideOfferInputs()">İptal</button>
                         </div>
                     </div>
-
+                    
                     <div id="counterOfferArea" style="display:none; background:#443300; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #faa61a;">
                         <h4 style="color:#faa61a; margin:0 0 10px 0;">⚠️ Oyuncu Karşı Teklif Yaptı!</h4>
-                        <p id="counterText" style="font-size:13px; margin-bottom:10px;">"Kulübünüzün itibarı benim için düşük. Eğer <b id="counterVal"></b> önerirseniz düşünebilirim."</p>
+                        <p id="counterText" style="font-size:13px; margin-bottom:10px;"></p>
                         <div style="display:flex; gap:10px; justify-content:center;">
                             <button class="confirm-btn" onclick="acceptCounterOffer()">Kabul Et</button>
                             <button class="confirm-btn" style="background:#ed4245;" onclick="rejectCounterOffer()">Reddet</button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -8817,57 +8836,42 @@ Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlıl�
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
     </textarea>
-<script>
-        // ----------------------------------------------------------------------------------
-        // AYARLAR - GELİŞMİŞ İTİBAR VE TAKIM SİSTEMİ
-        // ----------------------------------------------------------------------------------
-        
-        const GITHUB_REPO_URL = "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/"; 
-
-        // 1. İNSAN KULLANICILAR (Senin belirlediğin kullanıcılar ve YENİ İTİBAR PUANLARI)
-        const teamCredentials = {
-            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "", rep: 5 }, 
-            
-            // 5 YILDIZ: ELİT CAZİBE MERKEZLERİ
-            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png", rep: 5 }, // Son Şampiyon
-            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png", rep: 5 }, // Dev
-            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png", rep: 5 }, // Zengin
-            
-            // 4 YILDIZ: SAYGIN GÜÇLER
-            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png", rep: 4 }, // Yeni Zengin
-            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png", rep: 4 }, // Büyük
-            
-            // 3 YILDIZ: YÜKSELEN YILDIZLAR
-            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png", rep: 3 }, // Güvenli Liman
-            
-            // 2 YILDIZ: EKMEK TEKNESİ
-            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png", rep: 2 }, 
-            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png", rep: 2 } // Asansör korkusu
-        };
-
-        // 2. BOT TAKIMLAR (YENİ İTİBAR PUANLARIYLA)
-        const botTeams = [
-            // 4 YILDIZ
-            { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4 }, // Yaralı Dev
-            
-            // 3 YILDIZ
-            { name: "Bursaspor", logo: "Bursaspor.png", rep: 3 }, // Şampiyonun Dönüşü
-
-            // 2 YILDIZ
-            { name: "Sivasspor", logo: "Sivasspor.png", rep: 2 },
-            { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2 },
-            { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2 },
-            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2 },
-
-            // 1 YILDIZ: RİSKLİ BÖLGE / KRİZ
-            { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1 },
-            { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1 },
-            { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1 },
-            { name: "Kayserispor", logo: "Kayserispor.png", rep: 1 } // TOXIC: Çok zor transfer yapar
+    <script>
+        // --- 1. AYARLAR ---
+        const LOGO_BASE_URLS = [
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/", 
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar2/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar3/main/"
         ];
 
-        // ----------------------------------------------------------------------------------
+        // 1. İNSAN KULLANICILAR (İTİBAR PUANLARI EKLENDİ)
+        const teamCredentials = {
+            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "", rep: 5 },
+            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png", rep: 5 },
+            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png", rep: 5 },
+            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png", rep: 4 },
+            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png", rep: 4 },
+            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png", rep: 5 },
+            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png", rep: 3 },
+            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png", rep: 2 },
+            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png", rep: 2 }
+        };
 
+        // 2. BOT TAKIMLAR (İTİBAR PUANLARI EKLENDİ)
+        const botTeams = [
+            { name: "Kayserispor", logo: "Kayserispor.png", rep: 1 },
+            { name: "Sivasspor", logo: "Sivasspor.png", rep: 2 },
+            { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2 },
+            { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4 },
+            { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1 },
+            { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1 },
+            { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2 },
+            { name: "Bursaspor", logo: "Bursaspor.png", rep: 3 },
+            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2 },
+            { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1 }
+        ];
+
+        // ... Diğer haritalar (Kıta, Emoji) aynı ...
         const continentMap = {
             "Europe": ["Türkiye", "Turkey", "Turkiye", "Almanya", "Fransa", "İtalya", "İspanya", "Portekiz", "Hollanda", "Belçika", "İngiltere", "İskoçya", "Galler", "İrlanda", "Kuzey İrlanda", "İsviçre", "Avusturya", "Polonya", "Macaristan", "Çekya", "Slovakya", "Rusya", "Ukrayna", "Belarus", "Romanya", "Bulgaristan", "Yunanistan", "Güney Kıbrıs", "Kuzey Kıbrıs", "Sırbistan", "Hırvatistan", "Bosna", "Bosna Hersek", "Slovenya", "Kuzey Makedonya", "Karadağ", "Kosova", "Arnavutluk", "Finlandiya", "İsveç", "Norveç", "Danimarka", "İzlanda", "Faroe", "Moldova", "San Marino", "Cebelitarık", "Andorra", "Lihtenştayn", "Lüksemburg", "Monako", "Malta"],
             "South America": ["Brezilya", "Arjantin", "Uruguay", "Kolombiya", "Şili", "Peru", "Paraguay", "Ekvador", "Venezuela", "Bolivya"],
@@ -8890,12 +8894,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         let availableCountries = new Set();
         let counterOfferData = null; 
 
-        // --- 3. LOGO YÜKLEME ZİNCİRİ (Waterfall) ---
-        const LOGO_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar", 
-            "https://raw.githubusercontent.com/SarpEfeKus/logolar2/main/"
-        ];
-
+        // --- LOGO YÜKLEME ---
         function loadLogo(imgElement, logoName, urlIndex = 0) {
             if (urlIndex >= LOGO_BASE_URLS.length) {
                 imgElement.style.display = 'none';
@@ -8942,7 +8941,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
-        // --- YARDIMCI FONKSİYONLAR ---
+        // --- YARDIMCI ---
         function showToast(msg, type="info") {
             const container = document.getElementById("toast-container");
             const toast = document.createElement("div");
@@ -9061,7 +9060,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         value: deger, wage: maas, comment: yorum.trim(), attributes
                     };
                     
-                    playerDB[id].isScouted = scoutedPlayers.includes(id);
+                    // Scout durumu
+                    if(playerDB[id].status === "Serbest") {
+                        playerDB[id].isScouted = true; // Serbest oyuncular otomatik gözlemli
+                    } else {
+                        playerDB[id].isScouted = scoutedPlayers.includes(id);
+                    }
 
                     let posClass = getPosClass(mevki);
                     let freeBadge = playerDB[id].status === "Serbest" ? `<span class="badge" style="background:#ed4245;">BEDELSİZ</span>` : "";
@@ -9096,10 +9100,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("modalFlag").innerHTML = p.flag;
             document.getElementById("modalName").innerText = p.name;
             document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight} • ${p.status}`;
-            
-            // Eğer oyuncu satıldıysa takım adını göster
-            let teamDisplay = p.team !== "Serbest" && p.team !== "Bilinmiyor" ? `<span style="color:var(--gold); font-weight:bold;">${p.team}</span>` : "";
-            document.getElementById("modalTeamBadge").innerHTML = teamDisplay;
+            document.getElementById("modalTeamBadge").innerHTML = p.team !== "Serbest" && p.team !== "Bilinmiyor" ? `<span style="color:var(--gold); font-weight:bold;">${p.team}</span>` : "";
 
             if (p.team === currentUser.name) {
                 document.getElementById("scoutedView").style.display = "block";
@@ -9191,9 +9192,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
 
             // 2. YILDIZ OYUNCU KAPRİSİ (Yüksek CA, Düşük Rep)
-            // Eğer oyuncu CA > 135 ve Takım Rep < 4 ise
             if(p.ca > 135 && teamRep < 4) {
-                 // %40 ihtimalle karşı teklif
                  if(Math.random() < 0.4) {
                      let counterAmount = (amountVal * 1.5).toFixed(1);
                      triggerCounterOffer(`Daha büyük hedeflerim var ama ${counterAmount}M € verirseniz düşünebilirim.`, counterAmount);
@@ -9201,7 +9200,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                  }
             }
 
-            // 3. NORMAL TEKLİF
             sendOfferProcess(amountVal);
         }
 
@@ -9277,9 +9275,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 let rT = botTeams[Math.floor(Math.random()*botTeams.length)];
                 if(rP.team !== "Serbest" && rP.team !== "Bilinmiyor" && !rP.team.includes("Spor")) continue; 
                 
-                // Bot Teklif Zekası (İtibara göre)
                 let baseVal = rP.ca * 100000;
-                let multiplier = 0.8 + (rT.rep * 0.1); // Yüksek itibar daha iyi teklif verebilir
+                let multiplier = 0.8 + (rT.rep * 0.1); 
                 let offerVal = (baseVal * multiplier).toFixed(1) / 1000000; 
                 
                 offersDB.push({
@@ -9299,7 +9296,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let winner = allOffers[0];
                         winner.status = "Kabul Edildi";
                         for(let i=1; i<allOffers.length; i++) allOffers[i].status = "Reddedildi";
-                        
                         let isBotWinner = botTeams.some(bt => bt.name === winner.team);
                         if(isBotWinner) completeTransfer(winner);
                         else updateTicker(`✅ ${winner.team}, ${winner.playerName} teklifi kabul edildi!`);
@@ -9334,13 +9330,10 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             else {
                 let html = "";
                 [...transferHistory].reverse().forEach(t => {
-                    let logoUrl = "";
-                    // Logo bulma (Waterfall mantığı burada inline zor, basitçe 1. repodan çekelim şimdilik, ya da onerror ile halledelim)
-                    let imgTag = t.teamLogo ? `<img id="hub_logo_${t.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
-                    html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${imgTag}${t.team}</span><span class="t-price">${t.offer}</span></div>`;
+                    let logoHTML = t.teamLogo ? `<img src="" id="hub_logo_${t.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${logoHTML}${t.team}</span><span class="t-price">${t.offer}</span></div>`;
                 });
                 transList.innerHTML = html;
-                // Resimleri yükle
                 [...transferHistory].reverse().forEach(t => { if(t.teamLogo) loadLogo(document.getElementById(`hub_logo_${t.id}`), t.teamLogo); });
             }
             const topList = document.getElementById("topOffersList");
@@ -9350,12 +9343,39 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 activeOffers.sort((a,b) => b.offerVal - a.offerVal);
                 let html = "";
                 activeOffers.slice(0, 10).forEach(o => {
-                    let imgTag = o.teamLogo ? `<img id="top_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
-                    html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${imgTag}${o.team}</span><span class="t-price">${o.offer}</span></div>`;
+                    let logoHTML = o.teamLogo ? `<img src="" id="top_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${logoHTML}${o.team}</span><span class="t-price">${o.offer}</span></div>`;
                 });
                 topList.innerHTML = html;
                 activeOffers.slice(0, 10).forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`top_logo_${o.id}`), o.teamLogo); });
             }
+        }
+
+        function contactAgent(btnElement) {
+            const p = playerDB[currentPlayerId];
+            btnElement.innerHTML = `<span class="loader" style="width:10px; height:10px;"></span>`;
+            btnElement.disabled = true;
+
+            setTimeout(() => {
+                let baseVal = p.ca * 150000; 
+                if(p.ca > 130) baseVal = p.ca * 300000;
+                if(p.status === "Serbest") baseVal = baseVal * 0.1;
+
+                let randomVal = Math.floor(baseVal + (Math.random() * 500000));
+                let randomWage = Math.floor(randomVal / 10);
+
+                let valStr = randomVal > 1000000 ? `€${(randomVal/1000000).toFixed(1)}M` : `€${(randomVal/1000).toFixed(0)}K`;
+                let wageStr = randomWage > 1000000 ? `€${(randomWage/1000000).toFixed(1)}M` : `€${(randomWage/1000).toFixed(0)}K`;
+
+                if(p.status === "Serbest") {
+                    document.getElementById("modalValue").innerHTML = `<span style="color:#ed4245">Bedelsiz</span>`;
+                    document.getElementById("modalWage").innerHTML = `<span style="color:#faa61a">${wageStr} (İmza: ${valStr})</span>`;
+                } else {
+                    document.getElementById("modalValue").innerText = valStr;
+                    document.getElementById("modalWage").innerText = wageStr;
+                }
+                btnElement.style.display = "none";
+            }, 1000);
         }
 
         function openOffersModal() {
@@ -9364,8 +9384,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
             else {
                 [...offersDB].reverse().forEach(o => {
-                    let imgTag = o.teamLogo ? `<img id="all_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
-                    tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${imgTag}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
+                    let logoHTML = o.teamLogo ? `<img src="" id="all_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${logoHTML}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
                 });
                 [...offersDB].reverse().forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`all_logo_${o.id}`), o.teamLogo); });
             }
