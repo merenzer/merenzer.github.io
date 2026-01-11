@@ -3,44 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v3.5</title>
+    <title>Transfer Borsası Ultimate</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
         :root { 
-            --bg-dark: #202225; 
-            --card-bg: #2f3136; 
-            --accent: #5865F2; 
-            --text: #dcddde; 
-            --success: #3ba55c; 
-            --danger: #ed4245; 
-            --gold: #faa61a; 
-            /* Mevki Renkleri */
-            --gk-color: #d35400; /* Turuncu */
-            --def-color: #2980b9; /* Mavi */
-            --mid-color: #27ae60; /* Yeşil */
-            --fwd-color: #c0392b; /* Kırmızı */
+            --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; 
+            --success: #3ba55c; --danger: #ed4245; --gold: #faa61a; 
+            --gk-color: #d35400; --def-color: #2980b9; --mid-color: #27ae60; --fwd-color: #c0392b; 
         }
         body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; padding-bottom: 60px; }
         
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
 
-        /* TOAST BİLDİRİM */
+        /* TOAST */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; border-left: 5px solid gray; min-width: 250px; }
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
         .toast.info { border-left-color: var(--accent); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        /* GİRİŞ EKRANI */
+        /* GİRİŞ */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202225; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; background-image: radial-gradient(circle, #2f3136 0%, #202225 100%); }
         .login-box { background: #2f3136; padding: 40px; border-radius: 12px; text-align: center; border: 1px solid var(--accent); width: 320px; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
         .login-input { padding: 12px; width: 85%; margin-bottom: 15px; border-radius: 6px; border: 1px solid #40444b; background: #202225; color: white; text-align: center; font-size: 16px; outline: none; }
         .login-btn { background: var(--accent); color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; margin-bottom: 10px; }
         .guest-btn { background: transparent; border: 1px solid #72767d; color: #aaa; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.3s; }
-        .guest-btn:hover { border-color: white; color: white; }
 
         /* HEADER */
         .header { background-color: var(--card-bg); padding: 15px 20px; border-bottom: 2px solid #202225; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 90; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
@@ -48,10 +37,11 @@
         .header-right { display: flex; align-items: center; gap: 15px; }
         
         .user-badge { display: flex; align-items: center; gap: 10px; background: #202225; padding: 5px 15px; border-radius: 20px; border: 1px solid #40444b; }
-        .team-logo { width: 30px; height: 30px; object-fit: contain; display: block; } /* Logo görünürlüğü */
+        .team-logo { width: 30px; height: 30px; object-fit: contain; display: block; }
+        .budget-display { color: var(--success); font-weight: bold; font-family: monospace; font-size: 14px; }
         
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; } /* Herkese açık buton */
+        .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
         /* FILTER BAR */
         .filter-bar { background: #292b2f; padding: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #40444b; }
@@ -62,16 +52,12 @@
         /* GRID */
         .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
         .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
-        
         .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-3px); background-color: #36393f; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        
-        /* MEVKİ RENKLERİ (ÖNEMLİ: !important ile baskın yapıyoruz) */
         .pos-kl { border-left-color: var(--gk-color) !important; }
         .pos-def { border-left-color: var(--def-color) !important; }
         .pos-mid { border-left-color: var(--mid-color) !important; }
         .pos-fwd { border-left-color: var(--fwd-color) !important; }
-        
         .card-header { display: flex; justify-content: space-between; align-items: center; }
         .player-name { font-size: 16px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .player-meta { font-size: 12px; color: #b9bbbe; display: flex; gap: 8px; align-items: center; }
@@ -84,18 +70,18 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background-color: #2f3136; width: 90%; max-width: 750px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 0; position: relative; border: 1px solid #40444b; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
-        .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
-        .profile-avatar { font-size: 50px; background: #202225; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid var(--accent); }
-        .profile-body { padding: 25px; }
         
+        .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .profile-body { padding: 25px; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
         .stat-box h4 { color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
         .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #36393f; padding: 4px 0; font-size: 13px; }
-        
         .val-high { color: var(--success); font-weight: bold; }
         .val-med { color: var(--gold); }
         .val-low { color: var(--danger); }
-        
         .action-area { margin-top: 20px; text-align: center; border-top: 1px solid #444; padding-top: 20px; }
         .main-btn { background: var(--accent); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .main-btn:disabled { background: #4f545c; cursor: not-allowed; opacity: 0.7; }
@@ -144,17 +130,19 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v3.5</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v4.0</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
                 <img src="" id="headerLogo" class="team-logo" style="display:none;">
-                <span id="userDisplay"></span>
+                <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                    <span id="userDisplay"></span>
+                    <span id="userBudget" class="budget-display"></span>
+                </div>
             </div>
             
             <div style="display:flex; gap:10px;">
                 <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
-                
                 <div id="adminPanel" style="display:none; gap:10px;">
                     <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
                     <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
@@ -266,7 +254,6 @@
                             <button class="confirm-btn" style="background:#ed4245;" onclick="hideOfferInputs()">İptal</button>
                         </div>
                     </div>
-                    
                     <div id="counterOfferArea" style="display:none; background:#443300; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #faa61a;">
                         <h4 style="color:#faa61a; margin:0 0 10px 0;">⚠️ Oyuncu Karşı Teklif Yaptı!</h4>
                         <p id="counterText" style="font-size:13px; margin-bottom:10px;"></p>
@@ -8843,34 +8830,62 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "https://github.com/merenzer/merenzer.github.io/tree/main/logolar2"
         ];
 
-        // 1. İNSAN KULLANICILAR (İTİBAR PUANLARI EKLENDİ)
-        const teamCredentials = {
-            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "", rep: 5 },
-            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png", rep: 5 },
-            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png", rep: 5 },
-            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png", rep: 4 },
-            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png", rep: 4 },
-            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png", rep: 5 },
-            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png", rep: 3 },
-            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png", rep: 2 },
-            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png", rep: 2 }
-        };
-
-        // 2. BOT TAKIMLAR (İTİBAR PUANLARI EKLENDİ)
-        const botTeams = [
-            { name: "Kayserispor", logo: "Kayserispor.png", rep: 1 },
-            { name: "Sivasspor", logo: "Sivasspor.png", rep: 2 },
-            { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2 },
-            { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4 },
-            { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1 },
-            { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1 },
-            { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2 },
-            { name: "Bursaspor", logo: "Bursaspor.png", rep: 3 },
-            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2 },
-            { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1 }
+        // 9 TANE YÜZ KLASÖRÜ
+        const FACE_BASE_URLS = [
+            "https://raw.githubusercontent.com/SarpEfeKus/face/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face2/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face3/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face4/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face5/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face6/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face7/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face8/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face9/main/"
         ];
 
-        // ... Diğer haritalar (Kıta, Emoji) aynı ...
+        // 1. İNSAN KULLANICILAR (BÜTÇE EKLENDİ - MİLYON EURO)
+        const teamCredentials = {
+            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "", rep: 5, budget: 999 },
+            
+            // TIER S
+            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png", rep: 5, budget: 500.0 },
+            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png", rep: 4, budget: 480.0 },
+            
+            // TIER A
+            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png", rep: 5, budget: 450.0 },
+            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png", rep: 5, budget: 410.0 },
+            
+            // TIER B
+            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png", rep: 4, budget: 350.0 },
+            
+            // TIER C
+            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png", rep: 3, budget: 270.0 },
+            
+            // TIER D
+            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png", rep: 2, budget: 180.0 },
+            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png", rep: 2, budget: 190.0 }
+        };
+
+        // 2. BOT TAKIMLAR
+        const botTeams = [
+            // TIER B
+            { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4, budget: 330.0 },
+            // TIER C
+            { name: "Bursaspor", logo: "Bursaspor.png", rep: 3, budget: 240.0 },
+            // TIER D
+            { name: "Sivasspor", logo: "Sivasspor.png", rep: 2, budget: 190.0 },
+            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2, budget: 200.0 },
+            // TIER E
+            { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2, budget: 170.0 },
+            { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2, budget: 165.0 },
+            { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1, budget: 160.0 },
+            { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1, budget: 155.0 },
+            { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1, budget: 145.0 },
+            // TIER F
+            { name: "Kayserispor", logo: "Kayserispor.png", rep: 1, budget: 110.0 }
+        ];
+
+        // ... DİĞER HARİTALAR (KITA/EMOJI) ...
         const continentMap = {
             "Europe": ["Türkiye", "Turkey", "Turkiye", "Almanya", "Fransa", "İtalya", "İspanya", "Portekiz", "Hollanda", "Belçika", "İngiltere", "İskoçya", "Galler", "İrlanda", "Kuzey İrlanda", "İsviçre", "Avusturya", "Polonya", "Macaristan", "Çekya", "Slovakya", "Rusya", "Ukrayna", "Belarus", "Romanya", "Bulgaristan", "Yunanistan", "Güney Kıbrıs", "Kuzey Kıbrıs", "Sırbistan", "Hırvatistan", "Bosna", "Bosna Hersek", "Slovenya", "Kuzey Makedonya", "Karadağ", "Kosova", "Arnavutluk", "Finlandiya", "İsveç", "Norveç", "Danimarka", "İzlanda", "Faroe", "Moldova", "San Marino", "Cebelitarık", "Andorra", "Lihtenştayn", "Lüksemburg", "Monako", "Malta"],
             "South America": ["Brezilya", "Arjantin", "Uruguay", "Kolombiya", "Şili", "Peru", "Paraguay", "Ekvador", "Venezuela", "Bolivya"],
@@ -8878,7 +8893,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Asia": ["Çin", "Güney Kore", "Kuzey Kore", "Japonya", "Avustralya", "Özbekistan", "Kazakistan", "İran", "Vietnam", "Suriye", "Endonezya", "Umman", "Afganistan", "Ürdün", "Malezya", "Tayland", "BAE", "Katar", "Kırgızistan"],
             "North America": ["ABD", "Kanada", "Meksika", "Jamaika", "Martinik", "Guadeloupe", "Trinidad", "Panama", "Kosta Rika", "Honduras"]
         };
-
         const emojiMap = {
             "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱", "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪", "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽", "Kanada": "🇨🇦", "Jamaika": "🇯🇲", "Martinik": "🇲🇶", "Guadeloupe": "🇬🇵", "Trinidad": "🇹🇹", "ABD": "🇺🇸", "Panama": "🇵🇦", "Kosta Rika": "🇨🇷", "Honduras": "🇭🇳", "Çin": "🇨🇳", "Güney Kore": "🇰🇷", "Kuzey Kore": "🇰🇵", "Japonya": "🇯🇵", "Avustralya": "🇦🇺", "Özbekistan": "🇺🇿", "Kazakistan": "🇰🇿", "İran": "🇮🇷", "Vietnam": "🇻🇳", "Suriye": "🇸🇾", "Endonezya": "🇮🇩", "Umman": "🇴🇲", "Afganistan": "🇦🇫", "Ürdün": "🇯🇴", "Malezya": "🇲🇾", "Tayland": "🇹🇭", "BAE": "🇦🇪", "Katar": "🇶🇦", "Kırgızistan": "🇰🇬", "Nijerya": "🇳🇬", "Kamerun": "🇨🇲", "Gana": "🇬🇭", "Fildişi": "🇨🇮", "Senegal": "🇸🇳", "Mısır": "🇪🇬", "Fas": "🇲🇦", "Cezayir": "🇩🇿", "Tunus": "🇹🇳", "Libya": "🇱🇾", "Zambiya": "🇿🇲", "Zimbabve": "🇿🇼", "Güney Afrika": "🇿🇦", "Tanzanya": "🇹🇿", "Kenya": "🇰🇪", "Kongo": "🇨🇬", "DR Kongo": "🇨🇩", "Gine": "🇬🇳", "Mali": "🇲🇱", "İtalya": "🇮🇹", "İspanya": "🇪🇸", "Portekiz": "🇵🇹", "Fransa": "🇫🇷", "Almanya": "🇩🇪", "Hollanda": "🇳🇱", "Belçika": "🇧🇪", "İngiltere": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "İskoçya": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Galler": "🏴󠁧󠁢󠁷󠁬󠁳󠁿", "Kuzey İrlanda": "🇯🇪", "İrlanda": "🇮🇪", "İsviçre": "🇨🇭", "Avusturya": "🇦🇹", "Polonya": "🇵🇱", "Macaristan": "🇭🇺", "Çekya": "🇨🇿", "Slovakya": "🇸🇰", "Rusya": "🇷🇺", "Ukrayna": "🇺🇦", "Belarus": "🇧🇾", "Romanya": "🇷🇴", "Bulgaristan": "🇧🇬", "Yunanistan": "🇬🇷", "Güney Kıbrıs": "🇨🇾", "Kuzey Kıbrıs": "🇹🇷", "Sırbistan": "🇷🇸", "Hırvatistan": "🇭🇷", "Bosna": "🇧🇦", "Slovenya": "🇸🇮", "Kuzey Makedonya": "🇲🇰", "Karadağ": "🇲🇪", "Kosova": "🇽🇰", "Arnavutluk": "🇦🇱", "Finlandiya": "🇫🇮", "İsveç": "🇸🇪", "Norveç": "🇳🇴", "Danimarka": "🇩🇰", "İzlanda": "🇮🇸", "Faroe": "🇫🇴", "Moldova": "🇲🇩", "San Marino": "🇸🇲", "Cebelitarık": "🇬🇮", "Andorra": "🇦🇩", "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
@@ -8893,7 +8907,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         let availableCountries = new Set();
         let counterOfferData = null; 
 
-        // --- LOGO YÜKLEME ---
+        // --- 3. YÜKLEME FONKSİYONLARI ---
         function loadLogo(imgElement, logoName, urlIndex = 0) {
             if (urlIndex >= LOGO_BASE_URLS.length) {
                 imgElement.style.display = 'none';
@@ -8904,11 +8918,36 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
+        // YÜZ YÜKLEME (9 KLASÖR TARAMASI)
+        function loadFace(containerElement, playerId, urlIndex = 0) {
+            if (urlIndex >= FACE_BASE_URLS.length) {
+                // Hiçbir yerde yoksa EMOJİYE DÖN
+                containerElement.innerHTML = document.getElementById("modalFlag").getAttribute("data-emoji");
+                containerElement.style.fontSize = "50px"; 
+                return;
+            }
+            
+            let img = containerElement.querySelector("img");
+            if (!img) {
+                containerElement.innerHTML = ""; 
+                img = document.createElement("img");
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
+                containerElement.appendChild(img);
+            }
+
+            let url = FACE_BASE_URLS[urlIndex] + playerId + ".png"; 
+            img.src = url;
+            img.onerror = function() { loadFace(containerElement, playerId, urlIndex + 1); };
+        }
+
         // --- LOCAL STORAGE ---
         function saveData() {
             localStorage.setItem('tbor_offers', JSON.stringify(offersDB));
             localStorage.setItem('tbor_transfers', JSON.stringify(transferHistory));
             localStorage.setItem('tbor_scouted', JSON.stringify(scoutedPlayers));
+            
             let soldPlayers = {};
             for(let id in playerDB) {
                 if(playerDB[id].team !== "Serbest" && playerDB[id].team !== "Bilinmiyor") {
@@ -8916,18 +8955,38 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 }
             }
             localStorage.setItem('tbor_sold_players', JSON.stringify(soldPlayers));
+
+            // Bütçeleri Kaydet
+            let budgets = {};
+            for(let key in teamCredentials) {
+                if(teamCredentials[key].role === "user") {
+                    budgets[key] = teamCredentials[key].budget;
+                }
+            }
+            localStorage.setItem('tbor_budgets', JSON.stringify(budgets));
         }
 
         function loadData() {
             if(localStorage.getItem('tbor_offers')) offersDB = JSON.parse(localStorage.getItem('tbor_offers'));
             if(localStorage.getItem('tbor_transfers')) transferHistory = JSON.parse(localStorage.getItem('tbor_transfers'));
             if(localStorage.getItem('tbor_scouted')) scoutedPlayers = JSON.parse(localStorage.getItem('tbor_scouted'));
+            
             if(localStorage.getItem('tbor_sold_players')) {
                 let soldMap = JSON.parse(localStorage.getItem('tbor_sold_players'));
                 for(let id in soldMap) {
                     if(playerDB[id]) {
                         playerDB[id].team = soldMap[id];
                         playerDB[id].status = "Sözleşmeli";
+                    }
+                }
+            }
+
+            // Bütçeleri Geri Yükle
+            if(localStorage.getItem('tbor_budgets')) {
+                let savedBudgets = JSON.parse(localStorage.getItem('tbor_budgets'));
+                for(let key in savedBudgets) {
+                    if(teamCredentials[key]) {
+                        teamCredentials[key].budget = savedBudgets[key];
                     }
                 }
             }
@@ -8979,20 +9038,29 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             const input = document.getElementById("passwordInput").value.toLowerCase();
             if (teamCredentials[input]) {
                 currentUser = teamCredentials[input];
+                currentUser.key = input; // Key'i sakla
                 document.getElementById("loginScreen").style.display = "none";
                 updateUserDisplay();
-                showToast(`Hoş geldin ${currentUser.name}! İtibarın: ${"⭐".repeat(currentUser.rep)}`, "success");
+                showToast(`Hoş geldin ${currentUser.name}! Bütçe: €${currentUser.budget}M`, "success");
             } else { document.getElementById("loginError").style.display = "block"; }
         }
 
         function loginAsGuest() {
-            currentUser = { name: "Misafir", role: "guest", logo: "", rep: 0 };
+            currentUser = { name: "Misafir", role: "guest", logo: "", rep: 0, budget: 0 };
             document.getElementById("loginScreen").style.display = "none";
             updateUserDisplay();
         }
 
         function updateUserDisplay() {
             document.getElementById("userDisplay").innerText = currentUser.name;
+            
+            // Bütçeyi Göster
+            if(currentUser.role === "user") {
+                document.getElementById("userBudget").innerText = `Bütçe: €${currentUser.budget.toFixed(1)}M`;
+            } else {
+                document.getElementById("userBudget").innerText = "";
+            }
+
             document.getElementById("userBadge").style.display = "flex";
             if(currentUser.logo) {
                 const imgEl = document.getElementById("headerLogo");
@@ -9007,6 +9075,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         // --- PARSE ---
         function parseData() {
+            loadData(); 
             const rawDataInput = document.getElementById("raw-data").value;
             if(!rawDataInput || rawDataInput.length < 20) return;
             const rawList = rawDataInput.split("ID: ");
@@ -9050,20 +9119,20 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                     let physique = generatePhysique(mevki);
 
-                    playerDB[id] = {
-                        id, name, mevki, yas, ca: parseInt(ca), flag: displayFlag, country: detectedCountry,
-                        continent: getContinent(detectedCountry),
-                        height: physique.h, weight: physique.w,
-                        status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
-                        team: item.includes("SERBEST") ? "Serbest" : "Bilinmiyor",
-                        value: deger, wage: maas, comment: yorum.trim(), attributes
-                    };
-                    
-                    // Scout durumu
-                    if(playerDB[id].status === "Serbest") {
-                        playerDB[id].isScouted = true; // Serbest oyuncular otomatik gözlemli
+                    // DB'de yoksa ekle
+                    if(!playerDB[id]) {
+                        playerDB[id] = {
+                            id, name, mevki, yas, ca: parseInt(ca), flag: displayFlag, country: detectedCountry,
+                            continent: getContinent(detectedCountry),
+                            height: physique.h, weight: physique.w,
+                            status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
+                            team: item.includes("SERBEST") ? "Serbest" : "Bilinmiyor",
+                            value: deger, wage: maas, comment: yorum.trim(), attributes
+                        };
+                        if(playerDB[id].status === "Serbest") playerDB[id].isScouted = true;
                     } else {
-                        playerDB[id].isScouted = scoutedPlayers.includes(id);
+                        // Var olanı güncelle (İsim vs değişmiş olabilir)
+                        playerDB[id].name = name; 
                     }
 
                     let posClass = getPosClass(mevki);
@@ -9096,7 +9165,15 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
-            document.getElementById("modalFlag").innerHTML = p.flag;
+            
+            // Emoji'yi sakla (Yüz yüklenemezse geri döneceğiz)
+            const modalFlag = document.getElementById("modalFlag");
+            modalFlag.innerHTML = p.flag; 
+            modalFlag.setAttribute("data-emoji", p.flag); 
+
+            // YÜZ YÜKLEME BAŞLAT
+            loadFace(modalFlag, p.id);
+
             document.getElementById("modalName").innerText = p.name;
             document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight} • ${p.status}`;
             document.getElementById("modalTeamBadge").innerHTML = p.team !== "Serbest" && p.team !== "Bilinmiyor" ? `<span style="color:var(--gold); font-weight:bold;">${p.team}</span>` : "";
@@ -9119,7 +9196,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 else { btn.disabled = false; btn.innerHTML = `<span id="scoutBtnText">🕵️ Gözlemci Gönder</span>`; }
             }
             document.getElementById("profileModal").style.display = "flex";
-            if(typeof twemoji !== 'undefined') twemoji.parse(document.getElementById("modalFlag"));
         }
 
         function scoutCurrentPlayer() {
@@ -9161,36 +9237,37 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("physStats").innerHTML=f;
         }
 
-        // --- İTİBAR VE MÜZAKERE ZEKASI ---
+        // --- İTİBAR, BÜTÇE VE MÜZAKERE ---
         function submitOffer() {
             const amountVal = parseFloat(document.getElementById("offerAmount").value);
             if(!amountVal || amountVal <= 0) return showToast("Geçerli bir miktar girin!", "error");
+
+            // BÜTÇE KONTROLÜ
+            if(amountVal > currentUser.budget) {
+                return showToast(`❌ Yetersiz Bütçe! (Mevcut: €${currentUser.budget.toFixed(1)}M)`, "error");
+            }
 
             const p = playerDB[currentPlayerId];
             let teamRep = currentUser.rep;
 
             // 1. DÜŞÜK İTİBAR CEZASI (TOXIC TAKIMLAR)
             if(teamRep <= 1) {
-                // Oyuncu CA'sı 110 üzerindeyse gelmek istemez
                 if(p.ca > 110) {
-                    let randomChance = Math.random();
-                    if(randomChance < 0.7) { // %70 Reddetme
-                         showToast(`Oyuncu temsilcisi: "${currentUser.name} kulübünün mevcut durumu nedeniyle oyuncum görüşmek istemiyor."`, "error");
+                    if(Math.random() < 0.7) { 
+                         showToast(`Oyuncu temsilcisi: "Kulübünüzün durumu nedeniyle oyuncum görüşmek istemiyor."`, "error");
                          return;
                     }
                 }
-                // Gelirse de 3 katı para ister
                 let baseVal = p.ca * 100000;
-                let minOffer = (baseVal * 3) / 1000000; // Milyon cinsinden
-                
+                let minOffer = (baseVal * 3) / 1000000; 
                 if(amountVal < minOffer) {
                     let counterAmount = minOffer.toFixed(1);
-                    triggerCounterOffer(`Kulübünüzün durumu riskli. ${counterAmount}M € altına imza atmam.`, counterAmount);
+                    triggerCounterOffer(`Riskli bir kulübe gelmem için en az ${counterAmount}M € gerekir.`, counterAmount);
                     return;
                 }
             }
 
-            // 2. YILDIZ OYUNCU KAPRİSİ (Yüksek CA, Düşük Rep)
+            // 2. YILDIZ OYUNCU KAPRİSİ
             if(p.ca > 135 && teamRep < 4) {
                  if(Math.random() < 0.4) {
                      let counterAmount = (amountVal * 1.5).toFixed(1);
@@ -9211,7 +9288,11 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         }
 
         function acceptCounterOffer() {
-            sendOfferProcess(parseFloat(counterOfferData));
+            let amount = parseFloat(counterOfferData);
+            if(amount > currentUser.budget) {
+                 return showToast(`❌ Karşı teklifi kabul edecek bütçeniz yok!`, "error");
+            }
+            sendOfferProcess(amount);
             document.getElementById("counterOfferArea").style.display = "none";
         }
 
@@ -9235,7 +9316,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             checkOfferStatus(p);
         }
 
-        // --- DİĞER FONKSİYONLAR ---
         function checkOfferStatus(p) {
             const offerArea = document.getElementById("offerArea");
             const myOffer = offersDB.find(o => o.playerId === p.id && o.team === currentUser.name && o.status !== "Reddedildi" && o.status !== "İptal Edildi");
@@ -9295,6 +9375,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let winner = allOffers[0];
                         winner.status = "Kabul Edildi";
                         for(let i=1; i<allOffers.length; i++) allOffers[i].status = "Reddedildi";
+                        
                         let isBotWinner = botTeams.some(bt => bt.name === winner.team);
                         if(isBotWinner) completeTransfer(winner);
                         else updateTicker(`✅ ${winner.team}, ${winner.playerName} teklifi kabul edildi!`);
@@ -9309,7 +9390,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function finalizeTransfer(offerId) {
             let offer = offersDB.find(o => o.id === offerId);
-            if(offer) { completeTransfer(offer); checkOfferStatus(playerDB[offer.playerId]); }
+            if(offer) { 
+                // BÜTÇEDEN DÜŞ
+                if(currentUser.budget >= offer.offerVal) {
+                    currentUser.budget -= offer.offerVal;
+                    // Bütçeyi güncelle ve kaydet
+                    teamCredentials[currentUser.key].budget = currentUser.budget; 
+                    saveData();
+                    updateUserDisplay();
+                    
+                    completeTransfer(offer); 
+                    checkOfferStatus(playerDB[offer.playerId]);
+                    showToast(`Transfer Tamam! Kalan Bütçe: €${currentUser.budget.toFixed(1)}M`, "success");
+                } else {
+                    showToast("Bu transferi tamamlamak için paranız yetmiyor!", "error");
+                }
+            }
         }
 
         function completeTransfer(offer) {
@@ -9329,7 +9425,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             else {
                 let html = "";
                 [...transferHistory].reverse().forEach(t => {
-                    let logoHTML = t.teamLogo ? `<img src="" id="hub_logo_${t.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    let logoHTML = t.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(t.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
                     html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${logoHTML}${t.team}</span><span class="t-price">${t.offer}</span></div>`;
                 });
                 transList.innerHTML = html;
@@ -9342,7 +9438,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 activeOffers.sort((a,b) => b.offerVal - a.offerVal);
                 let html = "";
                 activeOffers.slice(0, 10).forEach(o => {
-                    let logoHTML = o.teamLogo ? `<img src="" id="top_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
                     html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${logoHTML}${o.team}</span><span class="t-price">${o.offer}</span></div>`;
                 });
                 topList.innerHTML = html;
@@ -9383,7 +9479,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
             else {
                 [...offersDB].reverse().forEach(o => {
-                    let logoHTML = o.teamLogo ? `<img src="" id="all_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
                     tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${logoHTML}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
                 });
                 [...offersDB].reverse().forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`all_logo_${o.id}`), o.teamLogo); });
@@ -9420,3 +9516,5 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         window.onload = parseData;
     </script>
+</body>
+</html>
