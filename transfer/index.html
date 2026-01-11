@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro - Ultimate</title>
+    <title>Transfer Borsası Pro v3.0 (Simülasyon)</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
-        :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; --gold: #faa61a; }
+        :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; --gold: #faa61a; --gk: #d35400; --def: #2980b9; --mid: #27ae60; --fwd: #c0392b; }
         body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; padding-bottom: 60px; }
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
-        
+
+        /* TOAST BİLDİRİM (YENİ) */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; border-left: 5px solid gray; min-width: 250px; }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.info { border-left-color: var(--accent); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
         /* GİRİŞ EKRANI */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202225; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; background-image: radial-gradient(circle, #2f3136 0%, #202225 100%); }
         .login-box { background: #2f3136; padding: 40px; border-radius: 12px; text-align: center; border: 1px solid var(--accent); width: 320px; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
@@ -27,25 +36,35 @@
         .team-logo { width: 30px; height: 30px; object-fit: contain; }
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
-        /* FILTER BAR */
+        /* FİLTRE */
         .filter-bar { background: #292b2f; padding: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #40444b; }
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
         .filter-label { font-size: 11px; color: #aaa; font-weight: bold; text-transform: uppercase; }
         .filter-select, .filter-input { padding: 8px; background: #202225; border: 1px solid #40444b; color: white; border-radius: 5px; outline: none; min-width: 120px; }
 
-        /* GRID */
+        /* GRID ve MEVKİ RENKLERİ (YENİ) */
         .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
         .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+        
         .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-3px); background-color: #36393f; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        
+        /* MEVKİ RENKLERİ */
+        .pos-kl { border-left-color: var(--gk) !important; }
+        .pos-stp, .pos-bek { border-left-color: var(--def) !important; }
+        .pos-os, .pos-dos, .pos-oos { border-left-color: var(--mid) !important; }
+        .pos-snt, .pos-kanat { border-left-color: var(--fwd) !important; }
+        
+        /* Satılmış Oyuncu */
+        .card.sold { opacity: 0.6; filter: grayscale(100%); border-left-color: #555 !important; }
+
         .card-header { display: flex; justify-content: space-between; align-items: center; }
         .player-name { font-size: 16px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .player-meta { font-size: 12px; color: #b9bbbe; display: flex; gap: 8px; align-items: center; }
         .badge { padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; color: white; }
-        .badge-pos { background: #5865F2; }
+        .badge-pos { background: #40444b; }
         .badge-age { background: #4f545c; }
-        .status-free { border-left-color: var(--danger); }
-        .status-contract { border-left-color: var(--success); }
+        .custom-flag { height: 24px !important; width: auto !important; margin-left: 4px; vertical-align: middle; position: relative; top: -2px; }
 
         /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -60,6 +79,7 @@
         .val-high { color: var(--success); font-weight: bold; }
         .val-med { color: var(--gold); }
         .val-low { color: var(--danger); }
+        
         .action-area { margin-top: 20px; text-align: center; border-top: 1px solid #444; padding-top: 20px; }
         .main-btn { background: var(--accent); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .main-btn:disabled { background: #4f545c; cursor: not-allowed; opacity: 0.7; }
@@ -68,8 +88,8 @@
         .news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px 0; white-space: nowrap; overflow: hidden; z-index: 99; border-top: 3px solid #202225; font-size: 14px; font-weight: 500; }
         .ticker-content { display: inline-block; padding-left: 100%; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
-        
-        /* TRANSFER HUB STYLE */
+
+        /* TRANSFER HUB */
         .hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
         .hub-box { background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; height: 350px; overflow-y: auto; }
         .hub-title { color: var(--gold); border-bottom: 1px solid #555; padding-bottom: 5px; margin-bottom: 10px; font-size: 16px; }
@@ -78,10 +98,10 @@
         .t-team { color: #aaa; font-size: 12px; }
         .t-price { color: var(--success); font-weight: bold; }
         .sign-btn { background: linear-gradient(45deg, #3ba55c, #2d7d46); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 165, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0); } }
         
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         .offer-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         .offer-table th { text-align: left; color: var(--gold); border-bottom: 1px solid #555; padding: 8px; }
         .offer-table td { padding: 8px; border-bottom: 1px solid #444; }
@@ -92,6 +112,7 @@
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
 
     <div id="loginScreen" class="login-overlay">
         <div class="login-box">
@@ -106,17 +127,18 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v2.5</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v3.0</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
-                <img src="" id="headerLogo" class="team-logo" style="display:none;">
+                <img src="" id="headerLogo" class="team-logo" onerror="this.style.display='none'">
                 <span id="userDisplay"></span>
             </div>
             <div id="adminPanel" style="display:none; gap:10px;">
                 <button class="admin-btn" style="background:#5865F2;" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
                 <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
                 <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
+                <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️ Sıfırla</button>
             </div>
         </div>
     </div>
@@ -188,6 +210,7 @@
                 <div>
                     <h2 id="modalName" style="color:white; margin:0 0 5px 0;">Oyuncu Adı</h2>
                     <div style="color:#aaa; font-size:14px;" id="modalMeta">Bilgiler...</div>
+                    <div id="modalTeamBadge" style="margin-top:5px; font-weight:bold; color:var(--gold);"></div>
                 </div>
             </div>
             <div class="profile-body">
@@ -215,6 +238,7 @@
                         <div class="stat-box"><h4>Fiziksel</h4><div id="physStats"></div></div>
                     </div>
                     <div class="action-area" id="offerArea"></div>
+                    
                     <div id="offerInputs" style="display:none; flex-direction:column; align-items:center; gap:10px; margin-top:10px;">
                         <input type="number" id="offerAmount" class="offer-input" placeholder="Tutar (€)...">
                         <div style="display:flex; gap:10px;">
@@ -222,6 +246,16 @@
                             <button class="confirm-btn" style="background:#ed4245;" onclick="hideOfferInputs()">İptal</button>
                         </div>
                     </div>
+
+                    <div id="counterOfferArea" style="display:none; background:#443300; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #faa61a;">
+                        <h4 style="color:#faa61a; margin:0 0 10px 0;">⚠️ Oyuncu Karşı Teklif Yaptı!</h4>
+                        <p id="counterText" style="font-size:13px; margin-bottom:10px;">"Kulübünüzün itibarı benim için düşük. Eğer <b id="counterVal"></b> önerirseniz düşünebilirim."</p>
+                        <div style="display:flex; gap:10px; justify-content:center;">
+                            <button class="confirm-btn" onclick="acceptCounterOffer()">Kabul Et</button>
+                            <button class="confirm-btn" style="background:#ed4245;" onclick="rejectCounterOffer()">Reddet</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -233,14 +267,7 @@
             <h2 style="color:white; border-bottom:2px solid var(--gold); padding-bottom:10px;">📋 Tüm Teklifler</h2>
             <div style="overflow-x:auto;">
                 <table class="offer-table">
-                    <thead>
-                        <tr>
-                            <th>Takım</th>
-                            <th>Oyuncu</th>
-                            <th>Teklif</th>
-                            <th>Durum</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Takım</th><th>Oyuncu</th><th>Teklif</th><th>Durum</th></tr></thead>
                     <tbody id="offersTableBody"></tbody>
                 </table>
             </div>
@@ -8790,46 +8817,56 @@ Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlıl�
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
     </textarea>
-    <script>
-        // --- 1. AYARLAR (Çoklu Logo Desteği) ---
-        const LOGO_BASE_URLS = [
-            "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/", 
-            "https://raw.githubusercontent.com/SarpEfeKus/logolar2/main/", // Varsa buraya
-            "https://raw.githubusercontent.com/SarpEfeKus/logolar3/main/"  // Varsa buraya
-        ];
+<script>
+        // ----------------------------------------------------------------------------------
+        // AYARLAR - GELİŞMİŞ İTİBAR VE TAKIM SİSTEMİ
+        // ----------------------------------------------------------------------------------
+        
+        const GITHUB_REPO_URL = "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/"; 
 
+        // 1. İNSAN KULLANICILAR (Senin belirlediğin kullanıcılar ve YENİ İTİBAR PUANLARI)
         const teamCredentials = {
-            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "" },
-            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png" },
-            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png" },
-            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png" },
-            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png" },
-            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png" },
-            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png" },
-            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png" },
-            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png" }
+            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "", rep: 5 }, 
+            
+            // 5 YILDIZ: ELİT CAZİBE MERKEZLERİ
+            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png", rep: 5 }, // Son Şampiyon
+            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png", rep: 5 }, // Dev
+            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png", rep: 5 }, // Zengin
+            
+            // 4 YILDIZ: SAYGIN GÜÇLER
+            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png", rep: 4 }, // Yeni Zengin
+            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png", rep: 4 }, // Büyük
+            
+            // 3 YILDIZ: YÜKSELEN YILDIZLAR
+            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png", rep: 3 }, // Güvenli Liman
+            
+            // 2 YILDIZ: EKMEK TEKNESİ
+            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png", rep: 2 }, 
+            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png", rep: 2 } // Asansör korkusu
         };
 
+        // 2. BOT TAKIMLAR (YENİ İTİBAR PUANLARIYLA)
         const botTeams = [
-            { name: "Kayserispor", logo: "Kayserispor.png" },
-            { name: "Sivasspor", logo: "Sivasspor.png" },
-            { name: "Kocaelispor", logo: "Kocaelispor.png" },
-            { name: "Beşiktaş JK", logo: "Beşiktaş.png" },
-            { name: "Çaykur Rizespor", logo: "Rizespor.png" },
-            { name: "Kasımpaşa", logo: "Kasımpaşa.png" },
-            { name: "MKE Ankaragücü", logo: "Ankaragücü.png" },
-            { name: "Bursaspor", logo: "Bursaspor.png" },
-            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png" },
-            { name: "İstanbulspor", logo: "İstanbulspor.png" }
+            // 4 YILDIZ
+            { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4 }, // Yaralı Dev
+            
+            // 3 YILDIZ
+            { name: "Bursaspor", logo: "Bursaspor.png", rep: 3 }, // Şampiyonun Dönüşü
+
+            // 2 YILDIZ
+            { name: "Sivasspor", logo: "Sivasspor.png", rep: 2 },
+            { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2 },
+            { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2 },
+            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2 },
+
+            // 1 YILDIZ: RİSKLİ BÖLGE / KRİZ
+            { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1 },
+            { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1 },
+            { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1 },
+            { name: "Kayserispor", logo: "Kayserispor.png", rep: 1 } // TOXIC: Çok zor transfer yapar
         ];
 
-        // --- 2. DEĞİŞKENLER ---
-        let currentUser = null;
-        let playerDB = {};
-        let currentPlayerId = null;
-        let offersDB = [];
-        let transferHistory = [];
-        let availableCountries = new Set();
+        // ----------------------------------------------------------------------------------
 
         const continentMap = {
             "Europe": ["Türkiye", "Turkey", "Turkiye", "Almanya", "Fransa", "İtalya", "İspanya", "Portekiz", "Hollanda", "Belçika", "İngiltere", "İskoçya", "Galler", "İrlanda", "Kuzey İrlanda", "İsviçre", "Avusturya", "Polonya", "Macaristan", "Çekya", "Slovakya", "Rusya", "Ukrayna", "Belarus", "Romanya", "Bulgaristan", "Yunanistan", "Güney Kıbrıs", "Kuzey Kıbrıs", "Sırbistan", "Hırvatistan", "Bosna", "Bosna Hersek", "Slovenya", "Kuzey Makedonya", "Karadağ", "Kosova", "Arnavutluk", "Finlandiya", "İsveç", "Norveç", "Danimarka", "İzlanda", "Faroe", "Moldova", "San Marino", "Cebelitarık", "Andorra", "Lihtenştayn", "Lüksemburg", "Monako", "Malta"],
@@ -8843,7 +8880,82 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱", "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪", "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽", "Kanada": "🇨🇦", "Jamaika": "🇯🇲", "Martinik": "🇲🇶", "Guadeloupe": "🇬🇵", "Trinidad": "🇹🇹", "ABD": "🇺🇸", "Panama": "🇵🇦", "Kosta Rika": "🇨🇷", "Honduras": "🇭🇳", "Çin": "🇨🇳", "Güney Kore": "🇰🇷", "Kuzey Kore": "🇰🇵", "Japonya": "🇯🇵", "Avustralya": "🇦🇺", "Özbekistan": "🇺🇿", "Kazakistan": "🇰🇿", "İran": "🇮🇷", "Vietnam": "🇻🇳", "Suriye": "🇸🇾", "Endonezya": "🇮🇩", "Umman": "🇴🇲", "Afganistan": "🇦🇫", "Ürdün": "🇯🇴", "Malezya": "🇲🇾", "Tayland": "🇹🇭", "BAE": "🇦🇪", "Katar": "🇶🇦", "Kırgızistan": "🇰🇬", "Nijerya": "🇳🇬", "Kamerun": "🇨🇲", "Gana": "🇬🇭", "Fildişi": "🇨🇮", "Senegal": "🇸🇳", "Mısır": "🇪🇬", "Fas": "🇲🇦", "Cezayir": "🇩🇿", "Tunus": "🇹🇳", "Libya": "🇱🇾", "Zambiya": "🇿🇲", "Zimbabve": "🇿🇼", "Güney Afrika": "🇿🇦", "Tanzanya": "🇹🇿", "Kenya": "🇰🇪", "Kongo": "🇨🇬", "DR Kongo": "🇨🇩", "Gine": "🇬🇳", "Mali": "🇲🇱", "İtalya": "🇮🇹", "İspanya": "🇪🇸", "Portekiz": "🇵🇹", "Fransa": "🇫🇷", "Almanya": "🇩🇪", "Hollanda": "🇳🇱", "Belçika": "🇧🇪", "İngiltere": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "İskoçya": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Galler": "🏴󠁧󠁢󠁷󠁬󠁳󠁿", "Kuzey İrlanda": "🇯🇪", "İrlanda": "🇮🇪", "İsviçre": "🇨🇭", "Avusturya": "🇦🇹", "Polonya": "🇵🇱", "Macaristan": "🇭🇺", "Çekya": "🇨🇿", "Slovakya": "🇸🇰", "Rusya": "🇷🇺", "Ukrayna": "🇺🇦", "Belarus": "🇧🇾", "Romanya": "🇷🇴", "Bulgaristan": "🇧🇬", "Yunanistan": "🇬🇷", "Güney Kıbrıs": "🇨🇾", "Kuzey Kıbrıs": "🇹🇷", "Sırbistan": "🇷🇸", "Hırvatistan": "🇭🇷", "Bosna": "🇧🇦", "Slovenya": "🇸🇮", "Kuzey Makedonya": "🇲🇰", "Karadağ": "🇲🇪", "Kosova": "🇽🇰", "Arnavutluk": "🇦🇱", "Finlandiya": "🇫🇮", "İsveç": "🇸🇪", "Norveç": "🇳🇴", "Danimarka": "🇩🇰", "İzlanda": "🇮🇸", "Faroe": "🇫🇴", "Moldova": "🇲🇩", "San Marino": "🇸🇲", "Cebelitarık": "🇬🇮", "Andorra": "🇦🇩", "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
+        // --- 2. DEĞİŞKENLER ---
+        let currentUser = null;
+        let playerDB = {};
+        let currentPlayerId = null;
+        let offersDB = [];
+        let transferHistory = [];
+        let scoutedPlayers = [];
+        let availableCountries = new Set();
+        let counterOfferData = null; 
+
+        // --- 3. LOGO YÜKLEME ZİNCİRİ (Waterfall) ---
+        const LOGO_BASE_URLS = [
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/", 
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar2/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar3/main/"
+        ];
+
+        function loadLogo(imgElement, logoName, urlIndex = 0) {
+            if (urlIndex >= LOGO_BASE_URLS.length) {
+                imgElement.style.display = 'none';
+                return;
+            }
+            let url = LOGO_BASE_URLS[urlIndex] + encodeURIComponent(logoName);
+            imgElement.src = url;
+            imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
+        }
+
+        // --- LOCAL STORAGE ---
+        function saveData() {
+            localStorage.setItem('tbor_offers', JSON.stringify(offersDB));
+            localStorage.setItem('tbor_transfers', JSON.stringify(transferHistory));
+            localStorage.setItem('tbor_scouted', JSON.stringify(scoutedPlayers));
+            let soldPlayers = {};
+            for(let id in playerDB) {
+                if(playerDB[id].team !== "Serbest" && playerDB[id].team !== "Bilinmiyor") {
+                    soldPlayers[id] = playerDB[id].team;
+                }
+            }
+            localStorage.setItem('tbor_sold_players', JSON.stringify(soldPlayers));
+        }
+
+        function loadData() {
+            if(localStorage.getItem('tbor_offers')) offersDB = JSON.parse(localStorage.getItem('tbor_offers'));
+            if(localStorage.getItem('tbor_transfers')) transferHistory = JSON.parse(localStorage.getItem('tbor_transfers'));
+            if(localStorage.getItem('tbor_scouted')) scoutedPlayers = JSON.parse(localStorage.getItem('tbor_scouted'));
+            if(localStorage.getItem('tbor_sold_players')) {
+                let soldMap = JSON.parse(localStorage.getItem('tbor_sold_players'));
+                for(let id in soldMap) {
+                    if(playerDB[id]) {
+                        playerDB[id].team = soldMap[id];
+                        playerDB[id].status = "Sözleşmeli";
+                    }
+                }
+            }
+        }
+        
+        function clearData() {
+            if(confirm("TÜM VERİLER SİLİNECEK! Emin misin?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
         // --- YARDIMCI FONKSİYONLAR ---
+        function showToast(msg, type="info") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.innerHTML = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = "slideOut 0.3s ease-in forwards";
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         function generatePhysique(pos) {
             let h = pos.includes("KL") || pos.includes("STP") ? Math.floor(Math.random()*16+182) : Math.floor(Math.random()*17+168);
             let w = Math.floor(Math.random()*20+65);
@@ -8856,36 +8968,28 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
             return "Other";
         }
-        
-        // Logo Yükleme Zinciri (Waterfall)
-        function loadLogo(imgElement, logoName, urlIndex = 0) {
-            if (urlIndex >= LOGO_BASE_URLS.length) {
-                imgElement.style.display = 'none'; // Hiçbir yerde yoksa gizle
-                return;
-            }
-            // URL'i oluştur
-            let url = LOGO_BASE_URLS[urlIndex] + encodeURIComponent(logoName);
-            imgElement.src = url;
-            
-            // Eğer bu URL çalışmazsa bir sonrakini dene
-            imgElement.onerror = function() {
-                loadLogo(imgElement, logoName, urlIndex + 1);
-            };
+
+        function getPosClass(pos) {
+            if(pos.includes("KL")) return "pos-kl";
+            if(pos.includes("STP") || pos.includes("Bek")) return "pos-def";
+            if(pos.includes("OS") || pos.includes("OOS") || pos.includes("DOS")) return "pos-mid";
+            if(pos.includes("SNT") || pos.includes("Kanat")) return "pos-fwd";
+            return "";
         }
 
         // --- GİRİŞ ---
         function loginSystem() {
             const input = document.getElementById("passwordInput").value.toLowerCase();
-            const errorMsg = document.getElementById("loginError");
             if (teamCredentials[input]) {
                 currentUser = teamCredentials[input];
                 document.getElementById("loginScreen").style.display = "none";
                 updateUserDisplay();
-            } else { errorMsg.style.display = "block"; }
+                showToast(`Hoş geldin ${currentUser.name}! İtibarın: ${"⭐".repeat(currentUser.rep)}`, "success");
+            } else { document.getElementById("loginError").style.display = "block"; }
         }
 
         function loginAsGuest() {
-            currentUser = { name: "Misafir", role: "guest", logo: "" };
+            currentUser = { name: "Misafir", role: "guest", logo: "", rep: 0 };
             document.getElementById("loginScreen").style.display = "none";
             updateUserDisplay();
         }
@@ -8893,16 +8997,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         function updateUserDisplay() {
             document.getElementById("userDisplay").innerText = currentUser.name;
             document.getElementById("userBadge").style.display = "flex";
-            
-            if (currentUser.logo) {
+            if(currentUser.logo) {
                 const imgEl = document.getElementById("headerLogo");
                 imgEl.style.display = "block";
-                loadLogo(imgEl, currentUser.logo); // Yeni logo yükleme fonksiyonunu kullan
-            } else {
-                document.getElementById("headerLogo").style.display = "none";
+                loadLogo(imgEl, currentUser.logo);
             }
-
-            if (currentUser.role === "admin") {
+            if(currentUser.role === "admin") {
                 document.getElementById("adminPanel").style.display = "flex";
                 document.getElementById("userDisplay").style.color = "#ed4245";
             }
@@ -8959,12 +9059,16 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         height: physique.h, weight: physique.w,
                         status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
                         team: item.includes("SERBEST") ? "Serbest" : "Bilinmiyor",
-                        value: deger, wage: maas, comment: yorum.trim(), attributes, isScouted: false
+                        value: deger, wage: maas, comment: yorum.trim(), attributes
                     };
+                    
+                    playerDB[id].isScouted = scoutedPlayers.includes(id);
 
-                    let isFree = playerDB[id].status === "Serbest";
+                    let posClass = getPosClass(mevki);
+                    let freeBadge = playerDB[id].status === "Serbest" ? `<span class="badge" style="background:#ed4245;">BEDELSİZ</span>` : "";
+
                     gridHTML += `
-                        <div class="card ${isFree ? 'status-free' : 'status-contract'}" data-id="${id}" onclick="openProfile('${id}')">
+                        <div class="card ${posClass}" data-id="${id}" onclick="openProfile('${id}')">
                             <div class="card-header">
                                 <span class="flag-icon">${displayFlag}</span>
                                 <span style="color:#72767d; font-size:11px;">#${id}</span>
@@ -8973,62 +9077,31 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                             <div class="player-meta">
                                 <span class="badge badge-pos">${mevki.split(' ')[0]}</span>
                                 <span class="badge badge-age">${yas}</span>
-                                ${isFree ? '<span class="badge" style="background:#ed4245;">BEDELSİZ</span>' : ''}
+                                ${freeBadge}
                             </div>
                         </div>
                     `;
-                } catch(e) { console.warn("Veri okuma hatası:", e); }
+                } catch(e) { console.warn("Hata:", e); }
             });
 
             document.getElementById("grid").innerHTML = gridHTML;
             populateCountryFilter();
             if(typeof twemoji !== 'undefined') twemoji.parse(document.body);
+            loadData();
         }
 
-        // --- FİLTRE ---
-        function populateCountryFilter() {
-            const select = document.getElementById("filterCountry");
-            let sortedCountries = Array.from(availableCountries).sort();
-            sortedCountries.forEach(c => {
-                let opt = document.createElement("option"); opt.value = c; opt.innerText = c; select.appendChild(opt);
-            });
-        }
-        function filterAll() {
-            const nameInput = document.getElementById("filterName").value.toUpperCase();
-            const posInput = document.getElementById("filterPos").value;
-            const contInput = document.getElementById("filterContinent").value;
-            const ageInput = document.getElementById("filterAge").value;
-            const countryInput = document.getElementById("filterCountry").value;
-            const cards = document.getElementsByClassName("card");
-
-            for (let i = 0; i < cards.length; i++) {
-                let id = cards[i].getAttribute("data-id");
-                let p = playerDB[id];
-                let show = true;
-                if (p.name.toUpperCase().indexOf(nameInput) === -1) show = false;
-                if (posInput !== "all" && !p.mevki.includes(posInput)) {
-                    if (posInput === "Bek" && (p.mevki.includes("SĞB") || p.mevki.includes("SLB"))) {} 
-                    else if (posInput === "Kanat" && (p.mevki.includes("SĞK") || p.mevki.includes("SLK"))) {} 
-                    else show = false;
-                }
-                if (contInput !== "all" && p.continent !== contInput) show = false;
-                if (countryInput !== "all" && p.country !== countryInput) show = false;
-                if (ageInput !== "all") {
-                    if (ageInput === "u21" && p.yas >= 21) show = false;
-                    if (ageInput === "21-29" && (p.yas < 21 || p.yas > 29)) show = false;
-                    if (ageInput === "30+" && p.yas < 30) show = false;
-                }
-                cards[i].style.display = show ? "flex" : "none";
-            }
-        }
-
-        // --- PROFİL VE İŞLEMLER ---
+        // --- PROFİL ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
             document.getElementById("modalFlag").innerHTML = p.flag;
             document.getElementById("modalName").innerText = p.name;
-            document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.team}`;
+            document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight} • ${p.status}`;
+            
+            // Eğer oyuncu satıldıysa takım adını göster
+            let teamDisplay = p.team !== "Serbest" && p.team !== "Bilinmiyor" ? `<span style="color:var(--gold); font-weight:bold;">${p.team}</span>` : "";
+            document.getElementById("modalTeamBadge").innerHTML = teamDisplay;
+
             if (p.team === currentUser.name) {
                 document.getElementById("scoutedView").style.display = "block";
                 document.getElementById("unscoutedView").style.display = "none";
@@ -9037,6 +9110,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 document.getElementById("profileModal").style.display = "flex";
                 return;
             }
+
             if (p.isScouted) { showScoutedData(p); } 
             else {
                 document.getElementById("unscoutedView").style.display = "block";
@@ -9050,10 +9124,14 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         }
 
         function scoutCurrentPlayer() {
+            if(currentUser.role === "guest") return;
             document.getElementById("btnScout").innerHTML = `<span class="loader"></span>`;
             setTimeout(() => {
                 playerDB[currentPlayerId].isScouted = true;
+                scoutedPlayers.push(currentPlayerId);
+                saveData();
                 showScoutedData(playerDB[currentPlayerId]);
+                showToast("Rapor hazırlandı.", "success");
             }, 800);
         }
 
@@ -9064,8 +9142,10 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("modalValue").style.color = p.status==="Serbest" ? "#ed4245" : "#3ba55c";
             document.getElementById("modalWage").innerText = p.wage;
             document.getElementById("modalComment").innerText = `"${p.comment}"`;
+            
             showAttributes(p);
             checkOfferStatus(p);
+            document.getElementById("counterOfferArea").style.display = "none"; 
         }
 
         function showAttributes(p) {
@@ -9082,56 +9162,112 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("physStats").innerHTML=f;
         }
 
+        // --- İTİBAR VE MÜZAKERE ZEKASI ---
+        function submitOffer() {
+            const amountVal = parseFloat(document.getElementById("offerAmount").value);
+            if(!amountVal || amountVal <= 0) return showToast("Geçerli bir miktar girin!", "error");
+
+            const p = playerDB[currentPlayerId];
+            let teamRep = currentUser.rep;
+
+            // 1. DÜŞÜK İTİBAR CEZASI (TOXIC TAKIMLAR)
+            if(teamRep <= 1) {
+                // Oyuncu CA'sı 110 üzerindeyse gelmek istemez
+                if(p.ca > 110) {
+                    let randomChance = Math.random();
+                    if(randomChance < 0.7) { // %70 Reddetme
+                         showToast(`Oyuncu temsilcisi: "${currentUser.name} kulübünün mevcut durumu nedeniyle oyuncum görüşmek istemiyor."`, "error");
+                         return;
+                    }
+                }
+                // Gelirse de 3 katı para ister
+                let baseVal = p.ca * 100000;
+                let minOffer = (baseVal * 3) / 1000000; // Milyon cinsinden
+                
+                if(amountVal < minOffer) {
+                    let counterAmount = minOffer.toFixed(1);
+                    triggerCounterOffer(`Kulübünüzün durumu riskli. ${counterAmount}M € altına imza atmam.`, counterAmount);
+                    return;
+                }
+            }
+
+            // 2. YILDIZ OYUNCU KAPRİSİ (Yüksek CA, Düşük Rep)
+            // Eğer oyuncu CA > 135 ve Takım Rep < 4 ise
+            if(p.ca > 135 && teamRep < 4) {
+                 // %40 ihtimalle karşı teklif
+                 if(Math.random() < 0.4) {
+                     let counterAmount = (amountVal * 1.5).toFixed(1);
+                     triggerCounterOffer(`Daha büyük hedeflerim var ama ${counterAmount}M € verirseniz düşünebilirim.`, counterAmount);
+                     return;
+                 }
+            }
+
+            // 3. NORMAL TEKLİF
+            sendOfferProcess(amountVal);
+        }
+
+        function triggerCounterOffer(msg, amount) {
+            document.getElementById("offerInputs").style.display = "none";
+            document.getElementById("counterOfferArea").style.display = "block";
+            document.getElementById("counterText").innerText = `"${msg}"`;
+            document.getElementById("counterVal").innerText = `€${amount}M`;
+            counterOfferData = amount;
+        }
+
+        function acceptCounterOffer() {
+            sendOfferProcess(parseFloat(counterOfferData));
+            document.getElementById("counterOfferArea").style.display = "none";
+        }
+
+        function rejectCounterOffer() {
+            document.getElementById("counterOfferArea").style.display = "none";
+            document.getElementById("btnMakeOffer").style.display = "inline-flex";
+            showToast("Görüşmeler sonlandırıldı.", "error");
+        }
+
+        function sendOfferProcess(amountVal) {
+            const p = playerDB[currentPlayerId];
+            const amountStr = `€${amountVal}M`;
+            offersDB.push({
+                id: Date.now().toString(), team: currentUser.name, teamLogo: currentUser.logo,
+                playerName: p.name, playerId: p.id, offerVal: amountVal,
+                offer: amountStr, status: "Değerlendiriliyor", timestamp: Date.now()
+            });
+            saveData(); 
+            showToast("Teklifiniz kulübe iletildi!", "success");
+            updateTicker(`📢 ${currentUser.name}, ${p.name} için ${amountStr} teklif yaptı!`);
+            checkOfferStatus(p);
+        }
+
+        // --- DİĞER FONKSİYONLAR ---
         function checkOfferStatus(p) {
             const offerArea = document.getElementById("offerArea");
             const myOffer = offersDB.find(o => o.playerId === p.id && o.team === currentUser.name && o.status !== "Reddedildi" && o.status !== "İptal Edildi");
+            
+            document.getElementById("offerInputs").style.display = "none";
+            
             if (myOffer) {
                 if (myOffer.status === "Kabul Edildi") {
                     offerArea.innerHTML = `
                         <div style="text-align:center;">
                             <h3 style="color:#3ba55c;">🎉 TEKLİFİNİZ KABUL EDİLDİ!</h3>
                             <button class="sign-btn" onclick="finalizeTransfer('${myOffer.id}')">✍️ SÖZLEŞME İMZALA (${myOffer.offer})</button>
-                        </div>
-                    `;
+                        </div>`;
                 } else if(myOffer.status === "İmzalandı") {
                     offerArea.innerHTML = `<div style="background:#2d7d46; padding:10px; border-radius:5px; color:white; font-weight:bold;">✅ Transfer Tamamlandı</div>`;
                 } else {
-                    offerArea.innerHTML = `<div style="background:#faa61a; color:#222; padding:10px; border-radius:5px; font-weight:bold; text-align:center;">⏳ Teklifiniz Değerlendiriliyor... (${myOffer.offer})</div>`;
+                    offerArea.innerHTML = `<div style="background:#faa61a; color:#222; padding:10px; border-radius:5px; font-weight:bold; text-align:center;">⏳ Teklif Değerlendiriliyor... (${myOffer.offer})</div>`;
                 }
             } else {
-                if(currentUser.role === "guest") {
-                    offerArea.innerHTML = "";
-                } else {
-                    offerArea.innerHTML = `
-                        <button class="main-btn" style="background:#2d7d46;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>
-                        <div id="offerInputs" style="display:none; flex-direction:column; align-items:center; gap:10px;">
-                            <input type="number" id="offerAmount" class="offer-input" placeholder="Milyon €">
-                            <div style="display:flex; gap:10px;">
-                                <button class="confirm-btn" onclick="submitOffer()">Teklifi İlet</button>
-                                <button class="confirm-btn" style="background:#ed4245;" onclick="hideOfferInputs()">İptal</button>
-                            </div>
-                        </div>
-                    `;
+                if(currentUser.role === "guest") offerArea.innerHTML = "";
+                else {
+                    offerArea.innerHTML = `<button class="main-btn" style="background:#2d7d46;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>`;
                 }
             }
         }
 
         function showOfferInputs() { document.getElementById("btnMakeOffer").style.display="none"; document.getElementById("offerInputs").style.display="flex"; }
         function hideOfferInputs() { document.getElementById("offerInputs").style.display="none"; document.getElementById("btnMakeOffer").style.display="inline-flex"; }
-
-        function submitOffer() {
-            const amountVal = document.getElementById("offerAmount").value;
-            if(!amountVal || amountVal <= 0) return alert("Geçerli bir miktar girin!");
-            const p = playerDB[currentPlayerId];
-            const amountStr = `€${amountVal}M`;
-            offersDB.push({
-                id: Date.now().toString(), team: currentUser.name, teamLogo: currentUser.logo,
-                playerName: p.name, playerId: p.id, offerVal: parseFloat(amountVal),
-                offer: amountStr, status: "Değerlendiriliyor", timestamp: Date.now()
-            });
-            updateTicker(`📢 ${currentUser.name}, ${p.name} için ${amountStr} teklif yaptı!`);
-            checkOfferStatus(p);
-        }
 
         function advanceGame() {
             if (currentUser.role !== "admin") return;
@@ -9141,13 +9277,16 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 let rP = playerDB[keys[Math.floor(Math.random()*keys.length)]];
                 let rT = botTeams[Math.floor(Math.random()*botTeams.length)];
                 if(rP.team !== "Serbest" && rP.team !== "Bilinmiyor" && !rP.team.includes("Spor")) continue; 
-                let baseVal = rP.ca / 10;
-                let offerVal = (baseVal * (0.8 + Math.random())).toFixed(1);
+                
+                // Bot Teklif Zekası (İtibara göre)
+                let baseVal = rP.ca * 100000;
+                let multiplier = 0.8 + (rT.rep * 0.1); // Yüksek itibar daha iyi teklif verebilir
+                let offerVal = (baseVal * multiplier).toFixed(1) / 1000000; 
                 
                 offersDB.push({
                     id: Date.now() + i, team: rT.name, teamLogo: rT.logo,
                     playerName: rP.name, playerId: rP.id, offerVal: parseFloat(offerVal),
-                    offer: `€${offerVal}M`, status: "Değerlendiriliyor", timestamp: Date.now()
+                    offer: `€${offerVal.toFixed(1)}M`, status: "Değerlendiriliyor", timestamp: Date.now()
                 });
                 botOfferCount++;
             }
@@ -9169,7 +9308,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                     processedPlayers.add(offer.playerId);
                 }
             });
-            alert(`Hafta ilerletildi.\nKararlar verildi.`);
+            saveData();
+            showToast(`Hafta ilerletildi. ${botOfferCount} bot teklifi.`, "success");
             updateHub();
         }
 
@@ -9183,37 +9323,27 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             let p = playerDB[offer.playerId];
             p.team = offer.team; p.status = "Sözleşmeli"; p.value = offer.offer;
             offer.status = "İmzalandı";
+            saveData();
             updateTicker(`🚨 RESMİ: ${offer.playerName} >> ${offer.team} Transferi Bitti!`);
             updateHub();
         }
 
         function openTransferHub() { updateHub(); document.getElementById("transferHubModal").style.display = "flex"; }
-
         function updateHub() {
             const transList = document.getElementById("completedTransfersList");
             if(transferHistory.length === 0) { transList.innerHTML = "<p style='color:#666; text-align:center;'>Henüz gerçekleşen transfer yok.</p>"; } 
             else {
                 let html = "";
                 [...transferHistory].reverse().forEach(t => {
-                    let imgTag = "";
-                    if(t.teamLogo) {
-                         imgTag = `<img id="logo_${t.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">`;
-                    }
+                    let logoUrl = "";
+                    // Logo bulma (Waterfall mantığı burada inline zor, basitçe 1. repodan çekelim şimdilik, ya da onerror ile halledelim)
+                    let imgTag = t.teamLogo ? `<img id="hub_logo_${t.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
                     html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${imgTag}${t.team}</span><span class="t-price">${t.offer}</span></div>`;
-                    // Logoları dinamik yüklemek için bir diziye atabiliriz ama şimdilik inline loadLogo çağırmak zor.
-                    // O yüzden logo URL'ini doğrudan yazıp onerror eklemek en iyisi.
                 });
                 transList.innerHTML = html;
-                
-                // HTML basıldıktan sonra resimleri yükle
-                [...transferHistory].reverse().forEach(t => {
-                    if(t.teamLogo) {
-                        let img = document.getElementById(`logo_${t.id}`);
-                        if(img) loadLogo(img, t.teamLogo);
-                    }
-                });
+                // Resimleri yükle
+                [...transferHistory].reverse().forEach(t => { if(t.teamLogo) loadLogo(document.getElementById(`hub_logo_${t.id}`), t.teamLogo); });
             }
-            
             const topList = document.getElementById("topOffersList");
             let activeOffers = offersDB.filter(o => o.status === "Değerlendiriliyor" || o.status === "Kabul Edildi");
             if(activeOffers.length === 0) { topList.innerHTML = "<p style='color:#666; text-align:center;'>Masada büyük teklif yok.</p>"; } 
@@ -9221,21 +9351,11 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 activeOffers.sort((a,b) => b.offerVal - a.offerVal);
                 let html = "";
                 activeOffers.slice(0, 10).forEach(o => {
-                    let imgTag = "";
-                    if(o.teamLogo) {
-                         imgTag = `<img id="offer_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">`;
-                    }
+                    let imgTag = o.teamLogo ? `<img id="top_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
                     html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${imgTag}${o.team}</span><span class="t-price">${o.offer}</span></div>`;
                 });
                 topList.innerHTML = html;
-                 
-                // HTML basıldıktan sonra resimleri yükle
-                activeOffers.slice(0, 10).forEach(o => {
-                    if(o.teamLogo) {
-                        let img = document.getElementById(`offer_logo_${o.id}`);
-                        if(img) loadLogo(img, o.teamLogo);
-                    }
-                });
+                activeOffers.slice(0, 10).forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`top_logo_${o.id}`), o.teamLogo); });
             }
         }
 
@@ -9244,28 +9364,41 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             tbody.innerHTML = "";
             if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
             else {
-                offersDB.forEach(o => {
-                    let imgTag = "";
-                    if(o.teamLogo) {
-                         // Tablo içinde id benzersiz olsun
-                         imgTag = `<img id="table_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">`;
-                    }
+                [...offersDB].reverse().forEach(o => {
+                    let imgTag = o.teamLogo ? `<img id="all_logo_${o.id}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
                     tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${imgTag}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
                 });
-                
-                // Resimleri yükle
-                offersDB.forEach(o => {
-                    if(o.teamLogo) {
-                        let img = document.getElementById(`table_logo_${o.id}`);
-                        if(img) loadLogo(img, o.teamLogo);
-                    }
-                });
+                [...offersDB].reverse().forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`all_logo_${o.id}`), o.teamLogo); });
             }
             document.getElementById("offersModal").style.display = "flex";
         }
-        
         function closeOffersModal() { document.getElementById("offersModal").style.display = "none"; }
         function closeModal(e) { if (e === null || e.target.classList.contains("modal-overlay")) { document.querySelectorAll(".modal-overlay").forEach(m => m.style.display="none"); } }
+        function populateCountryFilter() {
+            const select = document.getElementById("filterCountry");
+            let sortedCountries = Array.from(availableCountries).sort();
+            sortedCountries.forEach(c => { let opt = document.createElement("option"); opt.value = c; opt.innerText = c; select.appendChild(opt); });
+        }
+        function filterAll() {
+            const nameInput = document.getElementById("filterName").value.toUpperCase();
+            const posInput = document.getElementById("filterPos").value;
+            const contInput = document.getElementById("filterContinent").value;
+            const ageInput = document.getElementById("filterAge").value;
+            const countryInput = document.getElementById("filterCountry").value;
+            const cards = document.getElementsByClassName("card");
+
+            for (let i = 0; i < cards.length; i++) {
+                let id = cards[i].getAttribute("data-id");
+                let p = playerDB[id];
+                let show = true;
+                if (p.name.toUpperCase().indexOf(nameInput) === -1) show = false;
+                if (posInput !== "all" && !p.mevki.includes(posInput)) { if (posInput === "Bek" && (p.mevki.includes("SĞB") || p.mevki.includes("SLB"))) {} else if (posInput === "Kanat" && (p.mevki.includes("SĞK") || p.mevki.includes("SLK"))) {} else show = false; }
+                if (contInput !== "all" && p.continent !== contInput) show = false;
+                if (countryInput !== "all" && p.country !== countryInput) show = false;
+                if (ageInput !== "all") { if (ageInput === "u21" && p.yas >= 21) show = false; if (ageInput === "21-29" && (p.yas < 21 || p.yas > 29)) show = false; if (ageInput === "30+" && p.yas < 30) show = false; }
+                cards[i].style.display = show ? "flex" : "none";
+            }
+        }
 
         window.onload = parseData;
     </script>
