@@ -8729,28 +8729,63 @@ Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlıl�
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
     </textarea>
 
-    <script>
+<script>
+        // ----------------------------------------------------------------------------------
+        // AYARLAR - TAKIM VE BOT YAPILANDIRMASI
+        // ----------------------------------------------------------------------------------
+        
+        // GITHUB LOGO ADRESİ (Senin verdiğin adres)
+        const GITHUB_REPO_URL = "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/"; 
+
+        // 1. İNSAN KULLANICILAR (Şifreleri buradaki 'key' kısmıdır)
         const teamCredentials = {
-            "admin": { name: "YÖNETİCİ", role: "admin" },
-            "kayısı": { name: "Kayserispor", role: "user" },
-            "fırtına": { name: "Trabzonspor", role: "user" },
-            "kartal": { name: "Beşiktaş", role: "user" },
-            "aslan": { name: "Galatasaray", role: "user" },
-            "kanarya": { name: "Fenerbahçe", role: "user" },
-            "timsah": { name: "Bursaspor", role: "user" },
-            "şimşek": { name: "Adana Demirspor", role: "user" }
+            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "admin.png" },
+            "gözgöz":  { name: "Göztepe", role: "user", logo: "goztepe.png" },
+            "cimbom":  { name: "Galatasaray", role: "user", logo: "galatasaray.png" },
+            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "eyupspor.png" },
+            "fırtına": { name: "Trabzonspor", role: "user", logo: "trabzonspor.png" },
+            "fener":   { name: "Fenerbahçe", role: "user", logo: "fenerbahce.png" },
+            "samsun":  { name: "Samsunspor", role: "user", logo: "samsunspor.png" },
+            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "corumfk.png" },
+            "alanya":  { name: "Alanyaspor", role: "user", logo: "alanyaspor.png" }
         };
 
-        const botTeams = ["Başakşehir", "Konyaspor", "Antalyaspor", "Sivasspor", "Alanyaspor", "Kasımpaşa", "Göztepe", "Rizespor"];
+        // 2. BOT TAKIMLAR (Otomatik teklif yapacaklar)
+        const botTeams = [
+            { name: "Kayserispor", logo: "kayserispor.png" },
+            { name: "Sivasspor", logo: "sivasspor.png" },
+            { name: "Kocaelispor", logo: "kocaelispor.png" },
+            { name: "Beşiktaş JK", logo: "besiktas.png" },
+            { name: "Çaykur Rizespor", logo: "rizespor.png" },
+            { name: "Kasımpaşa", logo: "kasimpasa.png" },
+            { name: "MKE Ankaragücü", logo: "ankaragucu.png" },
+            { name: "Bursaspor", logo: "bursaspor.png" },
+            { name: "Gençlerbirliği", logo: "genclerbirligi.png" }
+        ];
+
+        // ----------------------------------------------------------------------------------
+
+        // KITA HARİTASI
+        const continentMap = {
+            "Europe": ["Türkiye", "Turkey", "Turkiye", "Almanya", "Fransa", "İtalya", "İspanya", "Portekiz", "Hollanda", "Belçika", "İngiltere", "İskoçya", "Galler", "İrlanda", "Kuzey İrlanda", "İsviçre", "Avusturya", "Polonya", "Macaristan", "Çekya", "Slovakya", "Rusya", "Ukrayna", "Belarus", "Romanya", "Bulgaristan", "Yunanistan", "Güney Kıbrıs", "Kuzey Kıbrıs", "Sırbistan", "Hırvatistan", "Bosna", "Bosna Hersek", "Slovenya", "Kuzey Makedonya", "Karadağ", "Kosova", "Arnavutluk", "Finlandiya", "İsveç", "Norveç", "Danimarka", "İzlanda", "Faroe", "Moldova", "San Marino", "Cebelitarık", "Andorra", "Lihtenştayn", "Lüksemburg", "Monako", "Malta"],
+            "South America": ["Brezilya", "Arjantin", "Uruguay", "Kolombiya", "Şili", "Peru", "Paraguay", "Ekvador", "Venezuela", "Bolivya"],
+            "Africa": ["Nijerya", "Kamerun", "Gana", "Fildişi", "Fildişi Sahili", "Senegal", "Mısır", "Fas", "Cezayir", "Tunus", "Libya", "Zambiya", "Zimbabve", "Güney Afrika", "Tanzanya", "Kenya", "Kongo", "DR Kongo", "Gine", "Mali"],
+            "Asia": ["Çin", "Güney Kore", "Kuzey Kore", "Japonya", "Avustralya", "Özbekistan", "Kazakistan", "İran", "Vietnam", "Suriye", "Endonezya", "Umman", "Afganistan", "Ürdün", "Malezya", "Tayland", "BAE", "Katar", "Kırgızistan"],
+            "North America": ["ABD", "Kanada", "Meksika", "Jamaika", "Martinik", "Guadeloupe", "Trinidad", "Panama", "Kosta Rika", "Honduras"]
+        };
+
         const emojiMap = {
             "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱", "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪", "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽", "Kanada": "🇨🇦", "Jamaika": "🇯🇲", "Martinik": "🇲🇶", "Guadeloupe": "🇬🇵", "Trinidad": "🇹🇹", "ABD": "🇺🇸", "Panama": "🇵🇦", "Kosta Rika": "🇨🇷", "Honduras": "🇭🇳", "Çin": "🇨🇳", "Güney Kore": "🇰🇷", "Kuzey Kore": "🇰🇵", "Japonya": "🇯🇵", "Avustralya": "🇦🇺", "Özbekistan": "🇺🇿", "Kazakistan": "🇰🇿", "İran": "🇮🇷", "Vietnam": "🇻🇳", "Suriye": "🇸🇾", "Endonezya": "🇮🇩", "Umman": "🇴🇲", "Afganistan": "🇦🇫", "Ürdün": "🇯🇴", "Malezya": "🇲🇾", "Tayland": "🇹🇭", "BAE": "🇦🇪", "Katar": "🇶🇦", "Kırgızistan": "🇰🇬", "Nijerya": "🇳🇬", "Kamerun": "🇨🇲", "Gana": "🇬🇭", "Fildişi": "🇨🇮", "Senegal": "🇸🇳", "Mısır": "🇪🇬", "Fas": "🇲🇦", "Cezayir": "🇩🇿", "Tunus": "🇹🇳", "Libya": "🇱🇾", "Zambiya": "🇿🇲", "Zimbabve": "🇿🇼", "Güney Afrika": "🇿🇦", "Tanzanya": "🇹🇿", "Kenya": "🇰🇪", "Kongo": "🇨🇬", "DR Kongo": "🇨🇩", "Gine": "🇬🇳", "Mali": "🇲🇱", "İtalya": "🇮🇹", "İspanya": "🇪🇸", "Portekiz": "🇵🇹", "Fransa": "🇫🇷", "Almanya": "🇩🇪", "Hollanda": "🇳🇱", "Belçika": "🇧🇪", "İngiltere": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "İskoçya": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Galler": "🏴󠁧󠁢󠁷󠁬󠁳󠁿", "Kuzey İrlanda": "🇯🇪", "İrlanda": "🇮🇪", "İsviçre": "🇨🇭", "Avusturya": "🇦🇹", "Polonya": "🇵🇱", "Macaristan": "🇭🇺", "Çekya": "🇨🇿", "Slovakya": "🇸🇰", "Rusya": "🇷🇺", "Ukrayna": "🇺🇦", "Belarus": "🇧🇾", "Romanya": "🇷🇴", "Bulgaristan": "🇧🇬", "Yunanistan": "🇬🇷", "Güney Kıbrıs": "🇨🇾", "Kuzey Kıbrıs": "🇹🇷", "Sırbistan": "🇷🇸", "Hırvatistan": "🇭🇷", "Bosna": "🇧🇦", "Slovenya": "🇸🇮", "Kuzey Makedonya": "🇲🇰", "Karadağ": "🇲🇪", "Kosova": "🇽🇰", "Arnavutluk": "🇦🇱", "Finlandiya": "🇫🇮", "İsveç": "🇸🇪", "Norveç": "🇳🇴", "Danimarka": "🇩🇰", "İzlanda": "🇮🇸", "Faroe": "🇫🇴", "Moldova": "🇲🇩", "San Marino": "🇸🇲", "Cebelitarık": "🇬🇮", "Andorra": "🇦🇩", "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
+        // Değişkenler
         let currentUser = null;
         let playerDB = {};
         let currentPlayerId = null;
         let offersDB = [];
+        let availableCountries = new Set(); 
 
+        // --- YARDIMCI FONKSİYONLAR ---
         function generatePhysique(pos) {
             let height, weight;
             if (pos.includes("KL") || pos.includes("STP")) {
@@ -8766,20 +8801,49 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             return { h: (height/100).toFixed(2) + " m", w: weight + " kg" };
         }
 
+        function getContinent(countryName) {
+            for (const [continent, countries] of Object.entries(continentMap)) {
+                if (countries.includes(countryName)) return continent;
+            }
+            return "Other";
+        }
+
+        // --- GİRİŞ İŞLEMLERİ ---
         function loginSystem() {
             const input = document.getElementById("passwordInput").value.toLowerCase();
             const errorMsg = document.getElementById("loginError");
+
             if (teamCredentials[input]) {
                 currentUser = teamCredentials[input];
                 document.getElementById("loginScreen").style.display = "none";
-                document.getElementById("userDisplay").innerText = "👤 " + currentUser.name;
-                if (currentUser.role === "admin") {
-                    document.getElementById("adminPanel").style.display = "flex";
-                    document.getElementById("userDisplay").style.color = "#ed4245";
-                }
+                updateUserDisplay();
             } else { errorMsg.style.display = "block"; }
         }
 
+        function loginAsGuest() {
+            currentUser = { name: "Misafir", role: "guest", logo: "" };
+            document.getElementById("loginScreen").style.display = "none";
+            updateUserDisplay();
+        }
+
+        function updateUserDisplay() {
+            document.getElementById("userDisplay").innerText = currentUser.name;
+            document.getElementById("userBadge").style.display = "flex";
+            
+            if (currentUser.logo) {
+                document.getElementById("headerLogo").src = GITHUB_REPO_URL + currentUser.logo;
+                document.getElementById("headerLogo").style.display = "block";
+            } else {
+                document.getElementById("headerLogo").style.display = "none";
+            }
+
+            if (currentUser.role === "admin") {
+                document.getElementById("adminPanel").style.display = "flex";
+                document.getElementById("userDisplay").style.color = "#ed4245";
+            }
+        }
+
+        // --- VERİ PARSE ETME ---
         function parseData() {
             try {
                 const rawDataInput = document.getElementById("raw-data").value;
@@ -8790,6 +8854,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 
                 rawList.forEach(item => {
                     if(item.trim() === "") return;
+
                     try {
                         let id = item.split("\n")[0].split("|")[0].trim();
                         let name = item.split("\n")[0].split("|")[1] ? item.split("\n")[0].split("|")[1].trim() : "İsimsiz";
@@ -8803,7 +8868,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let mevkiMatch = item.match(/Mevki: (.*?) \|/);
                         let mevki = mevkiMatch ? mevkiMatch[1].trim() : "Belirsiz";
                         let yasMatch = item.match(/Yaş: (\d+)/);
-                        let yas = yasMatch ? yasMatch[1] : "--";
+                        let yas = yasMatch ? parseInt(yasMatch[1]) : 0;
                         let caMatch = item.match(/CA: (\d+)/);
                         let ca = caMatch ? parseInt(caMatch[1]) : 100;
                         let degerMatch = item.match(/Değeri: (.*?) \|/);
@@ -8811,16 +8876,26 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let maasMatch = item.match(/Maaş: (.*?) (Yorum|GENÇ|$)/);
                         let maas = maasMatch ? maasMatch[1].replace("Yorum", "").trim() : "Bilinmiyor";
 
+                        // Ülke Bulma ve Emoji
                         let displayFlag = "🌍"; 
+                        let detectedCountry = "Bilinmiyor";
                         let ulkeMatch = item.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeMatch ? ulkeMatch[1].trim() : "";
 
-                        if (ulkeRaw.length < 2) { displayFlag = "🇹🇷"; } 
-                        else {
+                        if (ulkeRaw.length < 2) { 
+                            detectedCountry = "Türkiye";
+                            displayFlag = "🇹🇷";
+                        } else {
                             for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
-                                if (ulkeRaw.includes(countryName)) { displayFlag = emojiCode; break; }
+                                if (ulkeRaw.includes(countryName)) { 
+                                    displayFlag = emojiCode; 
+                                    detectedCountry = countryName;
+                                    break; 
+                                }
                             }
                         }
+                        
+                        availableCountries.add(detectedCountry); 
 
                         let attributes = {};
                         let attrRegex = /([a-zA-ZçÇğĞıİöÖşŞüÜ]+)(\d{2})/g;
@@ -8833,7 +8908,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let physique = generatePhysique(mevki);
 
                         playerDB[id] = {
-                            id, name, mevki, yas, ca, flag: displayFlag,
+                            id, name, mevki, yas, ca, flag: displayFlag, country: detectedCountry,
+                            continent: getContinent(detectedCountry),
                             height: physique.h, weight: physique.w,
                             status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
                             value: deger, wage: maas, comment: yorum, 
@@ -8841,25 +8917,27 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         };
 
                         let contractColor = playerDB[id].status === "Serbest" ? "status-free" : "status-contract";
-                        let freeBadge = playerDB[id].status === "Serbest" ? `<span style="color:#ed4245; font-size:11px; font-weight:bold;">(Bedelsiz)</span>` : "";
+                        let freeBadge = playerDB[id].status === "Serbest" ? `<span class="badge" style="background:#ed4245;">BEDELSİZ</span>` : "";
 
                         gridHTML += `
-                            <div class="card ${contractColor}" data-pos="${posGroup(mevki)}" onclick="openProfile('${id}')">
-                                <div class="card-left">
-                                    <div class="player-name">
-                                        <span class="flag-icon">${displayFlag}</span> ${name}
-                                    </div>
-                                    <div class="player-meta">
-                                        <span>${mevki}</span> • <span>${yas} Yaş</span>${freeBadge}
-                                    </div>
+                            <div class="card ${contractColor}" data-id="${id}" onclick="openProfile('${id}')">
+                                <div class="card-header">
+                                    <span class="flag-icon">${displayFlag}</span>
+                                    <span style="color:#72767d; font-size:11px;">#${id}</span>
                                 </div>
-                                <div class="card-right"><span style="font-size:20px;">👉</span></div>
+                                <div class="player-name">${name}</div>
+                                <div class="player-meta">
+                                    <span class="badge badge-pos">${mevki.split(' ')[0]}</span>
+                                    <span class="badge badge-age">${yas}</span>
+                                    ${freeBadge}
+                                </div>
                             </div>
                         `;
                     } catch (err) { console.warn("Hata:", err); }
                 });
 
                 document.getElementById("grid").innerHTML = gridHTML;
+                populateCountryFilter();
                 if(typeof twemoji !== 'undefined') setTimeout(() => { twemoji.parse(document.body); }, 100);
 
             } catch (mainErr) {
@@ -8868,14 +8946,54 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
         }
 
-        function posGroup(mevki) {
-            if(mevki.includes("KL")) return "KL";
-            if(mevki.includes("STP") || mevki.includes("Bek")) return "STP";
-            if(mevki.includes("OS") || mevki.includes("OOS") || mevki.includes("DOS")) return "OS";
-            if(mevki.includes("SNT") || mevki.includes("Kanat")) return "SNT";
-            return "all";
+        // --- FİLTRELEME MANTIĞI ---
+        function populateCountryFilter() {
+            const select = document.getElementById("filterCountry");
+            let sortedCountries = Array.from(availableCountries).sort();
+            sortedCountries.forEach(c => {
+                let opt = document.createElement("option");
+                opt.value = c;
+                opt.innerText = c;
+                select.appendChild(opt);
+            });
         }
 
+        function filterAll() {
+            const nameInput = document.getElementById("filterName").value.toUpperCase();
+            const posInput = document.getElementById("filterPos").value;
+            const contInput = document.getElementById("filterContinent").value;
+            const ageInput = document.getElementById("filterAge").value;
+            const countryInput = document.getElementById("filterCountry").value;
+
+            const cards = document.getElementsByClassName("card");
+
+            for (let i = 0; i < cards.length; i++) {
+                let id = cards[i].getAttribute("data-id");
+                let p = playerDB[id];
+                let show = true;
+
+                if (p.name.toUpperCase().indexOf(nameInput) === -1) show = false;
+
+                if (posInput !== "all" && !p.mevki.includes(posInput)) {
+                    if (posInput === "Bek" && (p.mevki.includes("SĞB") || p.mevki.includes("SLB"))) {} 
+                    else if (posInput === "Kanat" && (p.mevki.includes("SĞK") || p.mevki.includes("SLK"))) {} 
+                    else show = false;
+                }
+
+                if (contInput !== "all" && p.continent !== contInput) show = false;
+                if (countryInput !== "all" && p.country !== countryInput) show = false;
+
+                if (ageInput !== "all") {
+                    if (ageInput === "u21" && p.yas >= 21) show = false;
+                    if (ageInput === "21-29" && (p.yas < 21 || p.yas > 29)) show = false;
+                    if (ageInput === "30+" && p.yas < 30) show = false;
+                }
+
+                cards[i].style.display = show ? "flex" : "none";
+            }
+        }
+
+        // --- PROFİL MANTIĞI ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
@@ -8884,14 +9002,24 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("modalName").innerText = p.name;
             document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight} • ${p.status}`;
 
+            const isGuest = currentUser.role === "guest";
+
             if (p.isScouted) {
                 showScoutedData(p);
             } else {
                 document.getElementById("unscoutedView").style.display = "block";
                 document.getElementById("scoutedView").style.display = "none";
                 const btn = document.getElementById("btnScout");
-                btn.disabled = false;
-                btn.innerHTML = `<span id="scoutBtnText">🕵️ Gözlemci Gönder</span>`;
+                
+                if (isGuest) {
+                    btn.disabled = true;
+                    btn.innerHTML = "🚫 Misafirler Gözlemleyemez";
+                    btn.style.background = "#4f545c";
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span id="scoutBtnText">🕵️ Gözlemci Gönder</span>`;
+                    btn.style.background = "#5865F2";
+                }
             }
 
             document.getElementById("profileModal").style.display = "flex";
@@ -8899,6 +9027,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         }
 
         function scoutCurrentPlayer() {
+            if (currentUser.role === "guest") return; 
+
             const btn = document.getElementById("btnScout");
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Rapor Hazırlanıyor...`;
@@ -8953,9 +9083,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
             if (p.wage === "Bilinmiyor" || p.wage === "" || p.wage.includes("-")) {
                 wageDiv.innerHTML = `<span style="font-size:12px; color:#888;">Belirsiz</span> ${agentBtnHTML}`;
-            } else {
-                wageDiv.innerText = p.wage;
-            }
+            } else { wageDiv.innerText = p.wage; }
             
             document.getElementById("modalComment").innerText = `"${p.comment}"`;
 
@@ -8965,11 +9093,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
             for (const [key, val] of Object.entries(p.attributes)) {
                 let colorClass = "val-low";
-                if(val > 80) colorClass = "val-high";
-                else if(val > 55) colorClass = "val-med";
-
+                if(val > 80) colorClass = "val-high"; else if(val > 55) colorClass = "val-med";
                 let rowHTML = `<div class="stat-row"><span>${key}</span><span class="${colorClass}">${val}</span></div>`;
-
                 if (physKeys.includes(key)) physHTML += rowHTML;
                 else if (mentalKeys.includes(key)) mentalHTML += rowHTML;
                 else techHTML += rowHTML;
@@ -8979,11 +9104,18 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("mentalStats").innerHTML = mentalHTML || "Veri yok";
             document.getElementById("physStats").innerHTML = physHTML || "Veri yok";
 
-            document.getElementById("offerInputs").style.display = "none";
-            document.getElementById("btnMakeOffer").style.display = "inline-flex";
-            document.getElementById("offerStatus").innerText = "";
+            // Teklif Alanı (Misafir Kontrolü)
+            if (currentUser.role === "guest") {
+                document.getElementById("offerArea").style.display = "none";
+            } else {
+                document.getElementById("offerArea").style.display = "block";
+                document.getElementById("offerInputs").style.display = "none";
+                document.getElementById("btnMakeOffer").style.display = "inline-flex";
+                document.getElementById("offerStatus").innerText = "";
+            }
         }
 
+        // --- TEKLİF & BOT SİSTEMİ ---
         function showOfferInputs() {
             document.getElementById("btnMakeOffer").style.display = "none";
             document.getElementById("offerInputs").style.display = "flex";
@@ -9001,6 +9133,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             const p = playerDB[currentPlayerId];
             offersDB.push({
                 team: currentUser.name,
+                teamLogo: currentUser.logo, // İnsan logosu
                 playerName: p.name,
                 playerId: p.id,
                 offer: `€${amount}`,
@@ -9009,7 +9142,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
             document.getElementById("offerInputs").style.display = "none";
             const statusText = document.getElementById("offerStatus");
-            statusText.innerText = `✅ ${currentUser.name} olarak teklifiniz iletildi!`;
+            statusText.innerText = `✅ Teklif iletildi!`;
             statusText.style.color = "#3ba55c";
             updateTicker();
         }
@@ -9023,14 +9156,15 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             for(let i=0; i<numOffers; i++) {
                 const randId = keys[Math.floor(Math.random() * keys.length)];
                 const player = playerDB[randId];
-                const randTeam = botTeams[Math.floor(Math.random() * botTeams.length)];
+                const randBot = botTeams[Math.floor(Math.random() * botTeams.length)];
                 
                 let baseVal = player.ca * 100000; 
                 let offerVal = Math.floor(baseVal * (0.8 + Math.random() * 0.7));
                 let offerStr = `€${(offerVal/1000000).toFixed(1)}M`;
 
                 offersDB.push({
-                    team: randTeam,
+                    team: randBot.name,
+                    teamLogo: randBot.logo, // Bot logosu
                     playerName: player.name,
                     playerId: player.id,
                     offer: offerStr,
@@ -9057,9 +9191,17 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
             else {
                 offersDB.forEach(o => {
+                    // Logo var mı kontrolü
+                    let logoHTML = "";
+                    if(o.teamLogo) {
+                        logoHTML = `<img src="${GITHUB_REPO_URL + o.teamLogo}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;" onerror="this.style.display='none'">`;
+                    }
+
                     tbody.innerHTML += `
                         <tr>
-                            <td style="color:${o.team.includes('Yönetici')?'var(--danger)':'var(--gold)'}">${o.team}</td>
+                            <td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">
+                                ${logoHTML}${o.team}
+                            </td>
                             <td>${o.playerName}</td>
                             <td style="font-weight:bold; color:var(--success)">${o.offer}</td>
                             <td style="font-size:12px;">${o.status}</td>
@@ -9069,30 +9211,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
             document.getElementById("offersModal").style.display = "flex";
         }
+        
         function closeOffersModal() { document.getElementById("offersModal").style.display = "none"; }
         function closeModal(e) {
             if (e === null || e.target.classList.contains("modal-overlay")) {
                 document.getElementById("profileModal").style.display = "none";
                 document.getElementById("offersModal").style.display = "none";
-            }
-        }
-
-        function filterPlayers() {
-            let input = document.getElementById("searchInput").value.toUpperCase();
-            let cards = document.getElementsByClassName("card");
-            for (let i = 0; i < cards.length; i++) {
-                let name = cards[i].querySelector(".player-name").innerText;
-                if (name.toUpperCase().indexOf(input) > -1) cards[i].style.display = "flex"; else cards[i].style.display = "none";
-            }
-        }
-        function filterPosition(pos) {
-            let cards = document.getElementsByClassName("card");
-            let btns = document.getElementsByClassName("filter-btn");
-            for(let btn of btns) btn.classList.remove("active");
-            event.target.classList.add("active");
-            for (let i = 0; i < cards.length; i++) {
-                let cardPos = cards[i].getAttribute("data-pos");
-                if (pos === 'all' || cardPos === pos) cards[i].style.display = "flex"; else cards[i].style.display = "none";
             }
         }
 
