@@ -8789,34 +8789,42 @@ Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlıl�
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
     </textarea>
-    <script>
-        // --- AYARLAR ---
+   <script>
+        // ----------------------------------------------------------------------------------
+        // AYARLAR - GÜNCELLENMİŞ LOGO VE TAKIM İSİMLERİ
+        // ----------------------------------------------------------------------------------
+        
+        // GITHUB REPO ADRESİ
         const GITHUB_REPO_URL = "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/"; 
 
+        // 1. İNSAN KULLANICILAR (Senin belirlediğin şifreler ve dosya isimleri)
         const teamCredentials = {
-            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "admin.png" },
-            "gözgöz":  { name: "Göztepe", role: "user", logo: "goztepe.png" },
-            "cimbom":  { name: "Galatasaray", role: "user", logo: "galatasaray.png" },
-            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "eyupspor.png" },
-            "fırtına": { name: "Trabzonspor", role: "user", logo: "trabzonspor.png" },
-            "fener":   { name: "Fenerbahçe", role: "user", logo: "fenerbahce.png" },
-            "samsun":  { name: "Samsunspor", role: "user", logo: "samsunspor.png" },
-            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "corumfk.png" },
-            "alanya":  { name: "Alanyaspor", role: "user", logo: "alanyaspor.png" }
+            "admin":   { name: "YÖNETİCİ", role: "admin", logo: "" }, // Admin logosu yoksa boş kalsın
+            "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png" },
+            "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png" },
+            "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png" },
+            "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png" },
+            "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png" },
+            "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png" },
+            "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png" },
+            "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png" }
         };
 
+        // 2. BOT TAKIMLAR (Senin belirlediğin dosya isimleriyle)
         const botTeams = [
-            { name: "Kayserispor", logo: "kayserispor.png" },
-            { name: "Sivasspor", logo: "sivasspor.png" },
-            { name: "Kocaelispor", logo: "kocaelispor.png" },
-            { name: "Beşiktaş JK", logo: "besiktas.png" },
-            { name: "Çaykur Rizespor", logo: "rizespor.png" },
-            { name: "Kasımpaşa", logo: "kasimpasa.png" },
-            { name: "MKE Ankaragücü", logo: "ankaragucu.png" },
-            { name: "Bursaspor", logo: "bursaspor.png" },
-            { name: "Gençlerbirliği", logo: "genclerbirligi.png" },
-            { name: "İstanbulspor", logo: "istanbulspor.png" }
+            { name: "Kayserispor", logo: "Kayserispor.png" },
+            { name: "Sivasspor", logo: "Sivasspor.png" },
+            { name: "Kocaelispor", logo: "Kocaelispor.png" },
+            { name: "Beşiktaş JK", logo: "Beşiktaş.png" },
+            { name: "Çaykur Rizespor", logo: "Rizespor.png" },
+            { name: "Kasımpaşa", logo: "Kasımpaşa.png" },
+            { name: "MKE Ankaragücü", logo: "Ankaragücü.png" },
+            { name: "Bursaspor", logo: "Bursaspor.png" },
+            { name: "Gençlerbirliği", logo: "Gençlerbirliği.png" },
+            { name: "İstanbulspor", logo: "İstanbulspor.png" }
         ];
+
+        // ----------------------------------------------------------------------------------
 
         const continentMap = {
             "Europe": ["Türkiye", "Turkey", "Turkiye", "Almanya", "Fransa", "İtalya", "İspanya", "Portekiz", "Hollanda", "Belçika", "İngiltere", "İskoçya", "Galler", "İrlanda", "Kuzey İrlanda", "İsviçre", "Avusturya", "Polonya", "Macaristan", "Çekya", "Slovakya", "Rusya", "Ukrayna", "Belarus", "Romanya", "Bulgaristan", "Yunanistan", "Güney Kıbrıs", "Kuzey Kıbrıs", "Sırbistan", "Hırvatistan", "Bosna", "Bosna Hersek", "Slovenya", "Kuzey Makedonya", "Karadağ", "Kosova", "Arnavutluk", "Finlandiya", "İsveç", "Norveç", "Danimarka", "İzlanda", "Faroe", "Moldova", "San Marino", "Cebelitarık", "Andorra", "Lihtenştayn", "Lüksemburg", "Monako", "Malta"],
@@ -8838,9 +8846,18 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         let availableCountries = new Set();
 
         function generatePhysique(pos) {
-            let h = pos.includes("KL") || pos.includes("STP") ? Math.floor(Math.random()*16+182) : Math.floor(Math.random()*17+168);
-            let w = Math.floor(Math.random()*20+65);
-            return { h: (h/100).toFixed(2)+" m", w: w+" kg" };
+            let height, weight;
+            if (pos.includes("KL") || pos.includes("STP")) {
+                height = Math.floor(Math.random() * (198 - 182 + 1) + 182);
+                weight = Math.floor(Math.random() * (95 - 78 + 1) + 78);
+            } else if (pos.includes("DOS") || pos.includes("OS")) {
+                height = Math.floor(Math.random() * (188 - 175 + 1) + 175);
+                weight = Math.floor(Math.random() * (85 - 70 + 1) + 70);
+            } else { 
+                height = Math.floor(Math.random() * (185 - 168 + 1) + 168);
+                weight = Math.floor(Math.random() * (82 - 65 + 1) + 65);
+            }
+            return { h: (height/100).toFixed(2) + " m", w: weight + " kg" };
         }
 
         function getContinent(countryName) {
@@ -8852,11 +8869,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function loginSystem() {
             const input = document.getElementById("passwordInput").value.toLowerCase();
+            const errorMsg = document.getElementById("loginError");
             if (teamCredentials[input]) {
                 currentUser = teamCredentials[input];
                 document.getElementById("loginScreen").style.display = "none";
                 updateUserDisplay();
-            } else { document.getElementById("loginError").style.display = "block"; }
+            } else { errorMsg.style.display = "block"; }
         }
 
         function loginAsGuest() {
@@ -8869,8 +8887,13 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("userDisplay").innerText = currentUser.name;
             document.getElementById("userBadge").style.display = "flex";
             if(currentUser.logo) {
-                document.getElementById("headerLogo").src = GITHUB_REPO_URL + currentUser.logo;
+                // Burada github linkini ve dosya adını birleştiriyoruz
+                // encodeURI kullanıyoruz ki "Çorum FK" gibi boşluklu isimler bozulmasın
+                const fullLogoUrl = GITHUB_REPO_URL + encodeURI(currentUser.logo);
+                document.getElementById("headerLogo").src = fullLogoUrl;
                 document.getElementById("headerLogo").style.display = "block";
+            } else {
+                document.getElementById("headerLogo").style.display = "none";
             }
             if(currentUser.role === "admin") {
                 document.getElementById("adminPanel").style.display = "flex";
@@ -8956,7 +8979,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if(typeof twemoji !== 'undefined') twemoji.parse(document.body);
         }
 
-        // --- FILTER ---
         function populateCountryFilter() {
             const select = document.getElementById("filterCountry");
             let sortedCountries = Array.from(availableCountries).sort();
@@ -8964,6 +8986,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 let opt = document.createElement("option"); opt.value = c; opt.innerText = c; select.appendChild(opt);
             });
         }
+
         function filterAll() {
             const nameInput = document.getElementById("filterName").value.toUpperCase();
             const posInput = document.getElementById("filterPos").value;
@@ -8999,6 +9022,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("modalFlag").innerHTML = p.flag;
             document.getElementById("modalName").innerText = p.name;
             document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.team}`;
+            
             if (p.team === currentUser.name) {
                 document.getElementById("scoutedView").style.display = "block";
                 document.getElementById("unscoutedView").style.display = "none";
@@ -9007,6 +9031,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 document.getElementById("profileModal").style.display = "flex";
                 return;
             }
+
             if (p.isScouted) { showScoutedData(p); } 
             else {
                 document.getElementById("unscoutedView").style.display = "block";
@@ -9113,13 +9138,19 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 if(rP.team !== "Serbest" && rP.team !== "Bilinmiyor" && !rP.team.includes("Spor")) continue; 
                 let baseVal = rP.ca / 10;
                 let offerVal = (baseVal * (0.8 + Math.random())).toFixed(1);
+                
+                // Bot Logosu Ayarla (URL Encode Ederek)
+                let botLogo = rT.logo;
+                
                 offersDB.push({
-                    id: Date.now() + i, team: rT.name, teamLogo: rT.logo,
+                    id: Date.now() + i, team: rT.name, teamLogo: botLogo,
                     playerName: rP.name, playerId: rP.id, offerVal: parseFloat(offerVal),
                     offer: `€${offerVal}M`, status: "Değerlendiriliyor", timestamp: Date.now()
                 });
                 botOfferCount++;
             }
+            
+            // Değerlendirme
             let processedPlayers = new Set();
             offersDB.forEach(offer => {
                 if(offer.status === "Değerlendiriliyor" && !processedPlayers.has(offer.playerId)) {
@@ -9129,6 +9160,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let winner = allOffers[0];
                         winner.status = "Kabul Edildi";
                         for(let i=1; i<allOffers.length; i++) allOffers[i].status = "Reddedildi";
+                        
+                        // Bot Kazandıysa
                         let isBotWinner = botTeams.some(bt => bt.name === winner.team);
                         if(isBotWinner) completeTransfer(winner);
                         else updateTicker(`✅ ${winner.team}, ${winner.playerName} teklifi kabul edildi!`);
@@ -9162,7 +9195,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             else {
                 let html = "";
                 [...transferHistory].reverse().forEach(t => {
-                    html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${t.team}</span><span class="t-price">${t.offer}</span></div>`;
+                    let logoHTML = t.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(t.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${logoHTML}${t.team}</span><span class="t-price">${t.offer}</span></div>`;
                 });
                 transList.innerHTML = html;
             }
@@ -9173,7 +9207,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 activeOffers.sort((a,b) => b.offerVal - a.offerVal);
                 let html = "";
                 activeOffers.slice(0, 10).forEach(o => {
-                    html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${o.team}</span><span class="t-price">${o.offer}</span></div>`;
+                    let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${logoHTML}${o.team}</span><span class="t-price">${o.offer}</span></div>`;
                 });
                 topList.innerHTML = html;
             }
@@ -9182,10 +9217,13 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         function openOffersModal() {
             const tbody = document.getElementById("offersTableBody");
             tbody.innerHTML = "";
-            [...offersDB].reverse().forEach(o => {
-                let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + o.teamLogo}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;" onerror="this.style.display='none'">` : "";
-                tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${logoHTML}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
-            });
+            if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
+            else {
+                offersDB.forEach(o => {
+                    let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;" onerror="this.style.display='none'">` : "";
+                    tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${logoHTML}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
+                });
+            }
             document.getElementById("offersModal").style.display = "flex";
         }
         function closeOffersModal() { document.getElementById("offersModal").style.display = "none"; }
