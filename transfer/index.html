@@ -3,84 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası</title>
+    <title>Transfer Borsası v2</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
- <style>
+    
+    <style>
         :root { --bg-dark: #202225; --card-bg: #2f3136; --accent: #5865F2; --text: #dcddde; --success: #3ba55c; --danger: #ed4245; --gold: #faa61a; }
-        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; padding-bottom: 60px; /* Ticker için boşluk */ }
+        body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; padding-bottom: 60px; }
         
-        /* Temel Bileşenler */
-        img.emoji { height: 1.2em; width: 1.2em; margin: 0 2px; vertical-align: -0.2em; }
-        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: var(--bg-dark); padding: 10px 0; z-index: 80; border-bottom: 2px solid #2f3136; display: flex; flex-direction: column; gap: 10px; }
-        h1 { color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        /* Emoji Ayarı */
+        img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
         
-        /* Giriş Ekranı (Login Overlay) */
+        /* GİRİŞ EKRANI */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202225; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { background: #2f3136; padding: 40px; border-radius: 10px; text-align: center; border: 2px solid var(--accent); width: 300px; }
-        .login-input { padding: 10px; width: 80%; margin-bottom: 15px; border-radius: 5px; border: 1px solid #40444b; background: #202225; color: white; text-align: center; font-size: 16px; }
-        .login-btn { background: var(--success); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-        
-        /* Admin Paneli & Üst Bar */
+        .login-box { background: #2f3136; padding: 40px; border-radius: 10px; text-align: center; border: 2px solid var(--accent); width: 300px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .login-input { padding: 12px; width: 85%; margin-bottom: 15px; border-radius: 5px; border: 1px solid #40444b; background: #202225; color: white; text-align: center; font-size: 16px; outline: none; }
+        .login-btn { background: var(--success); color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        .login-btn:hover { background: #2d7d46; }
+
+        /* ÜST MENÜ */
+        .header { text-align: center; margin-bottom: 30px; position: sticky; top: 0; background-color: var(--bg-dark); padding: 10px 0; z-index: 80; border-bottom: 2px solid #2f3136; display: flex; flex-direction: column; gap: 10px; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 10px; }
-        .user-info { font-weight: bold; color: var(--gold); }
-        .admin-controls { display: none; gap: 10px; } /* Varsayılan gizli */
-        .admin-btn { background: var(--danger); color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
-        
-        /* Grid ve Kartlar */
+        .user-info { font-weight: bold; color: var(--gold); font-size: 14px; }
+        .admin-controls { display: none; gap: 10px; }
+        .admin-btn { background: var(--danger); color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        h1 { color: var(--accent); margin: 0; text-transform: uppercase; letter-spacing: 1px; font-size: 24px; }
+
         .search-container { display: flex; justify-content: center; gap: 10px; }
-        .search-box { padding: 12px; width: 300px; border-radius: 8px; border: 1px solid #2f3136; background-color: #40444b; color: white; font-size: 16px; outline: none; }
-        .filters { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .filter-btn { background-color: #2f3136; border: 1px solid var(--accent); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        .filter-btn:hover, .filter-btn.active { background-color: var(--accent); }
+        .search-box { padding: 10px; width: 300px; border-radius: 8px; border: 1px solid #2f3136; background-color: #40444b; color: white; outline: none; }
         
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        .filters { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .filter-btn { background-color: #2f3136; border: 1px solid var(--accent); color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        .filter-btn:hover, .filter-btn.active { background-color: var(--accent); }
+
+        /* KARTLAR */
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: space-between; }
         .card:hover { transform: translateY(-3px); background-color: #36393f; }
         .card-left { display: flex; flex-direction: column; gap: 5px; }
         .player-name { font-size: 16px; font-weight: bold; color: #fff; }
         .player-meta { font-size: 12px; color: #b9bbbe; display: flex; align-items: center; gap: 5px; }
-        
-        /* Kayan Yazı (Ticker) */
-        .news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px 0; white-space: nowrap; overflow: hidden; z-index: 99; border-top: 2px solid #fff; }
-        .ticker-content { display: inline-block; padding-left: 100%; animation: ticker 20s linear infinite; font-weight: bold; }
-        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .status-free { border-left-color: var(--danger); }
+        .status-contract { border-left-color: var(--success); }
 
-        /* Modal Stilleri */
+        /* MODAL (PROFİL) */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background-color: #2f3136; width: 90%; max-width: 700px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 20px; position: relative; border: 1px solid #40444b; }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; }
+        .modal-content { background-color: #2f3136; width: 90%; max-width: 700px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 25px; position: relative; border: 1px solid #40444b; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; transition: 0.2s; }
+        .modal-close:hover { color: white; }
+
+        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 20px; margin-bottom: 20px; }
+        .profile-avatar { font-size: 45px; background: #202225; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid var(--accent); }
         
-        /* Profil Detayları */
-        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 15px; }
-        .profile-avatar { font-size: 40px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; }
-        .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #40444b; padding: 2px 0; }
+        .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #444; padding: 4px 0; font-size: 13px; }
         .val-high { color: var(--success); font-weight: bold; }
         .val-med { color: var(--gold); }
         .val-low { color: var(--danger); }
 
-        .action-area { margin-top: 20px; text-align: center; }
-        .main-btn { background: var(--accent); color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px; }
-        .offer-input { padding: 10px; width: 60%; border-radius: 5px; border: 1px solid #444; background: #222; color: white; margin-right: 5px; display: none; } /* Başlangıçta gizli */
-        .confirm-btn { background: var(--success); padding: 10px; border: none; border-radius: 5px; color: white; cursor: pointer; display: none; }
-
-        .status-free { border-left-color: var(--danger); }
-        .status-contract { border-left-color: var(--success); }
+        .action-area { margin-top: 25px; text-align: center; border-top: 1px solid #444; padding-top: 20px; }
+        .main-btn { background: var(--accent); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .main-btn:hover { transform: scale(1.05); }
         
-        /* Teklif Listesi Tablosu */
+        .agent-btn { background: var(--gold); border: none; border-radius: 4px; padding: 3px 8px; cursor: pointer; font-weight: bold; color: #202225; font-size: 11px; margin-left: 5px; }
+        .agent-btn:hover { background: #e69500; }
+
+        /* TICKER (KAYAN YAZI) */
+        .news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 12px 0; white-space: nowrap; overflow: hidden; z-index: 99; border-top: 3px solid #202225; font-size: 14px; }
+        .ticker-content { display: inline-block; padding-left: 100%; animation: ticker 30s linear infinite; font-weight: bold; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+        /* Loader */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #error-msg { text-align: center; width: 100%; color: #ed4245; margin-top: 50px; font-size: 18px; display: none; }
+        
+        /* TEKLİF TABLOSU */
         .offer-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        .offer-table th { text-align: left; color: var(--gold); border-bottom: 1px solid #555; padding: 5px; }
-        .offer-table td { padding: 8px 5px; border-bottom: 1px solid #444; }
+        .offer-table th { text-align: left; color: var(--gold); border-bottom: 1px solid #555; padding: 8px; }
+        .offer-table td { padding: 8px; border-bottom: 1px solid #444; }
+        .offer-input { padding: 10px; border-radius: 5px; border: 1px solid #555; background: #222; color: white; width: 120px; text-align: center; }
+        .confirm-btn { background: var(--success); padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-<div id="loginScreen" class="login-overlay">
+
+    <div id="loginScreen" class="login-overlay">
         <div class="login-box">
-            <h2 style="color:#5865F2; margin-bottom:20px;">MENAJER GİRİŞİ</h2>
-            <p style="color:#aaa; font-size:12px; margin-bottom:15px;">Takım şifrenizi giriniz</p>
+            <h2 style="color:#5865F2; margin-bottom:10px;">MENAJER GİRİŞİ</h2>
+            <p style="color:#aaa; font-size:12px; margin-bottom:20px;">Takım şifrenizi giriniz</p>
             <input type="password" id="passwordInput" class="login-input" placeholder="Şifre...">
             <button class="login-btn" onclick="loginSystem()">GİRİŞ YAP</button>
-            <p id="loginError" style="color:red; font-size:12px; margin-top:10px; display:none;">Hatalı şifre!</p>
+            <p id="loginError" style="color:red; font-size:13px; margin-top:10px; display:none;">❌ Hatalı şifre!</p>
         </div>
     </div>
 
@@ -89,7 +102,7 @@
             <div class="user-info" id="userDisplay">👤 Misafir</div>
             <div class="admin-controls" id="adminPanel">
                 <button class="admin-btn" onclick="openOffersModal()">📋 Tüm Teklifler</button>
-                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTAYI İLERLET (BOTLAR)</button>
+                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTAYI İLERLET</button>
             </div>
         </div>
         <h1>🏆 Transfer Borsası</h1>
@@ -106,7 +119,7 @@
         </div>
     </div>
 
-    <div id="error-msg">⚠️ Veri hatası! Lütfen kodun içindeki listeyi kontrol et.</div>
+    <div id="error-msg">⚠️ Veri hatası! Lütfen aşağıdaki veri kutusunun dolu olduğundan emin ol.</div>
 
     <div class="player-grid" id="grid">
         <p style="text-align:center; width:100%; color:#888;">Veriler yükleniyor...</p>
@@ -121,44 +134,51 @@
     <div id="profileModal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal(null)">&times;</span>
+            
             <div class="profile-header">
                 <div class="profile-avatar" id="modalFlag">🌍</div>
                 <div>
-                    <h2 id="modalName" style="color:white; margin:0;">Oyuncu Adı</h2>
-                    <div style="color:#aaa; font-size:14px;" id="modalMeta">Mevki - Yaş</div>
+                    <h2 id="modalName" style="color:white; margin:0 0 5px 0;">Oyuncu Adı</h2>
+                    <div style="color:#aaa; font-size:14px;" id="modalMeta">Mevki • Yaş • Boy • Kilo</div>
                 </div>
             </div>
 
-            <div id="unscoutedView" style="text-align:center; padding:30px;">
-                <p style="color:#aaa;">Bu oyuncu hakkında detaylı bilgiye sahip değilsiniz.</p>
-                <button class="main-btn" onclick="scoutCurrentPlayer()" id="btnScout">🕵️ Gözlemci Gönder</button>
+            <div id="unscoutedView" style="text-align:center; padding:40px 0;">
+                <p style="color:#aaa; font-size:16px; margin-bottom:20px;">🔒 Bu oyuncu hakkında detaylı raporunuz yok.</p>
+                <button class="main-btn" onclick="scoutCurrentPlayer()" id="btnScout">
+                    <span id="scoutBtnText">🕵️ Gözlemci Gönder</span>
+                </button>
             </div>
 
             <div id="scoutedView" style="display:none;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px; background:#222; padding:10px; border-radius:5px;">
-                    <div style="text-align:center;">
-                        <div style="font-size:11px; color:#aaa;">Değer</div>
-                        <div style="color:#3ba55c; font-weight:bold;" id="modalValue">?</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px; background:#222; padding:15px; border-radius:8px; border:1px solid #444;">
+                    <div style="text-align:center; width:48%;">
+                        <div style="font-size:12px; color:#aaa; margin-bottom:5px;">Piyasa Değeri</div>
+                        <div style="color:#3ba55c; font-weight:bold; font-size:18px;" id="modalValue">?</div>
                     </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:11px; color:#aaa;">Maaş</div>
-                        <div style="color:#faa61a; font-weight:bold;" id="modalWage">?</div>
+                    <div style="text-align:center; width:48%; border-left:1px solid #444;">
+                        <div style="font-size:12px; color:#aaa; margin-bottom:5px;">Maaş Talebi</div>
+                        <div style="color:#faa61a; font-weight:bold; font-size:18px;" id="modalWage">?</div>
                     </div>
                 </div>
                 
-                <div style="background:#222; padding:10px; border-radius:5px; margin-bottom:15px; font-style:italic; color:#ccc;" id="modalComment">...</div>
+                <div style="background:#36393f; padding:15px; border-radius:8px; margin-bottom:20px; font-style:italic; color:#dcddde; border-left:4px solid var(--accent);" id="modalComment">...</div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                    <div><h4 style="color:#5865F2; border-bottom:1px solid #444;">Teknik</h4><div id="techStats"></div></div>
-                    <div><h4 style="color:#5865F2; border-bottom:1px solid #444;">Zihinsel</h4><div id="mentalStats"></div></div>
-                    <div><h4 style="color:#5865F2; border-bottom:1px solid #444;">Fiziksel</h4><div id="physStats"></div></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
+                    <div><h4 style="color:#5865F2; margin:0 0 10px 0; border-bottom:1px solid #444; padding-bottom:5px;">Teknik</h4><div id="techStats"></div></div>
+                    <div><h4 style="color:#5865F2; margin:0 0 10px 0; border-bottom:1px solid #444; padding-bottom:5px;">Zihinsel</h4><div id="mentalStats"></div></div>
+                    <div><h4 style="color:#5865F2; margin:0 0 10px 0; border-bottom:1px solid #444; padding-bottom:5px;">Fiziksel</h4><div id="physStats"></div></div>
                 </div>
 
                 <div class="action-area" id="offerArea">
-                    <button class="main-btn" style="background:#2d7d46; margin-top:20px;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>
-                    <div id="offerInputs" style="display:none; margin-top:10px;">
-                        <input type="number" id="offerAmount" class="offer-input" placeholder="Bonservis (€)...">
-                        <button class="confirm-btn" onclick="submitOffer()">Gönder</button>
+                    <button class="main-btn" style="background:#2d7d46;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>
+                    
+                    <div id="offerInputs" style="display:none; flex-direction:column; align-items:center; gap:10px;">
+                        <input type="number" id="offerAmount" class="offer-input" placeholder="Tutar (€)...">
+                        <div style="display:flex; gap:10px;">
+                            <button class="confirm-btn" onclick="submitOffer()">Teklifi Gönder</button>
+                            <button class="confirm-btn" style="background:#ed4245;" onclick="cancelOffer()">İptal</button>
+                        </div>
                     </div>
                     <p id="offerStatus" style="margin-top:10px; font-weight:bold;"></p>
                 </div>
@@ -169,101 +189,26 @@
     <div id="offersModal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content">
             <span class="modal-close" onclick="closeOffersModal()">&times;</span>
-            <h2 style="color:white;">📋 Transfer Hareketleri</h2>
-            <table class="offer-table">
-                <thead>
-                    <tr>
-                        <th>Takım</th>
-                        <th>Oyuncu</th>
-                        <th>Teklif</th>
-                        <th>Durum</th>
-                    </tr>
-                </thead>
-                <tbody id="offersTableBody">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-<div id="profileModal" class="modal-overlay" onclick="closeModal(event)">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal(null)">&times;</span>
-            
-            <div class="profile-header">
-                <div class="profile-avatar" id="modalFlag">🌍</div>
-                <div class="profile-info">
-                    <h2 id="modalName">Oyuncu Adı</h2>
-                    <div class="profile-details">
-                        <div class="detail-item" id="modalPos">Mevki</div>
-                        <div class="detail-item" id="modalAge">Yaş</div>
-                        <div class="detail-item" id="modalHeight">Boy</div> <div class="detail-item" id="modalWeight">Kilo</div> <div class="detail-item" id="modalContract">Sözleşme</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="unscoutedView" class="blur-container">
-                <div class="blur-text">🔒 Bu oyuncunun detaylı profili henüz oluşturulmadı.</div>
-                <button class="scout-btn" onclick="scoutCurrentPlayer()">
-                    <span id="btnText">🕵️ Gözlemci Gönder</span>
-                </button>
-            </div>
-
-            <div id="scoutedView" class="full-profile">
-                <div class="market-info">
-                    <div class="market-item">
-                        <span class="market-label">Piyasa Değeri</span>
-                        <span class="market-value" id="modalValue">???</span>
-                    </div>
-                    <div class="market-item">
-                        <span class="market-label">Maaş Talebi</span>
-                        <span class="market-value" id="modalWage">???</span>
-                    </div>
-                </div>
-
-                <div class="report-box">
-                    <div class="report-title">📝 Gözlemci Notu</div>
-                    <div class="report-text" id="modalComment">...</div>
-                </div>
-
-                <h3 style="margin-top:20px; border-bottom:1px solid gray;">Özellik Analizi</h3>
-                <div class="stats-grid">
-                    <div class="stat-category">
-                        <h3>Teknik</h3>
-                        <div id="techStats"></div>
-                    </div>
-                    <div class="stat-category">
-                        <h3>Zihinsel</h3>
-                        <div id="mentalStats"></div>
-                    </div>
-                    <div class="stat-category">
-                        <h3>Fiziksel</h3>
-                        <div id="physStats"></div>
-                    </div>
-                </div>
+            <h2 style="color:white; border-bottom:2px solid var(--gold); padding-bottom:10px;">📋 Transfer Hareketleri</h2>
+            <div style="overflow-x:auto;">
+                <table class="offer-table">
+                    <thead>
+                        <tr>
+                            <th>Takım</th>
+                            <th>Oyuncu</th>
+                            <th>Teklif</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="offersTableBody"></tbody>
+                </table>
             </div>
         </div>
-    </div>
-    <div class="header">
-        <h1>🏆 Transfer Borsası</h1>
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-box" placeholder="Oyuncu ara..." onkeyup="filterPlayers()">
-        </div>
-        <div class="filters">
-            <button class="filter-btn active" onclick="filterPosition('all')">Tümü</button>
-            <button class="filter-btn" onclick="filterPosition('KL')">Kale</button>
-            <button class="filter-btn" onclick="filterPosition('STP')">Defans</button>
-            <button class="filter-btn" onclick="filterPosition('OS')">Orta Saha</button>
-            <button class="filter-btn" onclick="filterPosition('SNT')">Forvet</button>
-        </div>
-    </div>
-
-    <div id="error-msg">⚠️ Veri hatası! Lütfen kodun içindeki listeyi kontrol et.</div>
-
-    <div class="player-grid" id="grid">
-        <p style="text-align:center; width:100%; color:#888;">Veriler yükleniyor...</p>
     </div>
 
     <textarea id="raw-data" style="display:none;">
-    ID: 1 | Julián Cordoba
+    </textarea>
+ID: 1 | Julián Cordoba
 Ülke: Bolivya 🇧🇴 Mevki: OOS (Ofansif Orta Saha) | Yaş: 22 | CA: 123 | PA: 124 Durum: (Sözleşmeli) Piyasa Değeri: €3.5 Milyon | Maaş: €400.000 / yıl Yorum: Bolivya'dan çıkan nadir yeteneklerden. Gelişimi neredeyse tamamlanmış (124 PA). Agresif yapısıyla rakip savunmayı rahatsız eder. İyi bir yedek 10 numara.
 
 Teknik Pas75 Teknik72 Dribbling70 UzaktanŞut65 İlkKontrol70 Bitiricilik60 Falso70 OrtaYapma65 TopKapma50 Markaj45
@@ -8788,11 +8733,8 @@ Zihinsel Liderlik85 Kararlılık85 Konsantrasyon80 PozisyonAlma80 Soğukkanlıl�
 
 Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çeviklik65 VücutZindeliği80
     </textarea>
-
-<script>
-        // --- AYARLAR VE VERİTABANI ---
-        
-        // 1. TAKIM ŞİFRELERİ (Burayı Kafana Göre Düzenle)
+    <script>
+        // --- AYARLAR VE ŞİFRELER ---
         const teamCredentials = {
             "admin": { name: "YÖNETİCİ", role: "admin" },
             "kayısı": { name: "Kayserispor", role: "user" },
@@ -8804,95 +8746,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "şimşek": { name: "Adana Demirspor", role: "user" }
         };
 
-        // Bot Takımlar (Sisteme kayıtlı olmayan ama teklif yapacak takımlar)
-        const botTeams = ["Başakşehir", "Konyaspor", "Antalyaspor", "Sivasspor", "Alanyaspor", "Kasımpaşa"];
-
-        // Oyun Durumu
-        let currentUser = null; // Giriş yapan kullanıcı
-        let playerDB = {};
-        let currentPlayerId = null;
-        let offersDB = []; // Yapılan tüm teklifler burada tutulur
-
-        // --- GİRİŞ SİSTEMİ ---
-        function loginSystem() {
-            const input = document.getElementById("passwordInput").value.toLowerCase();
-            const errorMsg = document.getElementById("loginError");
-
-            if (teamCredentials[input]) {
-                currentUser = teamCredentials[input];
-                document.getElementById("loginScreen").style.display = "none";
-                document.getElementById("userDisplay").innerText = "👤 " + currentUser.name;
-                
-                // Eğer Admin ise kontrol panelini aç
-                if (currentUser.role === "admin") {
-                    document.getElementById("adminPanel").style.display = "flex";
-                    document.getElementById("userDisplay").style.color = "#ed4245"; // Admin kırmızı görünür
-                }
-            } else {
-                errorMsg.style.display = "block";
-            }
-        }
-
-        // --- BOT SİSTEMİ VE HAFTAYI İLERLETME ---
-        function advanceGame() {
-            if (currentUser.role !== "admin") return;
-
-            // Rastgele Bot Teklifleri Oluştur
-            let newOffersCount = 0;
-            const keys = Object.keys(playerDB);
-            
-            // 3-5 arası rastgele bot teklifi oluştur
-            const numOffers = Math.floor(Math.random() * 3) + 3;
-
-            for(let i=0; i<numOffers; i++) {
-                // Rastgele oyuncu seç
-                const randId = keys[Math.floor(Math.random() * keys.length)];
-                const player = playerDB[randId];
-                // Rastgele takım seç
-                const randTeam = botTeams[Math.floor(Math.random() * botTeams.length)];
-                
-                // Rastgele fiyat (Değerin %80'i ile %150'si arası)
-                // Değeri metinden sayıya çevirmek zor olduğu için basit simülasyon yapıyoruz
-                let baseVal = player.ca * 100000; 
-                let offerVal = Math.floor(baseVal * (0.8 + Math.random() * 0.7));
-                let offerStr = `€${(offerVal/1000000).toFixed(1)}M`;
-
-                // Teklifi kaydet
-                offersDB.push({
-                    team: randTeam,
-                    playerName: player.name,
-                    playerId: player.id,
-                    offer: offerStr,
-                    status: "Bekliyor",
-                    isBot: true
-                });
-                newOffersCount++;
-            }
-
-            alert(`${newOffersCount} adet yeni bot teklifi oluşturuldu!`);
-            updateTicker();
-        }
-
-        // --- HABER BANDI (TICKER) GÜNCELLEME ---
-        function updateTicker() {
-            const ticker = document.getElementById("newsTicker");
-            if(offersDB.length === 0) return;
-
-            // Son 5 teklifi al ve bültene yaz
-            let latestOffers = offersDB.slice(-5).reverse();
-            let text = "";
-            latestOffers.forEach(o => {
-                text += ` 🔥 SON DAKİKA: ${o.team}, ${o.playerName} için ${o.offer} önerdi! `;
-            });
-            
-            ticker.innerHTML = text + text; // Döngü pürüzsüz olsun diye iki kere yaz
-        }
-
-        // --- OYUNCU İŞLEMLERİ ---
-        
-        // Bu kısım önceki kodların aynısı (ParseData vb.)
-        // Sadece RESİM YERİNE EMOJİ KULLANIMI entegre edildi.
-        
+        const botTeams = ["Başakşehir", "Konyaspor", "Antalyaspor", "Sivasspor", "Alanyaspor", "Kasımpaşa", "Göztepe", "Rizespor"];
         const emojiMap = {
             "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱",
             "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪", "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽",
@@ -8913,6 +8767,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
         };
 
+        let currentUser = null;
+        let playerDB = {};
+        let currentPlayerId = null;
+        let offersDB = [];
+
+        // --- SİMÜLASYON ---
         function generatePhysique(pos) {
             let height, weight;
             if (pos.includes("KL") || pos.includes("STP")) {
@@ -8926,6 +8786,24 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 weight = Math.floor(Math.random() * (82 - 65 + 1) + 65);
             }
             return { h: (height/100).toFixed(2) + " m", w: weight + " kg" };
+        }
+
+        function loginSystem() {
+            const input = document.getElementById("passwordInput").value.toLowerCase();
+            const errorMsg = document.getElementById("loginError");
+
+            if (teamCredentials[input]) {
+                currentUser = teamCredentials[input];
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("userDisplay").innerText = "👤 " + currentUser.name;
+                
+                if (currentUser.role === "admin") {
+                    document.getElementById("adminPanel").style.display = "flex";
+                    document.getElementById("userDisplay").style.color = "#ed4245";
+                }
+            } else {
+                errorMsg.style.display = "block";
+            }
         }
 
         function parseData() {
@@ -8964,8 +8842,9 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let ulkeMatch = item.match(/Ülke: (.*?) (?:Mevki|[^\w\s\u00C0-\u017F])/);
                         let ulkeRaw = ulkeMatch ? ulkeMatch[1].trim() : "";
 
-                        if (ulkeRaw.length < 2) { displayFlag = "🇹🇷"; } 
-                        else {
+                        if (ulkeRaw.length < 2) { 
+                            displayFlag = "🇹🇷"; // Ülke yazmıyorsa Türkiye
+                        } else {
                             for (const [countryName, emojiCode] of Object.entries(emojiMap)) {
                                 if (ulkeRaw.includes(countryName)) { displayFlag = emojiCode; break; }
                             }
@@ -8982,8 +8861,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let physique = generatePhysique(mevki);
 
                         playerDB[id] = {
-                            id, name, mevki, yas, ca,
-                            flag: displayFlag,
+                            id, name, mevki, yas, ca, flag: displayFlag,
                             height: physique.h, weight: physique.w,
                             status: item.includes("SERBEST") ? "Serbest" : "Sözleşmeli",
                             value: deger, wage: maas, comment: yorum, 
@@ -8991,17 +8869,13 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         };
 
                         let contractColor = playerDB[id].status === "Serbest" ? "status-free" : "status-contract";
-                        let freeBadge = playerDB[id].status === "Serbest" ? `<span style="color:#ed4245; font-size:12px; font-weight:bold;"> (Bedelsiz)</span>` : "";
+                        let freeBadge = playerDB[id].status === "Serbest" ? `<span style="color:#ed4245; font-size:11px; font-weight:bold;">(Bedelsiz)</span>` : "";
 
                         gridHTML += `
                             <div class="card ${contractColor}" data-pos="${posGroup(mevki)}" onclick="openProfile('${id}')">
                                 <div class="card-left">
-                                    <div class="player-name">
-                                        <span class="flag-icon">${displayFlag}</span> ${name}
-                                    </div>
-                                    <div class="player-meta">
-                                        <span>${mevki}</span> • <span>${yas} Yaş</span>${freeBadge}
-                                    </div>
+                                    <div class="player-name">${displayFlag} ${name}</div>
+                                    <div class="player-meta">${mevki} • ${yas} Yaş ${freeBadge}</div>
                                 </div>
                                 <div class="card-right"><span style="font-size:20px;">👉</span></div>
                             </div>
@@ -9010,7 +8884,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 });
 
                 document.getElementById("grid").innerHTML = gridHTML;
-                setTimeout(() => { twemoji.parse(document.body); }, 100);
+                // Twemoji'yi güvenli çalıştır
+                if(typeof twemoji !== 'undefined') setTimeout(() => { twemoji.parse(document.body); }, 100);
 
             } catch (mainErr) {
                 console.error(mainErr);
@@ -9026,42 +8901,33 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             return "all";
         }
 
-        // --- PROFİL VE TEKLİF MANTIĞI ---
+        // --- PROFİL MANTIĞI ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
             
             document.getElementById("modalFlag").innerHTML = p.flag;
             document.getElementById("modalName").innerText = p.name;
-            document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight}`;
+            document.getElementById("modalMeta").innerText = `${p.mevki} • ${p.yas} Yaş • ${p.height} • ${p.weight} • ${p.status}`;
 
             if (p.isScouted) {
                 showScoutedData(p);
             } else {
                 document.getElementById("unscoutedView").style.display = "block";
                 document.getElementById("scoutedView").style.display = "none";
-                document.getElementById("btnScout").innerText = "🕵️ Gözlemci Gönder";
-                document.getElementById("btnScout").disabled = false;
+                const btn = document.getElementById("btnScout");
+                btn.disabled = false;
+                btn.innerHTML = `<span id="scoutBtnText">🕵️ Gözlemci Gönder</span>`;
             }
 
             document.getElementById("profileModal").style.display = "flex";
-            setTimeout(() => { twemoji.parse(document.getElementById("modalFlag")); }, 50);
-        }
-
-        function closeModal(e) {
-            if (e === null || e.target.classList.contains("modal-overlay")) {
-                document.getElementById("profileModal").style.display = "none";
-            }
-        }
-
-        function closeOffersModal() {
-            document.getElementById("offersModal").style.display = "none";
+            if(typeof twemoji !== 'undefined') setTimeout(() => { twemoji.parse(document.getElementById("modalFlag")); }, 50);
         }
 
         function scoutCurrentPlayer() {
             const btn = document.getElementById("btnScout");
             btn.disabled = true;
-            btn.innerText = "Rapor Hazırlanıyor...";
+            btn.innerHTML = `<span class="loader"></span> Rapor Hazırlanıyor...`;
 
             setTimeout(() => {
                 playerDB[currentPlayerId].isScouted = true;
@@ -9072,7 +8938,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function contactAgent(btnElement) {
             const p = playerDB[currentPlayerId];
-            btnElement.innerHTML = `Görüşülüyor...`;
+            btnElement.innerHTML = `<span class="loader" style="width:10px; height:10px;"></span>`;
             btnElement.disabled = true;
 
             setTimeout(() => {
@@ -9102,24 +8968,25 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             
             let valDiv = document.getElementById("modalValue");
             let wageDiv = document.getElementById("modalWage");
-            let agentBtnHTML = `<button onclick="contactAgent(this)" style="background:#faa61a; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; font-weight:bold; color:#202225; font-size:11px;">📞 Temsilci</button>`;
+            let agentBtnHTML = `<button class="agent-btn" onclick="contactAgent(this)">📞 Temsilci</button>`;
 
+            // Değer Gösterimi
             if (p.value === "Bilinmiyor" || p.value === "" || p.value.includes("-")) {
-                valDiv.innerHTML = agentBtnHTML;
+                valDiv.innerHTML = `<span style="font-size:12px; color:#888;">Belirsiz</span> ${agentBtnHTML}`;
             } else {
                 valDiv.innerText = p.status === "Serbest" ? "Bedelsiz" : p.value;
                 valDiv.style.color = p.status === "Serbest" ? "#ed4245" : "#3ba55c";
             }
 
+            // Maaş Gösterimi
             if (p.wage === "Bilinmiyor" || p.wage === "" || p.wage.includes("-")) {
-                wageDiv.innerHTML = agentBtnHTML;
+                wageDiv.innerHTML = `<span style="font-size:12px; color:#888;">Belirsiz</span> ${agentBtnHTML}`;
             } else {
                 wageDiv.innerText = p.wage;
             }
             
             document.getElementById("modalComment").innerText = `"${p.comment}"`;
 
-            // Özellikler HTML
             let techHTML = "", mentalHTML = "", physHTML = "";
             const mentalKeys = ["Kararlılık","Liderlik","TakımOyunu","Çalışkanlık","Cesaret","Agresiflik","Soğukkanlılık","Konsantrasyon","PozisyonAlma","Sezgi","KararAlma","Vizyon","ÖzelYetenek","Hırs","Mücadele","Sadakat"];
             const physKeys = ["Hız","Hızlanma","Güç","Dayanıklılık","Denge","Çeviklik","Zıplama","VücutZindeliği"];
@@ -9142,14 +9009,19 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
             // Teklif Alanını Sıfırla
             document.getElementById("offerInputs").style.display = "none";
-            document.getElementById("btnMakeOffer").style.display = "block";
+            document.getElementById("btnMakeOffer").style.display = "inline-flex";
             document.getElementById("offerStatus").innerText = "";
         }
 
-        // --- TEKLİF YAPMA ---
+        // --- TEKLİF & BOT SİSTEMİ ---
         function showOfferInputs() {
             document.getElementById("btnMakeOffer").style.display = "none";
             document.getElementById("offerInputs").style.display = "flex";
+        }
+
+        function cancelOffer() {
+            document.getElementById("offerInputs").style.display = "none";
+            document.getElementById("btnMakeOffer").style.display = "inline-flex";
         }
 
         function submitOffer() {
@@ -9157,68 +9029,102 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if(!amount) return alert("Lütfen bir miktar girin!");
 
             const p = playerDB[currentPlayerId];
-            
-            // Teklifi Kaydet
             offersDB.push({
                 team: currentUser.name,
                 playerName: p.name,
                 playerId: p.id,
                 offer: `€${amount}`,
-                status: "Bekliyor",
-                isBot: false
+                status: "Bekliyor"
             });
 
             document.getElementById("offerInputs").style.display = "none";
             const statusText = document.getElementById("offerStatus");
             statusText.innerText = `✅ ${currentUser.name} olarak teklifiniz iletildi!`;
             statusText.style.color = "#3ba55c";
-
             updateTicker();
         }
 
-        // --- ADMİN: TÜM TEKLİFLERİ GÖR ---
+        function advanceGame() {
+            if (currentUser.role !== "admin") return;
+            let newOffersCount = 0;
+            const keys = Object.keys(playerDB);
+            const numOffers = Math.floor(Math.random() * 3) + 2;
+
+            for(let i=0; i<numOffers; i++) {
+                const randId = keys[Math.floor(Math.random() * keys.length)];
+                const player = playerDB[randId];
+                const randTeam = botTeams[Math.floor(Math.random() * botTeams.length)];
+                
+                let baseVal = player.ca * 100000; 
+                let offerVal = Math.floor(baseVal * (0.8 + Math.random() * 0.7));
+                let offerStr = `€${(offerVal/1000000).toFixed(1)}M`;
+
+                offersDB.push({
+                    team: randTeam,
+                    playerName: player.name,
+                    playerId: player.id,
+                    offer: offerStr,
+                    status: "Bekliyor"
+                });
+                newOffersCount++;
+            }
+            alert(`${newOffersCount} adet bot teklifi oluşturuldu!`);
+            updateTicker();
+        }
+
+        function updateTicker() {
+            const ticker = document.getElementById("newsTicker");
+            if(offersDB.length === 0) return;
+            let latestOffers = offersDB.slice(-5).reverse();
+            let text = "";
+            latestOffers.forEach(o => { text += ` 🔥 SON DAKİKA: ${o.team}, ${o.playerName} için ${o.offer} önerdi! `; });
+            ticker.innerHTML = text + text;
+        }
+
+        // --- ADMİN PANELİ ---
         function openOffersModal() {
             const tbody = document.getElementById("offersTableBody");
             tbody.innerHTML = "";
-
-            if(offersDB.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='4'>Henüz teklif yok.</td></tr>";
-            } else {
+            if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
+            else {
                 offersDB.forEach(o => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>${o.team}</td>
+                            <td style="color:${o.team.includes('Yönetici')?'var(--danger)':'var(--gold)'}">${o.team}</td>
                             <td>${o.playerName}</td>
-                            <td>${o.offer}</td>
-                            <td style="color:${o.status==='Bekliyor'?'#faa61a':'#3ba55c'}">${o.status}</td>
+                            <td style="font-weight:bold; color:var(--success)">${o.offer}</td>
+                            <td style="font-size:12px;">${o.status}</td>
                         </tr>
                     `;
                 });
             }
             document.getElementById("offersModal").style.display = "flex";
         }
+        function closeOffersModal() { document.getElementById("offersModal").style.display = "none"; }
+        function closeModal(e) {
+            if (e === null || e.target.classList.contains("modal-overlay")) {
+                document.getElementById("profileModal").style.display = "none";
+                document.getElementById("offersModal").style.display = "none";
+            }
+        }
 
-        // Filtreleme
+        // --- FİLTRELEME ---
         function filterPlayers() {
             let input = document.getElementById("searchInput").value.toUpperCase();
             let cards = document.getElementsByClassName("card");
             for (let i = 0; i < cards.length; i++) {
                 let name = cards[i].querySelector(".player-name").innerText;
-                if (name.toUpperCase().indexOf(input) > -1) cards[i].style.display = "flex";
-                else cards[i].style.display = "none";
+                if (name.toUpperCase().indexOf(input) > -1) cards[i].style.display = "flex"; else cards[i].style.display = "none";
             }
         }
-
         function filterPosition(pos) {
             let cards = document.getElementsByClassName("card");
             let btns = document.getElementsByClassName("filter-btn");
             for(let btn of btns) btn.classList.remove("active");
             event.target.classList.add("active");
-
             for (let i = 0; i < cards.length; i++) {
                 let cardPos = cards[i].getAttribute("data-pos");
-                if (pos === 'all' || cardPos === pos) cards[i].style.display = "flex";
-                else cards[i].style.display = "none";
+                if (pos === 'all' || cardPos === pos) cards[i].style.display = "flex"; else cards[i].style.display = "none";
             }
         }
 
