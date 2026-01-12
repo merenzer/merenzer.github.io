@@ -8958,63 +8958,65 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
-        // --- YÜZ DOSYASI İSMİ BELİRLEME ---
-        function getPlayerFileName(id) {
-            let numId = parseInt(id);
-            if (numId >= 1 && numId <= 201) return `sam${numId}.png`;
-            if (numId >= 202 && numId <= 225) return `nam${numId}.png`;
-            if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
-            if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
-            if (numId >= 515 && numId <= 890) return `euro${numId}.png`; 
-            return `${numId}.png`; // Fallback
-        }
+// --- 1. DOSYA ADI BELİRLEME (DÜZELTİLDİ: 515+ HERKES EURO) ---
+function getPlayerFileName(id) {
+    let numId = parseInt(id);
+    if (numId >= 1 && numId <= 201) return `sam${numId}.png`;
+    if (numId >= 202 && numId <= 225) return `nam${numId}.png`;
+    if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
+    if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
+    
+    // 515 ve sonrası (792, 800 hepsi dahil) EURO olarak adlandırılır
+    if (numId >= 515) return `euro${numId}.png`;
+    
+    return `${numId}.png`; // Fallback
+}
 
-        // --- DÜZELTİLMİŞ YÜZ YÜKLEME FONKSİYONU ---
-        function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
-            let img = containerElement.querySelector("img");
-            if (!img) {
-                containerElement.innerHTML = ""; 
-                img = document.createElement("img");
-                img.style.width = "100%";
-                img.style.height = "100%";
-                img.style.objectFit = "cover";
-                containerElement.appendChild(img);
-            }
+// --- 2. YÜZ YÜKLEME (DÜZELTİLDİ: KLASÖR SIRASI) ---
+function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
+    // Resim elementi yoksa yarat
+    let img = containerElement.querySelector("img");
+    if (!img) {
+        containerElement.innerHTML = ""; 
+        img = document.createElement("img");
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        containerElement.appendChild(img);
+    }
 
-            if (urlIndex === -1) {
-                let numId = parseInt(playerId);
-                if (numId <= 201) urlIndex = 0; 
-                else if (numId <= 300) urlIndex = 2; 
-                else if (numId <= 514) urlIndex = 3; 
-                else urlIndex = 6; 
-            }
+    // --- BAŞLANGIÇ KLASÖRÜNÜ SEÇME MANTIĞI ---
+    if (urlIndex === -1) {
+        let numId = parseInt(playerId);
+        // 1-201: face, face2 (index 0, 1)
+        if (numId <= 201) urlIndex = 0; 
+        // 202-300: face3 (index 2)
+        else if (numId <= 300) urlIndex = 2; 
+        // 301-514: face4,5,6 (index 3,4,5)
+        else if (numId <= 514) urlIndex = 3; 
+        // 515+: face7,8,9 (index 6,7,8) -> Buradan başlar, bulamazsa artarak devam eder
+        else urlIndex = 6; 
+    }
 
-            if (urlIndex >= FACE_BASE_URLS.length) {
-                if (!tryBare) {
-                    loadFace(containerElement, playerId, 0, true); 
-                    return;
-                }
-                
-                let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
-                containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
-                return;
-            }
+    // Eğer tüm klasörler (index 9'a kadar) tarandıysa ve bulunamadıysa -> EMOJİ
+    if (urlIndex >= FACE_BASE_URLS.length) {
+        let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
+        containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
+        return;
+    }
 
-            let fileName;
-            if (tryBare) {
-                 fileName = playerId + ".png"; 
-            } else {
-                 fileName = getPlayerFileName(playerId); 
-            }
-
-            let url = FACE_BASE_URLS[urlIndex] + fileName; 
-            img.src = url;
-            
-            img.onerror = function() { 
-                loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
-            };
-        }
-
+    // Dosya adını al (euro792.png gibi)
+    let fileName = getPlayerFileName(playerId);
+    
+    // Resmi yüklemeyi dene
+    let url = FACE_BASE_URLS[urlIndex] + fileName; 
+    img.src = url;
+    
+    // Bulamazsa (404 hatası), bir sonraki klasöre (urlIndex + 1) geç
+    img.onerror = function() { 
+        loadFace(containerElement, playerId, urlIndex + 1, false); 
+    };
+}
         // --- LOCAL STORAGE ---
         function saveData() {
             localStorage.setItem('tbor_offers', JSON.stringify(offersDB));
