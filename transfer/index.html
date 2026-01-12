@@ -9138,11 +9138,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 // DÜZELTME 3: Orta panel görünürlüğü
                 dashboard.style.display = "flex";
                 dashTitle.innerText = currentUser.name;
-                
+                        
+        // Takım Logosunu Yükle
                 if (currentUser.logo) {
-                    let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
-                    dashLogo.src = logoUrl;
                     dashLogo.style.display = "block";
+                    // Artık loadLogo fonksiyonunu kullanıyoruz, böylece 2. klasörü de kontrol edecek
+                    loadLogo(dashLogo, currentUser.logo); 
                 }
             } 
             else if (currentUser.role === "admin") {
