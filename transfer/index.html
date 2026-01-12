@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v7.1 (Logo Ortada)</title>
+    <title>Transfer Borsası Pro v7.1</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -16,7 +16,7 @@
         
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
 
-        /* TOAST */
+        /* TOAST BİLDİRİM */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; border-left: 5px solid gray; min-width: 250px; }
         .toast.success { border-left-color: var(--success); }
@@ -24,125 +24,51 @@
         .toast.info { border-left-color: var(--accent); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* GİRİŞ */
+        /* GİRİŞ EKRANI */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202225; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; background-image: radial-gradient(circle, #2f3136 0%, #202225 100%); }
         .login-box { background: #2f3136; padding: 40px; border-radius: 12px; text-align: center; border: 1px solid var(--accent); width: 320px; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
         .login-input { padding: 12px; width: 85%; margin-bottom: 15px; border-radius: 6px; border: 1px solid #40444b; background: #202225; color: white; text-align: center; font-size: 16px; outline: none; }
         .login-btn { background: var(--accent); color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; margin-bottom: 10px; }
         .guest-btn { background: transparent; border: 1px solid #72767d; color: #aaa; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.3s; }
 
-        /* HEADER - Düzenlendi */
-/* HEADER DÜZENİ - GÜNCELLENDİ */
-.header { 
-    background-color: var(--card-bg); 
-    padding: 0 20px; 
-    border-bottom: 2px solid #202225; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; /* Sol ve Sağı uçlara iter */
-    position: sticky; 
-    top: 0; 
-    z-index: 90; 
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3); 
-    height: 70px; 
-}
-
-/* Sol Kısım: Logo ve Başlık */
-.header-left { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    flex: 1; /* Genişlik kaplar */
-}
-.app-logo { 
-    height: 40px; 
-    width: auto; 
-    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
-}
-
-/* Orta Kısım: Takım Logosu ve İsmi */
-.team-dashboard { 
-    flex: 1; /* Ortayı kaplar */
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 10px;
-}
-.dashboard-logo { 
-    height: 50px; 
-    width: auto; 
-    object-fit: contain; 
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); 
-}
-.dashboard-title-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    line-height: 1.2;
-}
-.dashboard-title { font-size: 18px; font-weight: bold; color: white; margin: 0; text-transform: uppercase; }
-.dashboard-subtitle { font-size: 11px; color: var(--success); font-family: monospace; font-weight: bold; }
-
-/* Sağ Kısım: Butonlar ve Bütçe */
-.header-right { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    flex: 1; 
-    justify-content: flex-end; /* Sağa yaslar */
-}
-
-/* Kullanıcı Kartı (Sağdaki ufak bilgi) */
-.user-card-mini {
-    display: none; 
-    align-items: center;
-    gap: 10px;
-    background: #202225;
-    padding: 5px 15px;
-    border-radius: 30px;
-    border: 1px solid #40444b;
-    margin-right: 10px;
-}
-        .mini-info { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
-        .mini-name { font-weight: bold; color: white; font-size: 14px; }
-        .mini-budget { font-family: monospace; color: var(--success); font-weight: bold; font-size: 13px; }
-
-        /* ORTA DASHBOARD - LOGO BURAYA GELECEK */
-        .team-dashboard { 
-            position: absolute; 
-            left: 50%; 
-            transform: translateX(-50%); 
+        /* HEADER */
+        .header { 
+            background-color: var(--card-bg); 
+            padding: 0 20px; 
+            border-bottom: 2px solid #202225; 
             display: flex; 
             align-items: center; 
-            justify-content: center; 
-            gap: 10px;
-            height: 100%;
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 90; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3); 
+            height: 70px; 
         }
-        .dashboard-logo { 
-            height: 55px; /* Header yüksekliğine uygun */
-            width: auto; 
-            object-fit: contain; 
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); 
-            display: none; 
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .app-logo { height: 45px; width: auto; margin-right: 15px; vertical-align: middle; filter: drop-shadow(0 0 3px rgba(0,0,0,0.5)); }
+        
+        .team-dashboard { 
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; position: absolute; left: 50%; transform: translateX(-50%); height: 100%;
         }
-        .dashboard-title-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .dashboard-title { font-size: 18px; font-weight: bold; color: white; margin: 0; letter-spacing: 0.5px; white-space: nowrap; text-transform: uppercase; }
-        .dashboard-subtitle { font-size: 11px; color: #aaa; text-align: center; }
+        .dashboard-logo { height: 50px; width: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); display: none; }
+        .dashboard-title-container { display: flex; flex-direction: column; align-items: center; line-height: 1.2; justify-content: center; }
+        .dashboard-title { font-size: 18px; font-weight: bold; color: white; margin: 0; text-transform: uppercase; white-space: nowrap; }
+        .dashboard-subtitle { font-size: 11px; color: var(--success); font-family: monospace; font-weight: bold; }
 
+        .header-right { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end; }
+        .user-card-mini { display: none; align-items: center; gap: 10px; background: #202225; padding: 5px 15px; border-radius: 30px; border: 1px solid #40444b; margin-right: 10px; }
+        
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
-        /* FILTER BAR */
+        /* FILTRE ÇUBUĞU */
         .filter-bar { background: #292b2f; padding: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #40444b; }
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
         .filter-label { font-size: 11px; color: #aaa; font-weight: bold; text-transform: uppercase; }
         .filter-select, .filter-input { padding: 8px; background: #202225; border: 1px solid #40444b; color: white; border-radius: 5px; outline: none; min-width: 120px; }
 
-        /* GRID */
+        /* OYUNCU KARTLARI */
         .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
         .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         .card { background-color: var(--card-bg); border-radius: 8px; padding: 15px; border-left: 5px solid gray; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
@@ -158,7 +84,7 @@
         .badge-pos { background: #40444b; }
         .badge-age { background: #4f545c; }
         
-        /* MODAL */
+        /* MODAL PENCERELER */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background-color: #2f3136; width: 90%; max-width: 750px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 0; position: relative; border: 1px solid #40444b; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
@@ -178,12 +104,12 @@
         .main-btn { background: var(--accent); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .main-btn:disabled { background: #4f545c; cursor: not-allowed; opacity: 0.7; }
 
-        /* TICKER */
+        /* HABER BANDI */
         .news-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px 0; white-space: nowrap; overflow: hidden; z-index: 99; border-top: 3px solid #202225; font-size: 14px; font-weight: 500; }
         .ticker-content { display: inline-block; padding-left: 100%; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
         
-        /* TRANSFER HUB STYLE */
+        /* TRANSFER HUB */
         .hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
         .hub-box { background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; height: 350px; overflow-y: auto; }
         .hub-title { color: var(--gold); border-bottom: 1px solid #555; padding-bottom: 5px; margin-bottom: 10px; font-size: 16px; }
@@ -202,16 +128,6 @@
         .offer-table td { padding: 8px; border-bottom: 1px solid #444; }
         .confirm-btn { background: var(--success); padding: 8px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .offer-input { padding: 8px; border-radius: 5px; border: 1px solid #555; background: #222; color: white; width: 100px; text-align: center; }
-        
-        #error-msg { text-align: center; width: 100%; color: #ed4245; margin-top: 50px; display: none; }
-        /* HEADER LOGO AYARI */
-.app-logo { 
-    height: 45px;  /* Header yüksekliğine uygun boyut */
-    width: auto; 
-    margin-right: 15px; /* Yazı ile logo arasındaki boşluk */
-    vertical-align: middle;
-    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5)); /* Hafif gölge */
-}
     </style>
 </head>
 <body>
@@ -227,36 +143,38 @@
             <p id="loginError" style="color:red; font-size:13px; margin-top:10px; display:none;">❌ Hatalı şifre!</p>
         </div>
     </div>
-<div class="header">
-    <div class="header-left">
-        <img src="https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/transfer/LOGOCUK.png" class="app-logo" alt="Logo">
-        <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.1</span></h1>
-    </div>
-    
-    <div id="teamDashboard" class="team-dashboard" style="display:none;"> <img src="" id="dashboardLogo" class="dashboard-logo">
-        <div class="dashboard-title-container">
-            <div id="dashboardTitle" class="dashboard-title">TAKIM ADI</div>
-            <div id="dashboardBudget" class="dashboard-subtitle">Bütçe: -</div>
-        </div>
-    </div>
 
-    <div class="header-right">
-        <div id="userCard" class="user-card-mini">
-            <div style="text-align:right;">
-                <div id="userDisplay" style="color:white; font-weight:bold; font-size:13px;"></div>
-                <div style="font-size:10px; color:#aaa;">Menajer</div>
+    <div class="header">
+        <div class="header-left">
+            <img src="https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/transfer/LOGOCUK.png" class="app-logo" alt="Logo">
+            <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.1</span></h1>
+        </div>
+        
+        <div id="teamDashboard" class="team-dashboard" style="display:none;"> 
+            <img src="" id="dashboardLogo" class="dashboard-logo">
+            <div class="dashboard-title-container">
+                <div id="dashboardTitle" class="dashboard-title">TAKIM ADI</div>
+                <div id="dashboardBudget" class="dashboard-subtitle">Bütçe: -</div>
             </div>
         </div>
 
-        <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
-        
-        <div id="adminPanel" style="display:none; gap:5px;">
-            <button class="admin-btn" onclick="openOffersModal()">📋</button>
-            <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩</button>
-            <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️</button>
+        <div class="header-right">
+            <div id="userCard" class="user-card-mini">
+                <div style="text-align:right;">
+                    <div id="userDisplay" style="color:white; font-weight:bold; font-size:13px;"></div>
+                    <div id="userBudget" style="font-size:10px; color:var(--success);"></div>
+                </div>
+            </div>
+
+            <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
+            
+            <div id="adminPanel" style="display:none; gap:5px;">
+                <button class="admin-btn" onclick="openOffersModal()">📋</button>
+                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩</button>
+                <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️</button>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="filter-bar">
         <div class="filter-group">
@@ -299,11 +217,9 @@
             <label class="filter-label">Ülke</label>
             <select id="filterCountry" class="filter-select" onchange="filterAll()">
                 <option value="all">Tümü</option>
-                </select>
+            </select>
         </div>
     </div>
-
-    <div id="error-msg">⚠️ Veri hatası! Lütfen en alttaki veri kutusunu kontrol et.</div>
 
     <div class="container">
         <div class="player-grid" id="grid">
@@ -8941,7 +8857,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar2/"
         ];
 
-        // YÜZ KLASÖRLERİ (RAW LINK - TÜMÜ EKLENDİ)
+        // YÜZ KLASÖRLERİ (RAW LINK)
         const FACE_BASE_URLS = [
             "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face/",
             "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face2/",
@@ -9011,84 +8927,57 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
-// --- 1. DOSYA ADI TAHMİN EDİCİ ---
-function getPrefix(id) {
-    let numId = parseInt(id);
-    if (numId >= 515) return "euro";
-    if (numId >= 301) return "afr";
-    if (numId >= 226) return "asian";
-    if (numId >= 202) return "nam";
-    return "sam"; // 1-201 arası varsayılan
-}
+        // --- YÜZ YÜKLEME ---
+        function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
+            let img = containerElement.querySelector("img");
+            if (!img) {
+                containerElement.innerHTML = ""; 
+                img = document.createElement("img");
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
+                containerElement.appendChild(img);
+            }
 
-// --- KESİN ÇÖZÜM: YÜZ YÜKLEME ---
-function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
-    let img = containerElement.querySelector("img");
-    if (!img) {
-        containerElement.innerHTML = ""; 
-        img = document.createElement("img");
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "cover";
-        containerElement.appendChild(img);
-    }
+            if (urlIndex === -1) {
+                let numId = parseInt(playerId);
+                if (numId <= 201) urlIndex = 0; 
+                else if (numId <= 300) urlIndex = 2; 
+                else if (numId <= 514) urlIndex = 3; 
+                else if (numId >= 792) urlIndex = 8; 
+                else urlIndex = 6; 
+            }
 
-    // --- BAŞLANGIÇ KLASÖRÜNÜ BELİRLE (NOKTA ATIŞI) ---
-    if (urlIndex === -1) {
-        let numId = parseInt(playerId);
-        
-        // 1-201
-        if (numId <= 201) urlIndex = 0; 
-        // 202-300
-        else if (numId <= 300) urlIndex = 2; 
-        // 301-514
-        else if (numId <= 514) urlIndex = 3; 
-        
-        // 792 VE ÜSTÜ -> DİREKT FACE9 (Index 8)
-        else if (numId >= 792) urlIndex = 8; 
-        
-        // 515 - 791 ARASI -> FACE7'den başla (Index 6)
-        else urlIndex = 6; 
-    }
+            if (urlIndex >= FACE_BASE_URLS.length) {
+                if (!tryBare) {
+                    loadFace(containerElement, playerId, 0, true);
+                    return;
+                }
+                let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
+                containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
+                return;
+            }
 
-    // LİMİT KONTROLÜ
-    if (urlIndex >= FACE_BASE_URLS.length) {
-        // İsim formatlı bulunamadıysa (euro792.png), sadece numara (792.png) dene
-        if (!tryBare) {
-            loadFace(containerElement, playerId, 0, true);
-            return;
+            let fileName;
+            if (tryBare) {
+                fileName = `${playerId}.png`;
+            } else {
+                let numId = parseInt(playerId);
+                let prefix = "sam"; 
+                if (numId >= 515) prefix = "euro";
+                else if (numId >= 301) prefix = "afr";
+                else if (numId >= 226) prefix = "asian";
+                else if (numId >= 202) prefix = "nam";
+                fileName = `${prefix}${numId}.png`;
+            }
+            
+            let url = FACE_BASE_URLS[urlIndex] + fileName; 
+            img.src = url;
+            img.onerror = function() { 
+                loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
+            };
         }
-        // Bulunamazsa Emoji
-        let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
-        containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
-        return;
-    }
 
-    // DOSYA ADI OLUŞTURMA
-    let fileName;
-    if (tryBare) {
-        fileName = `${playerId}.png`;
-    } else {
-        // Standart İsimlendirme
-        let numId = parseInt(playerId);
-        let prefix = "sam"; 
-        if (numId >= 515) prefix = "euro";
-        else if (numId >= 301) prefix = "afr";
-        else if (numId >= 226) prefix = "asian";
-        else if (numId >= 202) prefix = "nam";
-        
-        fileName = `${prefix}${numId}.png`;
-    }
-    
-    // URL Oluştur
-    let url = FACE_BASE_URLS[urlIndex] + fileName; 
-    img.src = url;
-    
-    // Hata Olursa (404) Sonraki Klasöre Bak
-    img.onerror = function() { 
-        loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
-    };
-}
         // --- LOCAL STORAGE ---
         function saveData() {
             localStorage.setItem('tbor_offers', JSON.stringify(offersDB));
@@ -9201,45 +9090,41 @@ function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
             showToast("Misafir girişi yapıldı.", "info");
         }
 
- // --- ARAYÜZ GÜNCELLEME (BÜTÇE SAĞ ÜSTTE) ---
-function updateUserDisplay() {
-    const dashboard = document.getElementById("teamDashboard");
-    const dashTitle = document.getElementById("dashboardTitle");
-    const dashLogo = document.getElementById("dashboardLogo");
-    
-    const userCard = document.getElementById("userCard");
-    const userDisplay = document.getElementById("userDisplay");
-    const userBudget = document.getElementById("userBudget");
+        function updateUserDisplay() {
+            const dashboard = document.getElementById("teamDashboard");
+            const dashTitle = document.getElementById("dashboardTitle");
+            const dashLogo = document.getElementById("dashboardLogo");
+            
+            const userCard = document.getElementById("userCard");
+            const userDisplay = document.getElementById("userDisplay");
+            const userBudget = document.getElementById("userBudget");
 
-    if (currentUser.role === "user") {
-        // --- SAĞ ÜST KISIM ---
-        userCard.style.display = "flex";
-        userDisplay.innerText = currentUser.name;
-        // Menajer yazısı yerine Bütçeyi basıyoruz
-        userBudget.innerText = `€${currentUser.budget.toFixed(1)}M`;
+            if (currentUser.role === "user") {
+                userCard.style.display = "flex";
+                userDisplay.innerText = currentUser.name;
+                userBudget.innerText = `€${currentUser.budget.toFixed(1)}M`;
 
-        // --- ORTA PANEL ---
-        dashboard.style.display = "flex";
-        dashTitle.innerText = currentUser.name;
-        
-        // Takım Logosunu Yükle
-        if (currentUser.logo) {
-            let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
-            dashLogo.src = logoUrl;
-            dashLogo.style.display = "block";
+                dashboard.style.display = "flex";
+                dashTitle.innerText = currentUser.name;
+                
+                if (currentUser.logo) {
+                    let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
+                    dashLogo.src = logoUrl;
+                    dashLogo.style.display = "block";
+                }
+            } 
+            else if (currentUser.role === "admin") {
+                userCard.style.display = "flex";
+                userDisplay.innerText = "YÖNETİCİ";
+                userBudget.innerText = "Sınırsız";
+                document.getElementById("adminPanel").style.display = "flex";
+                dashboard.style.display = "none";
+            } 
+            else {
+                dashboard.style.display = "none";
+                userCard.style.display = "none";
+            }
         }
-    } 
-    else if (currentUser.role === "admin") {
-        userCard.style.display = "flex";
-        userDisplay.innerText = "YÖNETİCİ";
-        userBudget.innerText = "Sınırsız";
-        dashboard.style.display = "none";
-    } 
-    else {
-        dashboard.style.display = "none";
-        userCard.style.display = "none";
-    }
-}
 
         // --- PARSE ---
         function parseData() {
@@ -9334,7 +9219,7 @@ function updateUserDisplay() {
             loadData();
         }
 
-        // --- PROFİL ---
+        // --- PROFİL VE MÜZAKERE FONKSİYONLARI ---
         function openProfile(id) {
             currentPlayerId = id;
             const p = playerDB[id];
@@ -9408,7 +9293,6 @@ function updateUserDisplay() {
             document.getElementById("physStats").innerHTML=f;
         }
 
-        // --- İTİBAR, BÜTÇE VE MÜZAKERE ---
         function submitOffer() {
             const amountVal = parseFloat(document.getElementById("offerAmount").value);
             if(!amountVal || amountVal <= 0) return showToast("Geçerli bir miktar girin!", "error");
