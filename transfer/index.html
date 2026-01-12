@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Ultimate</title>
+    <title>Transfer Borsası Pro v4.1</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -72,6 +72,7 @@
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
         
         .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
+        /* Profil Avatarı */
         .profile-avatar { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -215,7 +216,7 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal(null)">&times;</span>
             <div class="profile-header">
-                <div class="profile-avatar" id="modalFlag">🌍</div>
+                <div class="profile-avatar" id="modalFlag" data-emoji="🌍">🌍</div>
                 <div>
                     <h2 id="modalName" style="color:white; margin:0 0 5px 0;">Oyuncu Adı</h2>
                     <div style="color:#aaa; font-size:14px;" id="modalMeta">Bilgiler...</div>
@@ -8830,37 +8831,32 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             "https://github.com/merenzer/merenzer.github.io/tree/main/logolar2"
         ];
 
-        // 9 TANE YÜZ KLASÖRÜ
+        // 9 TANE YÜZ KLASÖRÜ (Facepack)
         const FACE_BASE_URLS = [
-            "https://raw.githubusercontent.com/SarpEfeKus/face/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face2/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face3/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face4/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face5/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face6/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face7/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face8/main/",
-            "https://raw.githubusercontent.com/SarpEfeKus/face9/main/"
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face2",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face3",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face4",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face5",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face6",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face7",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face8",
+            "https://github.com/merenzer/merenzer.github.io/tree/main/face9"
         ];
 
         // 1. İNSAN KULLANICILAR (BÜTÇE EKLENDİ - MİLYON EURO)
         const teamCredentials = {
             "admin":   { name: "YÖNETİCİ", role: "admin", logo: "", rep: 5, budget: 999 },
-            
             // TIER S
             "gözgöz":  { name: "Göztepe", role: "user", logo: "Göztepe.png", rep: 5, budget: 500.0 },
             "eyüp":    { name: "Redbull Eyüpspor", role: "user", logo: "Eyüpspor.png", rep: 4, budget: 480.0 },
-            
             // TIER A
             "cimbom":  { name: "Galatasaray", role: "user", logo: "Galatasaray.png", rep: 5, budget: 450.0 },
             "fener":   { name: "Fenerbahçe", role: "user", logo: "Fenerbahçe.png", rep: 5, budget: 410.0 },
-            
             // TIER B
             "fırtına": { name: "Trabzonspor", role: "user", logo: "Trabzonspor.png", rep: 4, budget: 350.0 },
-            
             // TIER C
             "samsun":  { name: "Samsunspor", role: "user", logo: "Samsunspor.png", rep: 3, budget: 270.0 },
-            
             // TIER D
             "çorum":   { name: "Arca Çorum FK", role: "user", logo: "Çorum FK.png", rep: 2, budget: 180.0 },
             "alanya":  { name: "Alanyaspor", role: "user", logo: "Alanyaspor.png", rep: 2, budget: 190.0 }
@@ -8868,34 +8864,17 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         // 2. BOT TAKIMLAR
         const botTeams = [
-            // TIER B
             { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4, budget: 330.0 },
-            // TIER C
             { name: "Bursaspor", logo: "Bursaspor.png", rep: 3, budget: 240.0 },
-            // TIER D
             { name: "Sivasspor", logo: "Sivasspor.png", rep: 2, budget: 190.0 },
             { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2, budget: 200.0 },
-            // TIER E
             { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2, budget: 170.0 },
             { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2, budget: 165.0 },
             { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1, budget: 160.0 },
             { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1, budget: 155.0 },
             { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1, budget: 145.0 },
-            // TIER F
             { name: "Kayserispor", logo: "Kayserispor.png", rep: 1, budget: 110.0 }
         ];
-
-        // ... DİĞER HARİTALAR (KITA/EMOJI) ...
-        const continentMap = {
-            "Europe": ["Türkiye", "Turkey", "Turkiye", "Almanya", "Fransa", "İtalya", "İspanya", "Portekiz", "Hollanda", "Belçika", "İngiltere", "İskoçya", "Galler", "İrlanda", "Kuzey İrlanda", "İsviçre", "Avusturya", "Polonya", "Macaristan", "Çekya", "Slovakya", "Rusya", "Ukrayna", "Belarus", "Romanya", "Bulgaristan", "Yunanistan", "Güney Kıbrıs", "Kuzey Kıbrıs", "Sırbistan", "Hırvatistan", "Bosna", "Bosna Hersek", "Slovenya", "Kuzey Makedonya", "Karadağ", "Kosova", "Arnavutluk", "Finlandiya", "İsveç", "Norveç", "Danimarka", "İzlanda", "Faroe", "Moldova", "San Marino", "Cebelitarık", "Andorra", "Lihtenştayn", "Lüksemburg", "Monako", "Malta"],
-            "South America": ["Brezilya", "Arjantin", "Uruguay", "Kolombiya", "Şili", "Peru", "Paraguay", "Ekvador", "Venezuela", "Bolivya"],
-            "Africa": ["Nijerya", "Kamerun", "Gana", "Fildişi", "Fildişi Sahili", "Senegal", "Mısır", "Fas", "Cezayir", "Tunus", "Libya", "Zambiya", "Zimbabve", "Güney Afrika", "Tanzanya", "Kenya", "Kongo", "DR Kongo", "Gine", "Mali"],
-            "Asia": ["Çin", "Güney Kore", "Kuzey Kore", "Japonya", "Avustralya", "Özbekistan", "Kazakistan", "İran", "Vietnam", "Suriye", "Endonezya", "Umman", "Afganistan", "Ürdün", "Malezya", "Tayland", "BAE", "Katar", "Kırgızistan"],
-            "North America": ["ABD", "Kanada", "Meksika", "Jamaika", "Martinik", "Guadeloupe", "Trinidad", "Panama", "Kosta Rika", "Honduras"]
-        };
-        const emojiMap = {
-            "Türkiye": "🇹🇷", "Turkey": "🇹🇷", "Turkiye": "🇹🇷", "Bolivya": "🇧🇴", "Brezilya": "🇧🇷", "Paraguay": "🇵🇾", "Şili": "🇨🇱", "Peru": "🇵🇪", "Arjantin": "🇦🇷", "Uruguay": "🇺🇾", "Venezuela": "🇻🇪", "Ekvador": "🇪🇨", "Kolombiya": "🇨🇴", "Meksika": "🇲🇽", "Kanada": "🇨🇦", "Jamaika": "🇯🇲", "Martinik": "🇲🇶", "Guadeloupe": "🇬🇵", "Trinidad": "🇹🇹", "ABD": "🇺🇸", "Panama": "🇵🇦", "Kosta Rika": "🇨🇷", "Honduras": "🇭🇳", "Çin": "🇨🇳", "Güney Kore": "🇰🇷", "Kuzey Kore": "🇰🇵", "Japonya": "🇯🇵", "Avustralya": "🇦🇺", "Özbekistan": "🇺🇿", "Kazakistan": "🇰🇿", "İran": "🇮🇷", "Vietnam": "🇻🇳", "Suriye": "🇸🇾", "Endonezya": "🇮🇩", "Umman": "🇴🇲", "Afganistan": "🇦🇫", "Ürdün": "🇯🇴", "Malezya": "🇲🇾", "Tayland": "🇹🇭", "BAE": "🇦🇪", "Katar": "🇶🇦", "Kırgızistan": "🇰🇬", "Nijerya": "🇳🇬", "Kamerun": "🇨🇲", "Gana": "🇬🇭", "Fildişi": "🇨🇮", "Senegal": "🇸🇳", "Mısır": "🇪🇬", "Fas": "🇲🇦", "Cezayir": "🇩🇿", "Tunus": "🇹🇳", "Libya": "🇱🇾", "Zambiya": "🇿🇲", "Zimbabve": "🇿🇼", "Güney Afrika": "🇿🇦", "Tanzanya": "🇹🇿", "Kenya": "🇰🇪", "Kongo": "🇨🇬", "DR Kongo": "🇨🇩", "Gine": "🇬🇳", "Mali": "🇲🇱", "İtalya": "🇮🇹", "İspanya": "🇪🇸", "Portekiz": "🇵🇹", "Fransa": "🇫🇷", "Almanya": "🇩🇪", "Hollanda": "🇳🇱", "Belçika": "🇧🇪", "İngiltere": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "İskoçya": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Galler": "🏴󠁧󠁢󠁷󠁬󠁳󠁿", "Kuzey İrlanda": "🇯🇪", "İrlanda": "🇮🇪", "İsviçre": "🇨🇭", "Avusturya": "🇦🇹", "Polonya": "🇵🇱", "Macaristan": "🇭🇺", "Çekya": "🇨🇿", "Slovakya": "🇸🇰", "Rusya": "🇷🇺", "Ukrayna": "🇺🇦", "Belarus": "🇧🇾", "Romanya": "🇷🇴", "Bulgaristan": "🇧🇬", "Yunanistan": "🇬🇷", "Güney Kıbrıs": "🇨🇾", "Kuzey Kıbrıs": "🇹🇷", "Sırbistan": "🇷🇸", "Hırvatistan": "🇭🇷", "Bosna": "🇧🇦", "Slovenya": "🇸🇮", "Kuzey Makedonya": "🇲🇰", "Karadağ": "🇲🇪", "Kosova": "🇽🇰", "Arnavutluk": "🇦🇱", "Finlandiya": "🇫🇮", "İsveç": "🇸🇪", "Norveç": "🇳🇴", "Danimarka": "🇩🇰", "İzlanda": "🇮🇸", "Faroe": "🇫🇴", "Moldova": "🇲🇩", "San Marino": "🇸🇲", "Cebelitarık": "🇬🇮", "Andorra": "🇦🇩", "Lihtenştayn": "🇱🇮", "Lüksemburg": "🇱🇺", "Monako": "🇲🇨", "Malta": "🇲🇹"
-        };
 
         // --- 2. DEĞİŞKENLER ---
         let currentUser = null;
@@ -8906,6 +8885,10 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         let scoutedPlayers = [];
         let availableCountries = new Set();
         let counterOfferData = null; 
+
+        // KITA VE EMOJİ HARİTALARI (Kısaltıldı)
+        const continentMap={ "Europe":["Türkiye","Turkey","Turkiye","Almanya","Fransa","İtalya","İspanya","Portekiz","Hollanda","Belçika","İngiltere","İskoçya","Galler","İrlanda","Kuzey İrlanda","İsviçre","Avusturya","Polonya","Macaristan","Çekya","Slovakya","Rusya","Ukrayna","Belarus","Romanya","Bulgaristan","Yunanistan","Güney Kıbrıs","Kuzey Kıbrıs","Sırbistan","Hırvatistan","Bosna","Bosna Hersek","Slovenya","Kuzey Makedonya","Karadağ","Kosova","Arnavutluk","Finlandiya","İsveç","Norveç","Danimarka","İzlanda","Faroe","Moldova","San Marino","Cebelitarık","Andorra","Lihtenştayn","Lüksemburg","Monako","Malta"],"South America":["Brezilya","Arjantin","Uruguay","Kolombiya","Şili","Peru","Paraguay","Ekvador","Venezuela","Bolivya"],"Africa":["Nijerya","Kamerun","Gana","Fildişi","Fildişi Sahili","Senegal","Mısır","Fas","Cezayir","Tunus","Libya","Zambiya","Zimbabve","Güney Afrika","Tanzanya","Kenya","Kongo","DR Kongo","Gine","Mali"],"Asia":["Çin","Güney Kore","Kuzey Kore","Japonya","Avustralya","Özbekistan","Kazakistan","İran","Vietnam","Suriye","Endonezya","Umman","Afganistan","Ürdün","Malezya","Tayland","BAE","Katar","Kırgızistan"],"North America":["ABD","Kanada","Meksika","Jamaika","Martinik","Guadeloupe","Trinidad","Panama","Kosta Rika","Honduras"]};
+        const emojiMap={ "Türkiye":"🇹🇷","Turkey":"🇹🇷","Turkiye":"🇹🇷","Bolivya":"🇧🇴","Brezilya":"🇧🇷","Paraguay":"🇵🇾","Şili":"🇨🇱","Peru":"🇵🇪","Arjantin":"🇦🇷","Uruguay":"🇺🇾","Venezuela":"🇻🇪","Ekvador":"🇪🇨","Kolombiya":"🇨🇴","Meksika":"🇲🇽","Kanada":"🇨🇦","Jamaika":"🇯🇲","Martinik":"🇲🇶","Guadeloupe":"🇬🇵","Trinidad":"🇹🇹","ABD":"🇺🇸","Panama":"🇵🇦","Kosta Rika":"🇨🇷","Honduras":"🇭🇳","Çin":"🇨🇳","Güney Kore":"🇰🇷","Kuzey Kore":"🇰🇵","Japonya":"🇯🇵","Avustralya":"🇦🇺","Özbekistan":"🇺🇿","Kazakistan":"🇰🇿","İran":"🇮🇷","Vietnam":"🇻🇳","Suriye":"🇸🇾","Endonezya":"🇮🇩","Umman":"🇴🇲","Afganistan":"🇦🇫","Ürdün":"🇯🇴","Malezya":"🇲🇾","Tayland":"🇹🇭","BAE":"🇦🇪","Katar":"🇶🇦","Kırgızistan":"🇰🇬","Nijerya":"🇳🇬","Kamerun":"🇨🇲","Gana":"🇬🇭","Fildişi":"🇨🇮","Senegal":"🇸🇳","Mısır":"🇪🇬","Fas":"🇲🇦","Cezayir":"🇩🇿","Tunus":"🇹🇳","Libya":"🇱🇾","Zambiya":"🇿🇲","Zimbabve":"🇿🇼","Güney Afrika":"🇿🇦","Tanzanya":"🇹🇿","Kenya":"🇰🇪","Kongo":"🇨🇬","DR Kongo":"🇨🇩","Gine":"🇬🇳","Mali":"🇲🇱","İtalya":"🇮🇹","İspanya":"🇪🇸","Portekiz":"🇵🇹","Fransa":"🇫🇷","Almanya":"🇩🇪","Hollanda":"🇳🇱","Belçika":"🇧🇪","İngiltere":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","İskoçya":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Galler":"🏴󠁧󠁢󠁷󠁬󠁳󠁿","Kuzey İrlanda":"🇯🇪","İrlanda":"🇮🇪","İsviçre":"🇨🇭","Avusturya":"🇦🇹","Polonya":"🇵🇱","Macaristan":"🇭🇺","Çekya":"🇨🇿","Slovakya":"🇸🇰","Rusya":"🇷🇺","Ukrayna":"🇺🇦","Belarus":"🇧🇾","Romanya":"🇷🇴","Bulgaristan":"🇧🇬","Yunanistan":"🇬🇷","Güney Kıbrıs":"🇨🇾","Kuzey Kıbrıs":"🇹🇷","Sırbistan":"🇷🇸","Hırvatistan":"🇭🇷","Bosna":"🇧🇦","Slovenya":"🇸🇮","Kuzey Makedonya":"🇲🇰","Karadağ":"🇲🇪","Kosova":"🇽🇰","Arnavutluk":"🇦🇱","Finlandiya":"🇫🇮","İsveç":"🇸🇪","Norveç":"🇳🇴","Danimarka":"🇩🇰","İzlanda":"🇮🇸","Faroe":"🇫🇴","Moldova":"🇲🇩","San Marino":"🇸🇲","Cebelitarık":"🇬🇮","Andorra":"🇦🇩","Lihtenştayn":"🇱🇮","Lüksemburg":"🇱🇺","Monako":"🇲🇨","Malta":"🇲🇹"};
 
         // --- 3. YÜKLEME FONKSİYONLARI ---
         function loadLogo(imgElement, logoName, urlIndex = 0) {
@@ -8918,10 +8901,20 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
-        // YÜZ YÜKLEME (9 KLASÖR TARAMASI)
+        // YENİ: FACEPACK YÜKLEME FONKSİYONU
+        function getPlayerFileName(id) {
+            let numId = parseInt(id);
+            if (numId >= 1 && numId <= 201) return `sam${numId}.png`;
+            if (numId >= 202 && numId <= 225) return `nam${numId}.png`;
+            if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
+            if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
+            if (numId >= 515 && numId <= 890) return `euro${numId}.png`;
+            return `${numId}.png`; // Fallback
+        }
+
         function loadFace(containerElement, playerId, urlIndex = 0) {
             if (urlIndex >= FACE_BASE_URLS.length) {
-                // Hiçbir yerde yoksa EMOJİYE DÖN
+                // Hiçbir yerde yoksa emoji göster
                 containerElement.innerHTML = document.getElementById("modalFlag").getAttribute("data-emoji");
                 containerElement.style.fontSize = "50px"; 
                 return;
@@ -8937,8 +8930,10 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 containerElement.appendChild(img);
             }
 
-            let url = FACE_BASE_URLS[urlIndex] + playerId + ".png"; 
+            let fileName = getPlayerFileName(playerId);
+            let url = FACE_BASE_URLS[urlIndex] + fileName; 
             img.src = url;
+            
             img.onerror = function() { loadFace(containerElement, playerId, urlIndex + 1); };
         }
 
@@ -8981,7 +8976,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 }
             }
 
-            // Bütçeleri Geri Yükle
             if(localStorage.getItem('tbor_budgets')) {
                 let savedBudgets = JSON.parse(localStorage.getItem('tbor_budgets'));
                 for(let key in savedBudgets) {
@@ -9038,7 +9032,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             const input = document.getElementById("passwordInput").value.toLowerCase();
             if (teamCredentials[input]) {
                 currentUser = teamCredentials[input];
-                currentUser.key = input; // Key'i sakla
+                currentUser.key = input; 
                 document.getElementById("loginScreen").style.display = "none";
                 updateUserDisplay();
                 showToast(`Hoş geldin ${currentUser.name}! Bütçe: €${currentUser.budget}M`, "success");
@@ -9053,8 +9047,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function updateUserDisplay() {
             document.getElementById("userDisplay").innerText = currentUser.name;
-            
-            // Bütçeyi Göster
             if(currentUser.role === "user") {
                 document.getElementById("userBudget").innerText = `Bütçe: €${currentUser.budget.toFixed(1)}M`;
             } else {
@@ -9119,7 +9111,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                     let physique = generatePhysique(mevki);
 
-                    // DB'de yoksa ekle
                     if(!playerDB[id]) {
                         playerDB[id] = {
                             id, name, mevki, yas, ca: parseInt(ca), flag: displayFlag, country: detectedCountry,
@@ -9131,7 +9122,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         };
                         if(playerDB[id].status === "Serbest") playerDB[id].isScouted = true;
                     } else {
-                        // Var olanı güncelle (İsim vs değişmiş olabilir)
                         playerDB[id].name = name; 
                     }
 
@@ -9166,12 +9156,11 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             currentPlayerId = id;
             const p = playerDB[id];
             
-            // Emoji'yi sakla (Yüz yüklenemezse geri döneceğiz)
             const modalFlag = document.getElementById("modalFlag");
             modalFlag.innerHTML = p.flag; 
             modalFlag.setAttribute("data-emoji", p.flag); 
 
-            // YÜZ YÜKLEME BAŞLAT
+            // YÜZ YÜKLE
             loadFace(modalFlag, p.id);
 
             document.getElementById("modalName").innerText = p.name;
@@ -9250,7 +9239,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             const p = playerDB[currentPlayerId];
             let teamRep = currentUser.rep;
 
-            // 1. DÜŞÜK İTİBAR CEZASI (TOXIC TAKIMLAR)
+            // 1. DÜŞÜK İTİBAR CEZASI
             if(teamRep <= 1) {
                 if(p.ca > 110) {
                     if(Math.random() < 0.7) { 
@@ -9391,10 +9380,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         function finalizeTransfer(offerId) {
             let offer = offersDB.find(o => o.id === offerId);
             if(offer) { 
-                // BÜTÇEDEN DÜŞ
                 if(currentUser.budget >= offer.offerVal) {
                     currentUser.budget -= offer.offerVal;
-                    // Bütçeyi güncelle ve kaydet
                     teamCredentials[currentUser.key].budget = currentUser.budget; 
                     saveData();
                     updateUserDisplay();
