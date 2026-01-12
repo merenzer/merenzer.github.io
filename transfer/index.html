@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v4.2 (Facepack Fix)</title>
+    <title>Transfer Borsası Pro v4.6 (Resim Fix)</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -13,6 +13,7 @@
             --gk-color: #d35400; --def-color: #2980b9; --mid-color: #27ae60; --fwd-color: #c0392b; 
         }
         body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; padding-bottom: 60px; }
+        
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
 
         /* TOAST */
@@ -69,7 +70,7 @@
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
         .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
         
-        /* PROFİL AVATARI (YÜZ) */
+        /* PROFİL AVATARI */
         .profile-avatar { width: 100px; height: 100px; border-radius: 12px; border: 2px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 0 15px rgba(88, 101, 242, 0.3); }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -98,7 +99,6 @@
         .t-team { color: #aaa; font-size: 12px; }
         .t-price { color: var(--success); font-weight: bold; }
         .sign-btn { background: linear-gradient(45deg, #3ba55c, #2d7d46); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 165, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0); } }
         
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -128,7 +128,7 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v4.2</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v4.6</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
@@ -8823,22 +8823,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
     </textarea>
     <script>
         // --- 1. AYARLAR ---
+        // Düzeltilmiş RAW Linkler (Önemli: Sondaki slash işaretlerine dikkat)
         const LOGO_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar", 
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar2"
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar/", 
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar2/"
         ];
 
-        // 9 TANE YÜZ KLASÖRÜ
         const FACE_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face2",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face3",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face4",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face5",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face6",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face7",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face8",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face9"
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face2/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face3/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face4/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face5/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face6/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face7/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face8/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face9/"
         ];
 
         // 1. İNSAN KULLANICILAR (BÜTÇE EKLENDİ - MİLYON EURO)
@@ -8861,19 +8861,24 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         // 2. BOT TAKIMLAR
         const botTeams = [
+            // TIER B
             { name: "Beşiktaş JK", logo: "Beşiktaş.png", rep: 4, budget: 330.0 },
+            // TIER C
             { name: "Bursaspor", logo: "Bursaspor.png", rep: 3, budget: 240.0 },
+            // TIER D
             { name: "Sivasspor", logo: "Sivasspor.png", rep: 2, budget: 190.0 },
             { name: "Gençlerbirliği", logo: "Gençlerbirliği.png", rep: 2, budget: 200.0 },
+            // TIER E
             { name: "Kocaelispor", logo: "Kocaelispor.png", rep: 2, budget: 170.0 },
             { name: "MKE Ankaragücü", logo: "Ankaragücü.png", rep: 2, budget: 165.0 },
             { name: "Çaykur Rizespor", logo: "Rizespor.png", rep: 1, budget: 160.0 },
             { name: "Kasımpaşa", logo: "Kasımpaşa.png", rep: 1, budget: 155.0 },
             { name: "İstanbulspor", logo: "İstanbulspor.png", rep: 1, budget: 145.0 },
+            // TIER F
             { name: "Kayserispor", logo: "Kayserispor.png", rep: 1, budget: 110.0 }
         ];
 
-        // --- 2. DEĞİŞKENLER ---
+        // ... DEĞİŞKENLER ...
         let currentUser = null;
         let playerDB = {};
         let currentPlayerId = null;
@@ -8901,27 +8906,27 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         // --- YÜZ PAKETİ İSİM BELİRLEYİCİ ---
         function getPlayerFileName(id) {
             let numId = parseInt(id);
-            if (numId >= 1 && numId <= 201) return `sam${numId}.png`; // South America
-            if (numId >= 202 && numId <= 225) return `nam${numId}.png`; // North America
-            if (numId >= 226 && numId <= 300) return `asian${numId}.png`; // Asia
-            if (numId >= 301 && numId <= 514) return `afr${numId}.png`; // Africa
-            if (numId >= 515 && numId <= 890) return `euro${numId}.png`; // Europe
-            return `${numId}.png`; // Fallback
+            if (numId >= 1 && numId <= 201) return `sam${numId}.png`;
+            if (numId >= 202 && numId <= 225) return `nam${numId}.png`;
+            if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
+            if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
+            if (numId >= 515 && numId <= 890) return `euro${numId}.png`;
+            return `${numId}.png`;
         }
 
-        // --- YÜZ YÜKLEME (ZİNCİRLEME) ---
         function loadFace(containerElement, playerId, urlIndex = 0) {
+            let flagEmoji = document.getElementById("modalFlag").getAttribute("data-emoji") || "🌍";
+
             if (urlIndex >= FACE_BASE_URLS.length) {
-                // Hiçbir klasörde yoksa EMOJİYE DÖN
-                containerElement.innerHTML = document.getElementById("modalFlag").getAttribute("data-emoji");
-                containerElement.style.fontSize = "50px"; 
+                // Hepsini denedik, yoksa EMOJİ KOY
+                containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
                 return;
             }
             
             // Eğer img etiketi yoksa oluştur
             let img = containerElement.querySelector("img");
             if (!img) {
-                containerElement.innerHTML = ""; // Emojiyi sil
+                containerElement.innerHTML = ""; 
                 img = document.createElement("img");
                 img.style.width = "100%";
                 img.style.height = "100%";
@@ -8929,19 +8934,11 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 containerElement.appendChild(img);
             }
 
-            // Doğru dosya adını al
             let fileName = getPlayerFileName(playerId);
             let url = FACE_BASE_URLS[urlIndex] + fileName; 
             
             img.src = url;
-            
-            // Bu klasörde yoksa bir sonrakine bak
-            img.onerror = function() { 
-                // Önemli: PNG (Büyük) veya png (küçük) fark edebilir.
-                // Eğer ilk deneme başarısızsa, önce uzantıyı değiştirip aynı klasöre bakabiliriz
-                // Ama şimdilik basit tutalım, bir sonraki klasöre geçsin.
-                loadFace(containerElement, playerId, urlIndex + 1); 
-            };
+            img.onerror = function() { loadFace(containerElement, playerId, urlIndex + 1); };
         }
 
         // --- LOCAL STORAGE ---
@@ -8958,7 +8955,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             }
             localStorage.setItem('tbor_sold_players', JSON.stringify(soldPlayers));
 
-            // Bütçeleri Kaydet
             let budgets = {};
             for(let key in teamCredentials) {
                 if(teamCredentials[key].role === "user") {
@@ -8983,7 +8979,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 }
             }
 
-            // Bütçeleri Geri Yükle
             if(localStorage.getItem('tbor_budgets')) {
                 let savedBudgets = JSON.parse(localStorage.getItem('tbor_budgets'));
                 for(let key in savedBudgets) {
@@ -9055,8 +9050,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function updateUserDisplay() {
             document.getElementById("userDisplay").innerText = currentUser.name;
-            
-            // Bütçeyi Göster
             if(currentUser.role === "user") {
                 document.getElementById("userBudget").innerText = `Bütçe: €${currentUser.budget.toFixed(1)}M`;
             } else {
@@ -9167,11 +9160,12 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             currentPlayerId = id;
             const p = playerDB[id];
             
+            // Emoji'yi sakla (Yüz yüklenemezse geri döneceğiz)
             const modalFlag = document.getElementById("modalFlag");
             modalFlag.innerHTML = p.flag; 
             modalFlag.setAttribute("data-emoji", p.flag); 
 
-            // YÜZ YÜKLE
+            // YÜZ YÜKLEME BAŞLAT
             loadFace(modalFlag, p.id);
 
             document.getElementById("modalName").innerText = p.name;
