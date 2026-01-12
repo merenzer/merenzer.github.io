@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v6.0 (Final)</title>
+    <title>Transfer Borsası Pro v6.1 (Final Link Fix)</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -38,6 +38,13 @@
         .user-badge { display: flex; align-items: center; gap: 10px; background: #202225; padding: 5px 15px; border-radius: 20px; border: 1px solid #40444b; }
         .team-logo { width: 30px; height: 30px; object-fit: contain; display: block; }
         .budget-display { color: var(--success); font-weight: bold; font-family: monospace; font-size: 14px; }
+        
+        /* ORTA DASHBOARD (LOGO BURADA) */
+        .team-dashboard { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .dashboard-logo { height: 50px; width: auto; object-fit: contain; margin-bottom: 2px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); display: none; }
+        .dashboard-title { font-size: 18px; font-weight: bold; color: white; margin: 0; letter-spacing: 0.5px; white-space: nowrap; }
+        .dashboard-budget { font-size: 13px; color: var(--success); font-weight: bold; font-family: monospace; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 4px; margin-top: 2px; }
+
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
@@ -99,6 +106,7 @@
         .t-team { color: #aaa; font-size: 12px; }
         .t-price { color: var(--success); font-weight: bold; }
         .sign-btn { background: linear-gradient(45deg, #3ba55c, #2d7d46); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 165, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0); } }
         
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -128,24 +136,21 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v6.0</span></h1>
+            <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v6.1</span></h1>
         </div>
+        
+        <div id="teamDashboard" class="team-dashboard" style="display:none;">
+            <img src="" id="dashboardLogo" class="dashboard-logo">
+            <h3 id="dashboardTitle" class="dashboard-title">TAKIM ADI</h3>
+            <div id="dashboardBudget" class="dashboard-budget"></div>
+        </div>
+
         <div class="header-right">
-            <div class="user-badge" id="userBadge" style="display:none;">
-                <img src="" id="headerLogo" class="team-logo" style="display:none;">
-                <div style="display:flex; flex-direction:column; align-items:flex-start;">
-                    <span id="userDisplay"></span>
-                    <span id="userBudget" class="budget-display"></span>
-                </div>
-            </div>
-            
-            <div style="display:flex; gap:10px;">
-                <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
-                <div id="adminPanel" style="display:none; gap:10px;">
-                    <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
-                    <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
-                    <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️ Sıfırla</button>
-                </div>
+            <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
+            <div id="adminPanel" style="display:none; gap:10px;">
+                <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
+                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
+                <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️ Sıfırla</button>
             </div>
         </div>
     </div>
@@ -8825,23 +8830,26 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         // --- 1. AYARLAR ---
         const PLACEHOLDER_FACE_URL = "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face/default_silhouette.png";
 
-        // Düzeltilmiş RAW Linkler (SarpEfeKus kullanıcısı için)
+        // LOGOLAR (RAW LINK)
         const LOGO_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar", 
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar2"
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar/", 
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar2/"
         ];
 
+        // YÜZ KLASÖRLERİ (RAW LINK - DÜZELTİLMİŞ HALİ)
         const FACE_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face2",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face3",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face4",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face5",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face6",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face7",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face8",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face9"
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face2/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face3/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face4/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face5/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face6/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face7/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face8/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face9/"
         ];
+
+        // ... (Kodun geri kalanı aynı şekilde devam edecek)
 
         // 1. İNSAN KULLANICILAR (BÜTÇE EKLENDİ - MİLYON EURO)
         const teamCredentials = {
@@ -9083,21 +9091,43 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function updateUserDisplay() {
             document.getElementById("userDisplay").innerText = currentUser.name;
+            
+            // DASHBOARD GÜNCELLE
+            document.getElementById("dashboardTitle").innerText = currentUser.name;
+            
             if(currentUser.role === "user") {
                 document.getElementById("userBudget").innerText = `Bütçe: €${currentUser.budget.toFixed(1)}M`;
+                document.getElementById("dashboardBudget").innerText = `BÜTÇE: €${currentUser.budget.toFixed(1)}M`;
+                
+                // LOGO YÜKLEME (RAW URL + encodeURI)
+                if(currentUser.logo) {
+                    let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
+                    
+                    document.getElementById("headerLogo").src = logoUrl;
+                    document.getElementById("headerLogo").style.display = "block";
+                    
+                    document.getElementById("dashboardLogo").src = logoUrl;
+                    document.getElementById("dashboardLogo").style.display = "block";
+                    
+                    // Logo 1. repoda yoksa 2. repoya bak (Zincirleme)
+                    loadLogo(document.getElementById("headerLogo"), currentUser.logo);
+                    loadLogo(document.getElementById("dashboardLogo"), currentUser.logo);
+
+                    document.getElementById("teamDashboard").style.display = "flex";
+                }
+                
             } else {
                 document.getElementById("userBudget").innerText = "";
+                document.getElementById("teamDashboard").style.display = "none";
             }
 
-            document.getElementById("userBadge").style.display = "flex";
-            if(currentUser.logo) {
-                const imgEl = document.getElementById("headerLogo");
-                imgEl.style.display = "block";
-                loadLogo(imgEl, currentUser.logo);
-            }
+            // Eski badge'i gizle
+            document.getElementById("userBadge").style.display = "none";
+
             if(currentUser.role === "admin") {
                 document.getElementById("adminPanel").style.display = "flex";
-                document.getElementById("userDisplay").style.color = "#ed4245";
+                document.getElementById("teamDashboard").style.display = "flex";
+                document.getElementById("dashboardTitle").style.color = "#ed4245";
             }
         }
 
@@ -9124,11 +9154,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 try {
                     let lines = item.split("\n");
                     let id = lines[0].split("|")[0].trim();
-                    
-                    // İSİM TEMİZLEME (Hata önleyici)
                     let rawName = lines[0].split("|")[1] ? lines[0].split("|")[1] : "İsimsiz";
                     let name = rawName.split("Mevki:")[0].split("Ülke:")[0].trim();
-                    
                     let fullText = item.replace(/\n/g, " ");
 
                     let statsIndex = item.search(/(Teknik|Kalecilik|Zihinsel|Fiziksel)/);
@@ -9207,7 +9234,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             currentPlayerId = id;
             const p = playerDB[id];
             
-            // Emoji'yi sakla (Yüz yüklenemezse geri döneceğiz)
+            // Emoji'yi sakla
             const modalFlag = document.getElementById("modalFlag");
             modalFlag.innerHTML = p.flag; 
             modalFlag.setAttribute("data-emoji", p.flag); 
@@ -9463,11 +9490,10 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             else {
                 let html = "";
                 [...transferHistory].reverse().forEach(t => {
-                    let logoHTML = t.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(t.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    let logoHTML = t.teamLogo ? `<img src="${LOGO_BASE_URLS[0] + encodeURIComponent(t.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;" onerror="loadLogo(this, '${t.teamLogo}', 1)">` : "";
                     html += `<div class="transfer-row"><span class="t-player">${t.playerName}</span><span class="t-team">➡️ ${logoHTML}${t.team}</span><span class="t-price">${t.offer}</span></div>`;
                 });
                 transList.innerHTML = html;
-                [...transferHistory].reverse().forEach(t => { if(t.teamLogo) loadLogo(document.getElementById(`hub_logo_${t.id}`), t.teamLogo); });
             }
             const topList = document.getElementById("topOffersList");
             let activeOffers = offersDB.filter(o => o.status === "Değerlendiriliyor" || o.status === "Kabul Edildi");
@@ -9476,12 +9502,38 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 activeOffers.sort((a,b) => b.offerVal - a.offerVal);
                 let html = "";
                 activeOffers.slice(0, 10).forEach(o => {
-                    let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    let logoHTML = o.teamLogo ? `<img src="${LOGO_BASE_URLS[0] + encodeURIComponent(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;" onerror="loadLogo(this, '${o.teamLogo}', 1)">` : "";
                     html += `<div class="transfer-row"><span class="t-player">${o.playerName}</span><span class="t-team">${logoHTML}${o.team}</span><span class="t-price">${o.offer}</span></div>`;
                 });
                 topList.innerHTML = html;
-                activeOffers.slice(0, 10).forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`top_logo_${o.id}`), o.teamLogo); });
             }
+        }
+
+        function contactAgent(btnElement) {
+            const p = playerDB[currentPlayerId];
+            btnElement.innerHTML = `<span class="loader" style="width:10px; height:10px;"></span>`;
+            btnElement.disabled = true;
+
+            setTimeout(() => {
+                let baseVal = p.ca * 150000; 
+                if(p.ca > 130) baseVal = p.ca * 300000;
+                if(p.status === "Serbest") baseVal = baseVal * 0.1;
+
+                let randomVal = Math.floor(baseVal + (Math.random() * 500000));
+                let randomWage = Math.floor(randomVal / 10);
+
+                let valStr = randomVal > 1000000 ? `€${(randomVal/1000000).toFixed(1)}M` : `€${(randomVal/1000).toFixed(0)}K`;
+                let wageStr = randomWage > 1000000 ? `€${(randomWage/1000000).toFixed(1)}M` : `€${(randomWage/1000).toFixed(0)}K`;
+
+                if(p.status === "Serbest") {
+                    document.getElementById("modalValue").innerHTML = `<span style="color:#ed4245">Bedelsiz</span>`;
+                    document.getElementById("modalWage").innerHTML = `<span style="color:#faa61a">${wageStr} (İmza: ${valStr})</span>`;
+                } else {
+                    document.getElementById("modalValue").innerText = valStr;
+                    document.getElementById("modalWage").innerText = wageStr;
+                }
+                btnElement.style.display = "none";
+            }, 1000);
         }
 
         function openOffersModal() {
@@ -9490,10 +9542,9 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if(offersDB.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='color:#888; text-align:center;'>Henüz teklif yok.</td></tr>"; } 
             else {
                 [...offersDB].reverse().forEach(o => {
-                    let logoHTML = o.teamLogo ? `<img src="${GITHUB_REPO_URL + encodeURI(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : "";
+                    let logoHTML = o.teamLogo ? `<img src="${LOGO_BASE_URLS[0] + encodeURIComponent(o.teamLogo)}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;" onerror="loadLogo(this, '${o.teamLogo}', 1)">` : "";
                     tbody.innerHTML += `<tr><td style="color:${o.team === 'YÖNETİCİ' ? 'var(--danger)' : 'var(--gold)'}">${logoHTML}${o.team}</td><td>${o.playerName}</td><td style="font-weight:bold; color:var(--success)">${o.offer}</td><td>${o.status}</td></tr>`;
                 });
-                [...offersDB].reverse().forEach(o => { if(o.teamLogo) loadLogo(document.getElementById(`all_logo_${o.id}`), o.teamLogo); });
             }
             document.getElementById("offersModal").style.display = "flex";
         }
