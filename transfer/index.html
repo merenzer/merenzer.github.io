@@ -183,10 +183,8 @@
         </div>
     </div>
 
-    <div class="header">        
         <div class="header-left">
-            <img src="https://github.com/merenzer/merenzer.github.io/blob/main/transfer/LOGOCUK.png" class="app-logo" alt="Logo">
-            
+            <img src="https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/transfer/LOGOCUK.png" class="app-logo" id="headerLogo" alt="Logo">
             <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.1</span></h1>
         </div>
         
@@ -8968,23 +8966,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
-// --- 1. DOSYA ADI BELİRLEME (DÜZELTİLDİ: 515+ HERKES EURO) ---
+// --- 1. DOSYA ADI BELİRLEME (STANDARTLAR) ---
 function getPlayerFileName(id) {
     let numId = parseInt(id);
-    if (numId >= 1 && numId <= 201) return `sam${numId}.png`;
-    if (numId >= 202 && numId <= 225) return `nam${numId}.png`;
-    if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
-    if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
-    
-    // 515 ve sonrası (792, 800 hepsi dahil) EURO olarak adlandırılır
+    // 515 ve yukarısı (792 dahil) EURO formatında
     if (numId >= 515) return `euro${numId}.png`;
-    
-    return `${numId}.png`; // Fallback
+    // Diğerleri
+    if (numId >= 301) return `afr${numId}.png`;
+    if (numId >= 226) return `asian${numId}.png`;
+    if (numId >= 202) return `nam${numId}.png`;
+    // 1-201 arası
+    return `sam${numId}.png`;
 }
 
-// --- 2. YÜZ YÜKLEME (DÜZELTİLDİ: KLASÖR SIRASI) ---
-function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
-    // Resim elementi yoksa yarat
+// --- 2. GÜÇLENDİRİLMİŞ YÜZ YÜKLEME (BRUTE FORCE TARAMA) ---
+function loadFace(containerElement, playerId, urlIndex = 0, tryBare = false) {
+    // Resim elementi yoksa oluştur
     let img = containerElement.querySelector("img");
     if (!img) {
         containerElement.innerHTML = ""; 
@@ -8995,36 +8992,35 @@ function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
         containerElement.appendChild(img);
     }
 
-    // --- BAŞLANGIÇ KLASÖRÜNÜ SEÇME MANTIĞI ---
-    if (urlIndex === -1) {
-        let numId = parseInt(playerId);
-        // 1-201: face, face2 (index 0, 1)
-        if (numId <= 201) urlIndex = 0; 
-        // 202-300: face3 (index 2)
-        else if (numId <= 300) urlIndex = 2; 
-        // 301-514: face4,5,6 (index 3,4,5)
-        else if (numId <= 514) urlIndex = 3; 
-        // 515+: face7,8,9 (index 6,7,8) -> Buradan başlar, bulamazsa artarak devam eder
-        else urlIndex = 6; 
-    }
-
-    // Eğer tüm klasörler (index 9'a kadar) tarandıysa ve bulunamadıysa -> EMOJİ
+    // LİMİT KONTROLÜ: Tüm klasörler (0'dan 9'a kadar) tarandı mı?
     if (urlIndex >= FACE_BASE_URLS.length) {
+        // Eğer formatlı isimlerle (örn: euro792.png) bulamadıysa,
+        // Son bir şans olarak sadece numara (örn: 792.png) olarak en baştan tara.
+        if (!tryBare) {
+            loadFace(containerElement, playerId, 0, true);
+            return;
+        }
+        
+        // Hiçbir şekilde bulunamadı -> EMOJİ KOY
         let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
         containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
         return;
     }
 
-    // Dosya adını al (euro792.png gibi)
-    let fileName = getPlayerFileName(playerId);
+    // Dosya ismini belirle
+    // tryBare true ise sadece "792.png" arar, false ise "euro792.png" arar.
+    let fileName = tryBare ? `${playerId}.png` : getPlayerFileName(playerId);
+    
+    // Şu anki klasör URL'si + Dosya adı
+    let currentUrl = FACE_BASE_URLS[urlIndex] + fileName; 
     
     // Resmi yüklemeyi dene
-    let url = FACE_BASE_URLS[urlIndex] + fileName; 
-    img.src = url;
+    img.src = currentUrl;
     
-    // Bulamazsa (404 hatası), bir sonraki klasöre (urlIndex + 1) geç
+    // EĞER BU KLASÖRDE YOKSA (404 HATASI):
     img.onerror = function() { 
-        loadFace(containerElement, playerId, urlIndex + 1, false); 
+        // Bir sonraki klasöre geç (index'i 1 artır) ve tekrar dene
+        loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
     };
 }
         // --- LOCAL STORAGE ---
