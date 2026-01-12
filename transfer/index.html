@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v5.2 (Final)</title>
+    <title>Transfer Borsası Pro v5.3 (Fast Load)</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -69,8 +69,6 @@
         .modal-content { background-color: #2f3136; width: 90%; max-width: 750px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 0; position: relative; border: 1px solid #40444b; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
         .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
-        
-        /* PROFİL AVATARI */
         .profile-avatar { width: 100px; height: 100px; border-radius: 12px; border: 2px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 0 15px rgba(88, 101, 242, 0.3); }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -99,7 +97,6 @@
         .t-team { color: #aaa; font-size: 12px; }
         .t-price { color: var(--success); font-weight: bold; }
         .sign-btn { background: linear-gradient(45deg, #3ba55c, #2d7d46); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 165, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 165, 92, 0); } }
         
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -129,7 +126,7 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v5.2</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v5.3</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
@@ -8824,25 +8821,21 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
     </textarea>
     <script>
         // --- 1. AYARLAR ---
-        // Varsa SİLÜET görsellerini burada tanımlıyoruz
-        const PLACEHOLDER_FACE_URL = "https://github.com/merenzer/merenzer.github.io/blob/main/transfer/default_silhouette.png";
-
-        // Düzeltilmiş RAW Linkler (SarpEfeKus kullanıcısı için)
         const LOGO_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar", 
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar2"
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar/", 
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar2/"
         ];
 
         const FACE_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face2",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face3",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face4",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face5",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face6",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face7",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face8",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face9"
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face2/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face3/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face4/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face5/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face6/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face7/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face8/",
+            "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/face9/"
         ];
 
         // 1. İNSAN KULLANICILAR (BÜTÇE EKLENDİ - MİLYON EURO)
@@ -8918,7 +8911,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             return `${numId}.png`; // Fallback
         }
 
-        // --- AKILLI YÜZ YÜKLEYİCİ (SMART FALLBACK V2 - SİLÜET) ---
+        // --- AKILLI YÜZ YÜKLEYİCİ (SMART FALLBACK - TARGETED) ---
         function loadFace(containerElement, playerId, urlIndex = 0, tryBare = false) {
             // Eğer img etiketi yoksa oluştur
             let img = containerElement.querySelector("img");
@@ -8928,36 +8921,52 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 img.style.width = "100%";
                 img.style.height = "100%";
                 img.style.objectFit = "cover";
-                // img.style.opacity = "0.8"; // Silüet olduğu için biraz opaklık verilebilir.
                 containerElement.appendChild(img);
             }
 
-            if (urlIndex >= FACE_BASE_URLS.length) {
-                // Eğer tüm klasörlerde "euro520.png" yoksa...
-                if (!tryBare) {
-                    // ...bir de sadece "520.png" olarak baştan tara!
-                    loadFace(containerElement, playerId, 0, true);
-                } else {
-                    // İkisinde de yoksa VARSAYILAN SİLÜETİ koy
-                    img.src = PLACEHOLDER_FACE_URL;
-                    img.onerror = null; // Hata döngüsünü engelle
+            // HEDEF KLASÖRÜ BELİRLE (NOKTA ATIŞI)
+            // Bu kısım 8000 isteği 1 isteğe düşürür
+            let numId = parseInt(playerId);
+            let targetFolderIndex = -1;
+
+            if (numId >= 1 && numId <= 201) targetFolderIndex = [0,1,2]; // face, face2, face3
+            else if (numId >= 202 && numId <= 300) targetFolderIndex = [2]; // face3
+            else if (numId >= 301 && numId <= 514) targetFolderIndex = [3,4,5]; // face4,5,6
+            else if (numId >= 515) targetFolderIndex = [6,7,8]; // face7,8,9
+
+            // Eğer urlIndex parametresi gönderilmemişse, doğru başlangıç noktasını seç
+            if (urlIndex === 0 && Array.isArray(targetFolderIndex)) {
+                // İlk deneme: Hedef klasörlerin ilki
+                urlIndex = targetFolderIndex[0];
+            }
+
+            // Eğer hedef klasörlerin dışına çıktıysak -> EMOJİ
+            if (Array.isArray(targetFolderIndex) && !targetFolderIndex.includes(urlIndex)) {
+                 if (!tryBare) {
+                    // Bir de sadece ID ile dene (örn: 741.png)
+                    // Baştan başlat ama flag ile
+                    loadFace(containerElement, playerId, targetFolderIndex[0], true);
+                    return;
                 }
+                
+                // Artık çare yok, EMOJİYE DÖN
+                let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
+                containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
                 return;
             }
-            
-            // Dosya adını belirle
+
+            // Dosya Adı
             let fileName;
             if (tryBare) {
-                 fileName = playerId + ".png"; // Sadece "520.png"
+                 fileName = playerId + ".png"; 
             } else {
-                 fileName = getPlayerFileName(playerId); // "euro520.png"
+                 fileName = getPlayerFileName(playerId); 
             }
 
             let url = FACE_BASE_URLS[urlIndex] + fileName; 
-            
             img.src = url;
             
-            // Yüklenemezse bir sonraki klasöre geç
+            // Hata olursa bir sonraki klasöre geç
             img.onerror = function() { 
                 loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
             };
@@ -9182,7 +9191,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             currentPlayerId = id;
             const p = playerDB[id];
             
-            // Emoji'yi sakla (Yüz yüklenemezse geri döneceğiz)
+            // Emoji'yi sakla
             const modalFlag = document.getElementById("modalFlag");
             modalFlag.innerHTML = p.flag; 
             modalFlag.setAttribute("data-emoji", p.flag); 
