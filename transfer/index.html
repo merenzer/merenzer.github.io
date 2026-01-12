@@ -9021,9 +9021,8 @@ function getPrefix(id) {
     return "sam"; // 1-201 arası varsayılan
 }
 
-// --- 2. GELİŞMİŞ "HER YERDE ARA" FONKSİYONU ---
-function loadFace(containerElement, playerId, urlIndex = 0, searchMode = 'prefix') {
-    // 1. Resim elementi yoksa yarat
+// --- KESİN ÇÖZÜM: YÜZ YÜKLEME ---
+function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
     let img = containerElement.querySelector("img");
     if (!img) {
         containerElement.innerHTML = ""; 
@@ -9034,41 +9033,60 @@ function loadFace(containerElement, playerId, urlIndex = 0, searchMode = 'prefix
         containerElement.appendChild(img);
     }
 
-    // 2. LİMİT KONTROLÜ (Tüm klasörler bitti mi?)
-    if (urlIndex >= FACE_BASE_URLS.length) {
+    // --- BAŞLANGIÇ KLASÖRÜNÜ BELİRLE (NOKTA ATIŞI) ---
+    if (urlIndex === -1) {
+        let numId = parseInt(playerId);
         
-        // Eğer 'prefix' modunda (örn: euro792.png) bulamadıysa,
-        // Modu 'bare' (sade) yapıp (örn: 792.png) BAŞTAN (0. klasörden) tekrar tara.
-        if (searchMode === 'prefix') {
-            loadFace(containerElement, playerId, 0, 'bare');
+        // 1-201
+        if (numId <= 201) urlIndex = 0; 
+        // 202-300
+        else if (numId <= 300) urlIndex = 2; 
+        // 301-514
+        else if (numId <= 514) urlIndex = 3; 
+        
+        // 792 VE ÜSTÜ -> DİREKT FACE9 (Index 8)
+        else if (numId >= 792) urlIndex = 8; 
+        
+        // 515 - 791 ARASI -> FACE7'den başla (Index 6)
+        else urlIndex = 6; 
+    }
+
+    // LİMİT KONTROLÜ
+    if (urlIndex >= FACE_BASE_URLS.length) {
+        // İsim formatlı bulunamadıysa (euro792.png), sadece numara (792.png) dene
+        if (!tryBare) {
+            loadFace(containerElement, playerId, 0, true);
             return;
         }
-        
-        // İki modda da bulamadıysa -> EMOJİ
+        // Bulunamazsa Emoji
         let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
         containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
         return;
     }
 
-    // 3. DOSYA ADINI BELİRLE
+    // DOSYA ADI OLUŞTURMA
     let fileName;
-    if (searchMode === 'prefix') {
-        // Örn: euro792.png
-        fileName = getPrefix(playerId) + playerId + ".png";
+    if (tryBare) {
+        fileName = `${playerId}.png`;
     } else {
-        // Örn: 792.png
-        fileName = playerId + ".png";
+        // Standart İsimlendirme
+        let numId = parseInt(playerId);
+        let prefix = "sam"; 
+        if (numId >= 515) prefix = "euro";
+        else if (numId >= 301) prefix = "afr";
+        else if (numId >= 226) prefix = "asian";
+        else if (numId >= 202) prefix = "nam";
+        
+        fileName = `${prefix}${numId}.png`;
     }
     
-    // 4. DENEME YAP
-    // Şu anki klasör URL'si + Dosya adı
-    let currentUrl = FACE_BASE_URLS[urlIndex] + fileName; 
+    // URL Oluştur
+    let url = FACE_BASE_URLS[urlIndex] + fileName; 
+    img.src = url;
     
-    img.src = currentUrl;
-    
-    // 5. HATA OLURSA SONRAKİ KLASÖRE GEÇ
+    // Hata Olursa (404) Sonraki Klasöre Bak
     img.onerror = function() { 
-        loadFace(containerElement, playerId, urlIndex + 1, searchMode); 
+        loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
     };
 }
         // --- LOCAL STORAGE ---
@@ -9183,52 +9201,45 @@ function loadFace(containerElement, playerId, urlIndex = 0, searchMode = 'prefix
             showToast("Misafir girişi yapıldı.", "info");
         }
 
-        // --- ARAYÜZ GÜNCELLEME (İSTEDİĞİNİZ LOGO BURADA EKLENİYOR) ---
-        function updateUserDisplay() {
-            // Sağ Üst
-            const userCard = document.getElementById("userCard");
-            const userDisplay = document.getElementById("userDisplay");
-            const userBudget = document.getElementById("userBudget");
+ // --- ARAYÜZ GÜNCELLEME (BÜTÇE SAĞ ÜSTTE) ---
+function updateUserDisplay() {
+    const dashboard = document.getElementById("teamDashboard");
+    const dashTitle = document.getElementById("dashboardTitle");
+    const dashLogo = document.getElementById("dashboardLogo");
+    
+    const userCard = document.getElementById("userCard");
+    const userDisplay = document.getElementById("userDisplay");
+    const userBudget = document.getElementById("userBudget");
 
-            // Orta Dashboard (Header Ortası)
-            const dashboard = document.getElementById("teamDashboard");
-            const dashTitle = document.getElementById("dashboardTitle");
-            const dashLogo = document.getElementById("dashboardLogo");
+    if (currentUser.role === "user") {
+        // --- SAĞ ÜST KISIM ---
+        userCard.style.display = "flex";
+        userDisplay.innerText = currentUser.name;
+        // Menajer yazısı yerine Bütçeyi basıyoruz
+        userBudget.innerText = `€${currentUser.budget.toFixed(1)}M`;
 
-            if (currentUser.role === "user") {
-                // Sağ Üst (Küçük Bilgi)
-                userCard.style.display = "flex";
-                userDisplay.innerText = currentUser.name;
-                userBudget.innerText = `€${currentUser.budget.toFixed(1)}M`;
-                
-                // ORTA ALAN: LOGO VE İSİM
-                dashboard.style.display = "flex";
-                dashTitle.innerText = currentUser.name;
-                
-                // Logo Yükleme
-                if (currentUser.logo) {
-                    let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
-                    dashLogo.src = logoUrl;
-                    dashLogo.style.display = "block";
-                    dashLogo.onerror = function() { loadLogo(dashLogo, currentUser.logo, 1); };
-                }
-
-            } else if (currentUser.role === "admin") {
-                userCard.style.display = "flex";
-                userDisplay.innerText = "YÖNETİCİ";
-                userBudget.innerText = "∞";
-
-                dashboard.style.display = "flex";
-                dashTitle.innerText = "YÖNETİCİ PANELİ";
-                dashTitle.style.color = "#ed4245";
-                dashLogo.style.display = "none";
-                
-                document.getElementById("adminPanel").style.display = "flex";
-            } else {
-                userCard.style.display = "none";
-                dashboard.style.display = "none";
-            }
+        // --- ORTA PANEL ---
+        dashboard.style.display = "flex";
+        dashTitle.innerText = currentUser.name;
+        
+        // Takım Logosunu Yükle
+        if (currentUser.logo) {
+            let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
+            dashLogo.src = logoUrl;
+            dashLogo.style.display = "block";
         }
+    } 
+    else if (currentUser.role === "admin") {
+        userCard.style.display = "flex";
+        userDisplay.innerText = "YÖNETİCİ";
+        userBudget.innerText = "Sınırsız";
+        dashboard.style.display = "none";
+    } 
+    else {
+        dashboard.style.display = "none";
+        userCard.style.display = "none";
+    }
+}
 
         // --- PARSE ---
         function parseData() {
