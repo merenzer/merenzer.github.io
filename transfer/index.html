@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v7.1</title>
+    <title>Transfer Borsası Pro v7.2</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -48,16 +48,43 @@
         .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
         .app-logo { height: 45px; width: auto; margin-right: 15px; vertical-align: middle; filter: drop-shadow(0 0 3px rgba(0,0,0,0.5)); }
         
+        /* ORTA DASHBOARD (LOGO ve İSİM) */
         .team-dashboard { 
-            flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; position: absolute; left: 50%; transform: translateX(-50%); height: 100%;
+            flex: 1; 
+            display: none; /* JS ile açılacak */
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px; 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            height: 100%;
+            z-index: 95;
         }
-        .dashboard-logo { height: 50px; width: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); display: none; }
+        .dashboard-logo { 
+            height: 55px; 
+            width: auto; 
+            object-fit: contain; 
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); 
+            display: block; 
+        }
         .dashboard-title-container { display: flex; flex-direction: column; align-items: center; line-height: 1.2; justify-content: center; }
         .dashboard-title { font-size: 18px; font-weight: bold; color: white; margin: 0; text-transform: uppercase; white-space: nowrap; }
         .dashboard-subtitle { font-size: 11px; color: var(--success); font-family: monospace; font-weight: bold; }
 
         .header-right { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end; }
-        .user-card-mini { display: none; align-items: center; gap: 10px; background: #202225; padding: 5px 15px; border-radius: 30px; border: 1px solid #40444b; margin-right: 10px; }
+        
+        /* SAĞ ÜST KART (BÜTÇE DÜZELTİLDİ) */
+        .user-card-mini { 
+            display: none; 
+            align-items: center; 
+            gap: 10px; 
+            background: #202225; 
+            padding: 5px 15px; 
+            border-radius: 30px; 
+            border: 1px solid #40444b; 
+            margin-right: 10px; 
+        }
         
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
@@ -147,13 +174,13 @@
     <div class="header">
         <div class="header-left">
             <img src="https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/transfer/LOGOCUK.png" class="app-logo" alt="Logo">
-            <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.1</span></h1>
+            <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.2</span></h1>
         </div>
         
-        <div id="teamDashboard" class="team-dashboard" style="display:none;"> 
+        <div id="teamDashboard" class="team-dashboard"> 
             <img src="" id="dashboardLogo" class="dashboard-logo">
             <div class="dashboard-title-container">
-                <div id="dashboardTitle" class="dashboard-title">TAKIM ADI</div>
+                <div id="dashboardTitle" class="dashboard-title"></div>
                 <div id="dashboardBudget" class="dashboard-subtitle">Bütçe: -</div>
             </div>
         </div>
@@ -162,7 +189,7 @@
             <div id="userCard" class="user-card-mini">
                 <div style="text-align:right;">
                     <div id="userDisplay" style="color:white; font-weight:bold; font-size:13px;"></div>
-                    <div id="userBudget" style="font-size:10px; color:var(--success);"></div>
+                    <div id="headerBudget" style="font-size:12px; color:var(--success); font-family:monospace; font-weight:bold;"></div>
                 </div>
             </div>
 
@@ -9079,7 +9106,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 currentUser.key = input; 
                 document.getElementById("loginScreen").style.display = "none";
                 updateUserDisplay();
-                showToast(`Hoş geldin ${currentUser.name}! Bütçe: €${currentUser.budget}M`, "success");
+                // DÜZELTME 2: İtibar ve bütçe bilgisi toast mesajında
+                showToast(`Hoş geldin ${currentUser.name}! İtibar: ${currentUser.rep} ⭐ | Bütçe: €${currentUser.budget}M`, "success");
             } else { document.getElementById("loginError").style.display = "block"; }
         }
 
@@ -9097,13 +9125,17 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             
             const userCard = document.getElementById("userCard");
             const userDisplay = document.getElementById("userDisplay");
-            const userBudget = document.getElementById("userBudget");
+            
+            // DÜZELTME 1: Bütçe ID'sini hedefleme
+            const budgetDisplay = document.getElementById("headerBudget");
 
             if (currentUser.role === "user") {
                 userCard.style.display = "flex";
                 userDisplay.innerText = currentUser.name;
-                userBudget.innerText = `€${currentUser.budget.toFixed(1)}M`;
+                // DÜZELTME 1: Statik 'Menajer' yazısı yerine dinamik bütçe
+                budgetDisplay.innerText = `€${currentUser.budget.toFixed(1)}M`;
 
+                // DÜZELTME 3: Orta panel görünürlüğü
                 dashboard.style.display = "flex";
                 dashTitle.innerText = currentUser.name;
                 
@@ -9116,7 +9148,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             else if (currentUser.role === "admin") {
                 userCard.style.display = "flex";
                 userDisplay.innerText = "YÖNETİCİ";
-                userBudget.innerText = "Sınırsız";
+                budgetDisplay.innerText = "Sınırsız";
                 document.getElementById("adminPanel").style.display = "flex";
                 dashboard.style.display = "none";
             } 
@@ -9132,7 +9164,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             const rawDataInput = document.getElementById("raw-data").value.trim();
             if(rawDataInput.length < 20) {
                if(document.getElementById("grid").children.length <= 1) {
-                   document.getElementById("grid").innerHTML = "<p style='text-align:center; color:red;'>Veri yüklenemedi. Lütfen textarea alanını kontrol edin.</p>";
+                   document.getElementById("grid").innerHTML = "<p style='text-align:center; width:100%; color:#888;'>Veriler yükleniyor...</p>";
                }
                return;
             }
