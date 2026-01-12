@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v4.1</title>
+    <title>Transfer Borsası Pro v4.2 (Facepack Fix)</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -13,7 +13,6 @@
             --gk-color: #d35400; --def-color: #2980b9; --mid-color: #27ae60; --fwd-color: #c0392b; 
         }
         body { background-color: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; padding-bottom: 60px; }
-        
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 3px; vertical-align: -0.2em; }
 
         /* TOAST */
@@ -35,11 +34,9 @@
         .header { background-color: var(--card-bg); padding: 15px 20px; border-bottom: 2px solid #202225; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 90; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .header-left h1 { margin: 0; color: var(--accent); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
         .header-right { display: flex; align-items: center; gap: 15px; }
-        
         .user-badge { display: flex; align-items: center; gap: 10px; background: #202225; padding: 5px 15px; border-radius: 20px; border: 1px solid #40444b; }
         .team-logo { width: 30px; height: 30px; object-fit: contain; display: block; }
         .budget-display { color: var(--success); font-weight: bold; font-family: monospace; font-size: 14px; }
-        
         .admin-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .hub-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
@@ -70,10 +67,10 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background-color: #2f3136; width: 90%; max-width: 750px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 0; position: relative; border: 1px solid #40444b; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
-        
         .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
-        /* Profil Avatarı */
-        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+        
+        /* PROFİL AVATARI (YÜZ) */
+        .profile-avatar { width: 100px; height: 100px; border-radius: 12px; border: 2px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 0 15px rgba(88, 101, 242, 0.3); }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .profile-body { padding: 25px; }
@@ -131,7 +128,7 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v4.0</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v4.2</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
@@ -8827,21 +8824,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
     <script>
         // --- 1. AYARLAR ---
         const LOGO_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar", 
-            "https://github.com/merenzer/merenzer.github.io/tree/main/logolar2"
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar/main/", 
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar2/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/logolar3/main/"
         ];
 
-        // 9 TANE YÜZ KLASÖRÜ (Facepack)
+        // 9 TANE YÜZ KLASÖRÜ
         const FACE_BASE_URLS = [
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face2",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face3",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face4",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face5",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face6",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face7",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face8",
-            "https://github.com/merenzer/merenzer.github.io/tree/main/face9"
+            "https://raw.githubusercontent.com/SarpEfeKus/face/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face2/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face3/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face4/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face5/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face6/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face7/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face8/main/",
+            "https://raw.githubusercontent.com/SarpEfeKus/face9/main/"
         ];
 
         // 1. İNSAN KULLANICILAR (BÜTÇE EKLENDİ - MİLYON EURO)
@@ -8901,28 +8899,30 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
-        // YENİ: FACEPACK YÜKLEME FONKSİYONU
+        // --- YÜZ PAKETİ İSİM BELİRLEYİCİ ---
         function getPlayerFileName(id) {
             let numId = parseInt(id);
-            if (numId >= 1 && numId <= 201) return `sam${numId}.png`;
-            if (numId >= 202 && numId <= 225) return `nam${numId}.png`;
-            if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
-            if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
-            if (numId >= 515 && numId <= 890) return `euro${numId}.png`;
+            if (numId >= 1 && numId <= 201) return `sam${numId}.png`; // South America
+            if (numId >= 202 && numId <= 225) return `nam${numId}.png`; // North America
+            if (numId >= 226 && numId <= 300) return `asian${numId}.png`; // Asia
+            if (numId >= 301 && numId <= 514) return `afr${numId}.png`; // Africa
+            if (numId >= 515 && numId <= 890) return `euro${numId}.png`; // Europe
             return `${numId}.png`; // Fallback
         }
 
+        // --- YÜZ YÜKLEME (ZİNCİRLEME) ---
         function loadFace(containerElement, playerId, urlIndex = 0) {
             if (urlIndex >= FACE_BASE_URLS.length) {
-                // Hiçbir yerde yoksa emoji göster
+                // Hiçbir klasörde yoksa EMOJİYE DÖN
                 containerElement.innerHTML = document.getElementById("modalFlag").getAttribute("data-emoji");
                 containerElement.style.fontSize = "50px"; 
                 return;
             }
             
+            // Eğer img etiketi yoksa oluştur
             let img = containerElement.querySelector("img");
             if (!img) {
-                containerElement.innerHTML = ""; 
+                containerElement.innerHTML = ""; // Emojiyi sil
                 img = document.createElement("img");
                 img.style.width = "100%";
                 img.style.height = "100%";
@@ -8930,11 +8930,19 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 containerElement.appendChild(img);
             }
 
+            // Doğru dosya adını al
             let fileName = getPlayerFileName(playerId);
             let url = FACE_BASE_URLS[urlIndex] + fileName; 
+            
             img.src = url;
             
-            img.onerror = function() { loadFace(containerElement, playerId, urlIndex + 1); };
+            // Bu klasörde yoksa bir sonrakine bak
+            img.onerror = function() { 
+                // Önemli: PNG (Büyük) veya png (küçük) fark edebilir.
+                // Eğer ilk deneme başarısızsa, önce uzantıyı değiştirip aynı klasöre bakabiliriz
+                // Ama şimdilik basit tutalım, bir sonraki klasöre geçsin.
+                loadFace(containerElement, playerId, urlIndex + 1); 
+            };
         }
 
         // --- LOCAL STORAGE ---
@@ -8976,6 +8984,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 }
             }
 
+            // Bütçeleri Geri Yükle
             if(localStorage.getItem('tbor_budgets')) {
                 let savedBudgets = JSON.parse(localStorage.getItem('tbor_budgets'));
                 for(let key in savedBudgets) {
@@ -9047,6 +9056,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
         function updateUserDisplay() {
             document.getElementById("userDisplay").innerText = currentUser.name;
+            
+            // Bütçeyi Göster
             if(currentUser.role === "user") {
                 document.getElementById("userBudget").innerText = `Bütçe: €${currentUser.budget.toFixed(1)}M`;
             } else {
@@ -9111,6 +9122,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
 
                     let physique = generatePhysique(mevki);
 
+                    // DB'de yoksa ekle
                     if(!playerDB[id]) {
                         playerDB[id] = {
                             id, name, mevki, yas, ca: parseInt(ca), flag: displayFlag, country: detectedCountry,
@@ -9364,7 +9376,6 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                         let winner = allOffers[0];
                         winner.status = "Kabul Edildi";
                         for(let i=1; i<allOffers.length; i++) allOffers[i].status = "Reddedildi";
-                        
                         let isBotWinner = botTeams.some(bt => bt.name === winner.team);
                         if(isBotWinner) completeTransfer(winner);
                         else updateTicker(`✅ ${winner.team}, ${winner.playerName} teklifi kabul edildi!`);
