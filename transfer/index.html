@@ -8925,7 +8925,8 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         }
 
         // --- AKILLI YÜZ YÜKLEYİCİ (SMART FALLBACK - TARGETED) ---
-        function loadFace(containerElement, playerId, urlIndex = 0, tryBare = false) {
+        // --- GÜÇLENDİRİLMİŞ YÜZ YÜKLEYİCİ ---
+        function loadFace(containerElement, playerId, urlIndex = -1, tryBare = false) {
             // Eğer img etiketi yoksa oluştur
             let img = containerElement.querySelector("img");
             if (!img) {
@@ -8937,46 +8938,43 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 containerElement.appendChild(img);
             }
 
-            // HEDEF KLASÖRÜ BELİRLE (NOKTA ATIŞI)
-            let numId = parseInt(playerId);
-            let targetFolderIndex = -1;
-
-            if (numId >= 1 && numId <= 201) targetFolderIndex = [0,1,2]; // face, face2, face3
-            else if (numId >= 202 && numId <= 300) targetFolderIndex = [2]; // face3
-            else if (numId >= 301 && numId <= 514) targetFolderIndex = [3,4,5]; // face4,5,6
-            else if (numId >= 515) targetFolderIndex = [6,7,8]; // face7,8,9
-
-            // Eğer urlIndex parametresi gönderilmemişse, doğru başlangıç noktasını seç
-            if (urlIndex === 0 && Array.isArray(targetFolderIndex)) {
-                urlIndex = targetFolderIndex[0];
+            // Başlangıç Ayarı: Hedef klasörleri belirle
+            if (urlIndex === -1) {
+                let numId = parseInt(playerId);
+                // Hedef klasörleri belirle (Senin dağılımına göre)
+                if (numId <= 201) urlIndex = 0; // face'den başla
+                else if (numId <= 300) urlIndex = 2; // face3
+                else if (numId <= 514) urlIndex = 3; // face4
+                else urlIndex = 6; // face7 (Avrupa ve 792+ buraya düşer)
             }
 
-            // Eğer hedef klasörlerin dışına çıktıysak -> EMOJİ
-            if (Array.isArray(targetFolderIndex) && !targetFolderIndex.includes(urlIndex)) {
-                 if (!tryBare) {
-                    // Bir de sadece ID ile dene (örn: 741.png)
-                    loadFace(containerElement, playerId, targetFolderIndex[0], true);
+            // Tüm klasörler bittiyse -> EMOJİYE DÖN
+            if (urlIndex >= FACE_BASE_URLS.length) {
+                // Son bir şans: Eğer "euro792.png" denediysek ve olmadıysa, bir de "792.png" deneyelim
+                if (!tryBare) {
+                    loadFace(containerElement, playerId, -1, true); // Baştan başla ama bu sefer sadece numara ile
                     return;
                 }
                 
-                // Artık çare yok, EMOJİYE DÖN
+                // Artık çare yok, EMOJİ
                 let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
                 containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
                 return;
             }
 
-            // Dosya Adı
+            // Dosya Adını Belirle
             let fileName;
             if (tryBare) {
-                 fileName = playerId + ".png"; 
+                 fileName = playerId + ".png"; // Sadece "792.png" (Yedek plan)
             } else {
-                 fileName = getPlayerFileName(playerId); 
+                 fileName = getPlayerFileName(playerId); // "euro792.png" (Asıl plan)
             }
 
+            // Resmi Yükle
             let url = FACE_BASE_URLS[urlIndex] + fileName; 
             img.src = url;
             
-            // Hata olursa bir sonraki klasöre geç
+            // Hata olursa (404) bir sonraki klasöre geç
             img.onerror = function() { 
                 loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
             };
@@ -9083,46 +9081,56 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             } else { document.getElementById("loginError").style.display = "block"; }
         }
 
-        function loginAsGuest() {
-            currentUser = { name: "Misafir", role: "guest", logo: "", rep: 0, budget: 0 };
-            document.getElementById("loginScreen").style.display = "none";
-            updateUserDisplay();
-        }
-
-        function updateUserDisplay() {
+function updateUserDisplay() {
+            // 1. Kullanıcı Adını Güncelle
             document.getElementById("userDisplay").innerText = currentUser.name;
             
-            // DASHBOARD GÜNCELLE
-            document.getElementById("dashboardTitle").innerText = currentUser.name;
-            
-            if(currentUser.role === "user") {
-                document.getElementById("userBudget").innerText = `Bütçe: €${currentUser.budget.toFixed(1)}M`;
-                document.getElementById("dashboardBudget").innerText = `BÜTÇE: €${currentUser.budget.toFixed(1)}M`;
-                
-                // LOGO YÜKLEME (RAW URL + encodeURI)
-                if(currentUser.logo) {
-                    let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
-                    
-                    document.getElementById("headerLogo").src = logoUrl;
-                    document.getElementById("headerLogo").style.display = "block";
-                    
-                    document.getElementById("dashboardLogo").src = logoUrl;
-                    document.getElementById("dashboardLogo").style.display = "block";
-                    
-                    // Logo 1. repoda yoksa 2. repoya bak (Zincirleme)
-                    loadLogo(document.getElementById("headerLogo"), currentUser.logo);
-                    loadLogo(document.getElementById("dashboardLogo"), currentUser.logo);
+            // 2. Takım Dashboard'ını (Orta Panel) Yönet
+            const dashboard = document.getElementById("teamDashboard");
+            const dashTitle = document.getElementById("dashboardTitle");
+            const dashBudget = document.getElementById("dashboardBudget");
+            const dashLogo = document.getElementById("dashboardLogo");
 
-                    document.getElementById("teamDashboard").style.display = "flex";
-                }
+            if(currentUser.role === "user") {
+                // Kullanıcı ise paneli aç
+                dashboard.style.display = "flex"; 
+                dashTitle.innerText = currentUser.name;
+                dashTitle.style.color = "white";
                 
-            } else {
+                // Bütçeyi Yaz
+                dashBudget.innerText = `BÜTÇE: €${currentUser.budget.toFixed(1)}M`;
+                
+                // Logoyu Koy
+                if(currentUser.logo) {
+                    // Logolar için ana URL (1. link) kullanılıyor
+                    let logoUrl = LOGO_BASE_URLS[0] + encodeURIComponent(currentUser.logo);
+                    dashLogo.src = logoUrl;
+                    dashLogo.style.display = "block";
+                    
+                    // Header'daki küçük logoyu da güncelle
+                    const headerImg = document.getElementById("headerLogo");
+                    headerImg.src = logoUrl;
+                    headerImg.style.display = "block";
+                }
+            } 
+            else if (currentUser.role === "admin") {
+                // Admin ise
+                dashboard.style.display = "flex";
+                dashTitle.innerText = "YÖNETİCİ PANELİ";
+                dashTitle.style.color = "#ed4245";
+                dashBudget.innerText = "Sınırsız Yetki";
+                dashLogo.style.display = "none";
+                document.getElementById("adminPanel").style.display = "flex";
+            }
+            else {
+                // Misafir ise gizle
+                dashboard.style.display = "none";
                 document.getElementById("userBudget").innerText = "";
-                document.getElementById("teamDashboard").style.display = "none";
             }
 
-            // Eski badge'i gizle
+            // Eski sağ badge'i gizle (karmaşa olmasın)
             document.getElementById("userBadge").style.display = "none";
+        }
 
             if(currentUser.role === "admin") {
                 document.getElementById("adminPanel").style.display = "flex";
