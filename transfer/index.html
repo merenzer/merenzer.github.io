@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v7.2</title>
+    <title>Transfer Borsası Pro v8.0</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -181,7 +181,7 @@
             <img src="" id="dashboardLogo" class="dashboard-logo">
             <div class="dashboard-title-container">
                 <div id="dashboardTitle" class="dashboard-title"></div>
-                <div id="dashboardBudget" class="dashboard-subtitle">Bütçe: -</div>
+                <div class="dashboard-subtitle" style="color:#aaa;">SÜPER LİG 2027-28</div>
             </div>
         </div>
 
@@ -296,8 +296,26 @@
                         <div class="stat-box"><h4>Fiziksel</h4><div id="physStats"></div></div>
                     </div>
                     <div class="action-area" id="offerArea"></div>
-                    <div id="offerInputs" style="display:none; flex-direction:column; align-items:center; gap:10px; margin-top:10px;">
-                        <input type="number" id="offerAmount" class="offer-input" placeholder="Tutar (€)...">
+                    <div id="offerInputs" style="display:none; flex-direction:column; align-items:center; gap:10px; margin-top:10px; background:#222; padding:15px; border-radius:8px;">
+                        
+                        <div class="preset-btn-group">
+                            <button class="preset-btn" onclick="adjustOffer(1)">+1M</button>
+                            <button class="preset-btn" onclick="adjustOffer(5)">+5M</button>
+                            <button class="preset-btn" onclick="adjustOffer(10)">+10M</button>
+                            <button class="preset-btn" style="color:#ed4245;" onclick="adjustOffer(-1)">-1M</button>
+                        </div>
+                    
+                        <div class="offer-row">
+                            <div class="offer-group">
+                                <span class="offer-label">Bonservis (€)</span>
+                                <input type="number" id="offerAmount" class="offer-input" placeholder="0.0">
+                            </div>
+                            <div class="offer-group">
+                                <span class="offer-label">Yıllık Maaş (€)</span>
+                                <input type="number" id="offerWage" class="offer-input" placeholder="0.0">
+                            </div>
+                        </div>
+                    
                         <div style="display:flex; gap:10px;">
                             <button class="confirm-btn" onclick="submitOffer()">Teklifi Gönder</button>
                             <button class="confirm-btn" style="background:#ed4245;" onclick="hideOfferInputs()">İptal</button>
@@ -9326,43 +9344,51 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             document.getElementById("physStats").innerHTML=f;
         }
 
-        function submitOffer() {
-            const amountVal = parseFloat(document.getElementById("offerAmount").value);
-            if(!amountVal || amountVal <= 0) return showToast("Geçerli bir miktar girin!", "error");
+function submitOffer() {
+    const amountVal = parseFloat(document.getElementById("offerAmount").value);
+    const wageVal = parseFloat(document.getElementById("offerWage").value);
 
-            if(amountVal > currentUser.budget) {
-                return showToast(`❌ Yetersiz Bütçe! (Mevcut: €${currentUser.budget.toFixed(1)}M)`, "error");
-            }
+    // Hata Kontrolleri
+    if(!amountVal || amountVal <= 0) return showToast("Geçerli bir bonservis girin!", "error");
+    if(!wageVal || wageVal <= 0) return showToast("Oyuncuya bir maaş önermelisiniz!", "error");
 
-            const p = playerDB[currentPlayerId];
-            let teamRep = currentUser.rep;
+    // Bütçe Kontrolü
+    if(amountVal > currentUser.budget) {
+        return showToast(`❌ Yetersiz Bütçe! (Mevcut: €${currentUser.budget.toFixed(1)}M)`, "error");
+    }
 
-            if(teamRep <= 1) {
-                if(p.ca > 110) {
-                    if(Math.random() < 0.7) { 
-                         showToast(`Oyuncu temsilcisi: "Kulübünüzün durumu nedeniyle oyuncum görüşmek istemiyor."`, "error");
-                         return;
-                    }
-                }
-                let baseVal = p.ca * 100000;
-                let minOffer = (baseVal * 3) / 1000000; 
-                if(amountVal < minOffer) {
-                    let counterAmount = minOffer.toFixed(1);
-                    triggerCounterOffer(`Riskli bir kulübe gelmem için en az ${counterAmount}M € gerekir.`, counterAmount);
-                    return;
-                }
-            }
+    const p = playerDB[currentPlayerId];
+    let teamRep = currentUser.rep;
 
-            if(p.ca > 135 && teamRep < 4) {
-                 if(Math.random() < 0.4) {
-                     let counterAmount = (amountVal * 1.5).toFixed(1);
-                     triggerCounterOffer(`Daha büyük hedeflerim var ama ${counterAmount}M € verirseniz düşünebilirim.`, counterAmount);
-                     return;
-                 }
-            }
+    // --- TEMSİLCİ VE OYUNCU REAKSİYONU ---
+    
+    // 1. Maaş Kontrolü (Oyuncunun istediğinden düşükse reddet)
+    // Oyuncunun mevcut maaşını sayıya çevirelim (örn: "€1.2M" -> 1.2)
+    let playerDemandedWage = 0;
+    if(p.hiddenWage) playerDemandedWage = p.hiddenWage; 
+    else {
+        // Regex ile stringden sayı çekme
+        let match = p.wage.match(/[\d\.]+/);
+        if(match) playerDemandedWage = parseFloat(match[0]);
+    }
 
-            sendOfferProcess(amountVal);
+    // Eğer teklif edilen maaş, talebin %80'inden azsa reddet
+    if(wageVal < playerDemandedWage * 0.8) {
+        showToast(`Temsilci: "Bu maaş (${wageVal}M) oyuncum için hakaret sayılır. En az ${playerDemandedWage.toFixed(2)}M istiyoruz."`, "error");
+        return;
+    }
+
+    // 2. İtibar Kontrolü (Aynı kalıyor)
+    if(teamRep <= 1 && p.ca > 110) {
+        if(Math.random() < 0.7) { 
+             showToast(`Temsilci: "Kulübünüzün hedefleri oyuncumla uyuşmuyor."`, "error");
+             return;
         }
+    }
+
+    // Teklifi Gönder (wageVal parametresini de ekliyoruz)
+    sendOfferProcess(amountVal, wageVal);
+}
 
         function triggerCounterOffer(msg, amount) {
             document.getElementById("offerInputs").style.display = "none";
@@ -9387,45 +9413,68 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             showToast("Görüşmeler sonlandırıldı.", "error");
         }
 
-        function sendOfferProcess(amountVal) {
-            const p = playerDB[currentPlayerId];
-            const amountStr = `€${amountVal}M`;
-            offersDB.push({
-                id: Date.now().toString(), team: currentUser.name, teamLogo: currentUser.logo,
-                playerName: p.name, playerId: p.id, offerVal: amountVal,
-                offer: amountStr, status: "Değerlendiriliyor", timestamp: Date.now()
-            });
-            saveData(); 
-            showToast("Teklifiniz kulübe iletildi!", "success");
-            updateTicker(`📢 ${currentUser.name}, ${p.name} için ${amountStr} teklif yaptı!`);
-            checkOfferStatus(p);
-        }
+function sendOfferProcess(amountVal, wageVal) { // wageVal eklendi
+    const p = playerDB[currentPlayerId];
+    const amountStr = `€${amountVal}M`;
+    const wageStr = `€${wageVal}M / yıl`; // Gösterim için
 
-        function checkOfferStatus(p) {
-            const offerArea = document.getElementById("offerArea");
-            const myOffer = offersDB.find(o => o.playerId === p.id && o.team === currentUser.name && o.status !== "Reddedildi" && o.status !== "İptal Edildi");
+    offersDB.push({
+        id: Date.now().toString(), 
+        team: currentUser.name, 
+        teamLogo: currentUser.logo,
+        playerName: p.name, 
+        playerId: p.id, 
+        offerVal: amountVal,
+        wageOffer: wageStr, // Maaş teklifini kaydettik
+        offer: amountStr, 
+        status: "Değerlendiriliyor", 
+        timestamp: Date.now()
+    });
+    
+    saveData(); 
+    showToast("Resmi teklif ve sözleşme şartları iletildi!", "success");
+    updateTicker(`📢 ${currentUser.name}, ${p.name} için ${amountStr} bonservis ve ${wageStr} maaş önerdi!`);
+    checkOfferStatus(p);
+}
+
+function checkOfferStatus(p) {
+    const offerArea = document.getElementById("offerArea");
+    const myOffer = offersDB.find(o => o.playerId === p.id && o.team === currentUser.name && o.status !== "Reddedildi" && o.status !== "İptal Edildi");
+    
+    document.getElementById("offerInputs").style.display = "none";
+    
+    if (myOffer) {
+        if (myOffer.status === "Kabul Edildi") {
+            offerArea.innerHTML = `
+                <div style="text-align:center;">
+                    <h3 style="color:#3ba55c;">🎉 TEKLİFİNİZ KABUL EDİLDİ!</h3>
+                    <div style="font-size:12px; color:#aaa;">Anlaşılan Maaş: ${myOffer.wageOffer}</div>
+                    <button class="sign-btn" onclick="finalizeTransfer('${myOffer.id}')">✍️ SÖZLEŞME İMZALA (${myOffer.offer})</button>
+                </div>`;
+        } else if(myOffer.status === "İmzalandı") {
+            offerArea.innerHTML = `<div style="background:#2d7d46; padding:10px; border-radius:5px; color:white; font-weight:bold;">✅ Transfer Tamamlandı</div>`;
+        } else {
+            offerArea.innerHTML = `<div style="background:#faa61a; color:#222; padding:10px; border-radius:5px; font-weight:bold; text-align:center;">⏳ Teklif Değerlendiriliyor... (${myOffer.offer})</div>`;
+        }
+    } else {
+        if(currentUser.role === "guest") {
+            offerArea.innerHTML = "";
+        } else {
+            // EĞER DEĞERLER BİLİNMİYORSA TEMSİLCİ BUTONU GÖSTER
+            // Basit kontrol: Değer stringi içinde "?" veya "Bilinmiyor" var mı?
+            let valStr = String(p.value);
+            let wageStr = String(p.wage);
             
-            document.getElementById("offerInputs").style.display = "none";
-            
-            if (myOffer) {
-                if (myOffer.status === "Kabul Edildi") {
-                    offerArea.innerHTML = `
-                        <div style="text-align:center;">
-                            <h3 style="color:#3ba55c;">🎉 TEKLİFİNİZ KABUL EDİLDİ!</h3>
-                            <button class="sign-btn" onclick="finalizeTransfer('${myOffer.id}')">✍️ SÖZLEŞME İMZALA (${myOffer.offer})</button>
-                        </div>`;
-                } else if(myOffer.status === "İmzalandı") {
-                    offerArea.innerHTML = `<div style="background:#2d7d46; padding:10px; border-radius:5px; color:white; font-weight:bold;">✅ Transfer Tamamlandı</div>`;
-                } else {
-                    offerArea.innerHTML = `<div style="background:#faa61a; color:#222; padding:10px; border-radius:5px; font-weight:bold; text-align:center;">⏳ Teklif Değerlendiriliyor... (${myOffer.offer})</div>`;
-                }
+            if (valStr.includes("?") || valStr.includes("Bilinmiyor") || wageStr.includes("?") || wageStr.includes("Bilinmiyor")) {
+                offerArea.innerHTML = `<button class="agent-btn" onclick="contactAgent()" id="btnAgent">📞 Temsilciyle Görüş</button>
+                                       <div style="font-size:11px; color:#aaa; margin-top:5px;">Mali şartları öğrenmek için görüşme yapmalısınız.</div>`;
             } else {
-                if(currentUser.role === "guest") offerArea.innerHTML = "";
-                else {
-                    offerArea.innerHTML = `<button class="main-btn" style="background:#2d7d46;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>`;
-                }
+                // Değerler belliyse Teklif Yap butonu
+                offerArea.innerHTML = `<button class="main-btn" style="background:#2d7d46;" onclick="showOfferInputs()" id="btnMakeOffer">💰 Teklif Yap</button>`;
             }
         }
+    }
+}
 
         function showOfferInputs() { document.getElementById("btnMakeOffer").style.display="none"; document.getElementById("offerInputs").style.display="flex"; }
         function hideOfferInputs() { document.getElementById("offerInputs").style.display="none"; document.getElementById("btnMakeOffer").style.display="inline-flex"; }
@@ -9567,6 +9616,46 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
         }
 
         window.onload = parseData;
+        // --- YENİ EKLENEN FONKSİYONLAR ---
+
+        // Hazır butonlara basınca inputu doldurur
+        function adjustOffer(amount) {
+            const input = document.getElementById("offerAmount");
+            let current = parseFloat(input.value) || 0;
+            let newVal = current + amount;
+            if(newVal < 0) newVal = 0;
+            input.value = newVal.toFixed(1);
+        }
+        
+        // Temsilci ile görüşme simülasyonu
+        function contactAgent() {
+            const p = playerDB[currentPlayerId];
+            const btn = document.getElementById("btnAgent");
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loader"></span> Görüşülüyor...`;
+        
+            setTimeout(() => {
+                // Rastgele bir değer ve maaş ata (Eğer veride yoksa)
+                if(p.value === "Bilinmiyor" || p.value === "?" || p.value === 0) {
+                    let baseVal = (p.ca * p.ca) / 2000; // Basit bir formül
+                    if(p.yas < 22) baseVal *= 1.5; // Genç yetenek pahalı olur
+                    p.value = `€${baseVal.toFixed(1)} Milyon`;
+                    // Sayısal değerini de saklayalım (hiddenValue)
+                    p.hiddenValue = baseVal;
+                }
+                
+                if(p.wage === "Bilinmiyor" || p.wage === "?") {
+                    let baseWage = (p.ca * 5000); 
+                    p.wage = `€${(baseWage/1000000).toFixed(2)}M / yıl`;
+                    p.hiddenWage = baseWage / 1000000; // Milyon cinsinden
+                }
+        
+                saveData(); // Veriyi kaydet
+                showScoutedData(p); // Ekranı yenile
+                showToast("Temsilci şartları iletti.", "success");
+            }, 1500);
+        }
     </script>
 </body>
 </html>
