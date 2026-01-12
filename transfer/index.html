@@ -32,32 +32,77 @@
         .guest-btn { background: transparent; border: 1px solid #72767d; color: #aaa; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.3s; }
 
         /* HEADER - Düzenlendi */
-        .header { 
-            background-color: var(--card-bg); 
-            padding: 0 20px; 
-            border-bottom: 2px solid #202225; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 90; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3); 
-            height: 70px; /* Sabit yükseklik */
-        }
-        .header-left h1 { margin: 0; color: var(--accent); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        
-        /* SAĞ KÖŞE BİLGİ KARTI */
-        .user-card-mini {
-            display: none; /* JS ile açılacak */
-            align-items: center;
-            gap: 10px;
-            background: #202225;
-            padding: 5px 15px;
-            border-radius: 30px;
-            border: 1px solid #40444b;
-        }
+/* HEADER DÜZENİ - GÜNCELLENDİ */
+.header { 
+    background-color: var(--card-bg); 
+    padding: 0 20px; 
+    border-bottom: 2px solid #202225; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; /* Sol ve Sağı uçlara iter */
+    position: sticky; 
+    top: 0; 
+    z-index: 90; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3); 
+    height: 70px; 
+}
+
+/* Sol Kısım: Logo ve Başlık */
+.header-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    flex: 1; /* Genişlik kaplar */
+}
+.app-logo { 
+    height: 40px; 
+    width: auto; 
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
+}
+
+/* Orta Kısım: Takım Logosu ve İsmi */
+.team-dashboard { 
+    flex: 1; /* Ortayı kaplar */
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px;
+}
+.dashboard-logo { 
+    height: 50px; 
+    width: auto; 
+    object-fit: contain; 
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); 
+}
+.dashboard-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+}
+.dashboard-title { font-size: 18px; font-weight: bold; color: white; margin: 0; text-transform: uppercase; }
+.dashboard-subtitle { font-size: 11px; color: var(--success); font-family: monospace; font-weight: bold; }
+
+/* Sağ Kısım: Butonlar ve Bütçe */
+.header-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    flex: 1; 
+    justify-content: flex-end; /* Sağa yaslar */
+}
+
+/* Kullanıcı Kartı (Sağdaki ufak bilgi) */
+.user-card-mini {
+    display: none; 
+    align-items: center;
+    gap: 10px;
+    background: #202225;
+    padding: 5px 15px;
+    border-radius: 30px;
+    border: 1px solid #40444b;
+    margin-right: 10px;
+}
         .mini-info { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
         .mini-name { font-weight: bold; color: white; font-size: 14px; }
         .mini-budget { font-family: monospace; color: var(--success); font-weight: bold; font-size: 13px; }
@@ -182,36 +227,36 @@
             <p id="loginError" style="color:red; font-size:13px; margin-top:10px; display:none;">❌ Hatalı şifre!</p>
         </div>
     </div>
-
-        <div class="header-left">
-            <img src="https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/transfer/LOGOCUK.png" class="app-logo" id="headerLogo" alt="Logo">
-            <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.1</span></h1>
-        </div>
-        
-        <div id="teamDashboard" class="team-dashboard" style="display:none;">
-            <img src="" id="dashboardLogo" class="dashboard-logo">
-            <div class="dashboard-title-container">
-                <h3 id="dashboardTitle" class="dashboard-title">TAKIM ADI</h3>
-                <span class="dashboard-subtitle">RESMİ KADRO PLANLAMASI</span>
-            </div>
-        </div>
-
-        <div class="header-right">
-            <div id="userCard" class="user-card-mini">
-                <div class="mini-info">
-                    <div id="userDisplay" class="mini-name"></div>
-                    <div id="userBudget" class="mini-budget"></div>
-                </div>
-            </div>
-
-            <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
-            <div id="adminPanel" style="display:none; gap:10px;">
-                <button class="admin-btn" onclick="openOffersModal()">📋 Teklifler</button>
-                <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩ HAFTA İLERLET</button>
-                <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️ Sıfırla</button>
-            </div>
+<div class="header">
+    <div class="header-left">
+        <img src="https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/transfer/LOGOCUK.png" class="app-logo" alt="Logo">
+        <h1>TRANSFER BORSASI <span style="font-size:12px; color:#555;">PRO v7.1</span></h1>
+    </div>
+    
+    <div id="teamDashboard" class="team-dashboard" style="display:none;"> <img src="" id="dashboardLogo" class="dashboard-logo">
+        <div class="dashboard-title-container">
+            <div id="dashboardTitle" class="dashboard-title">TAKIM ADI</div>
+            <div id="dashboardBudget" class="dashboard-subtitle">Bütçe: -</div>
         </div>
     </div>
+
+    <div class="header-right">
+        <div id="userCard" class="user-card-mini">
+            <div style="text-align:right;">
+                <div id="userDisplay" style="color:white; font-weight:bold; font-size:13px;"></div>
+                <div style="font-size:10px; color:#aaa;">Menajer</div>
+            </div>
+        </div>
+
+        <button class="hub-btn" onclick="openTransferHub()">🌍 Transfer Merkezi</button>
+        
+        <div id="adminPanel" style="display:none; gap:5px;">
+            <button class="admin-btn" onclick="openOffersModal()">📋</button>
+            <button class="admin-btn" style="background-color: #faa61a; color:black;" onclick="advanceGame()">⏩</button>
+            <button class="admin-btn" style="background:#ed4245;" onclick="clearData()">🗑️</button>
+        </div>
+    </div>
+</div>
 
     <div class="filter-bar">
         <div class="filter-group">
@@ -8966,22 +9011,19 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             imgElement.onerror = function() { loadLogo(imgElement, logoName, urlIndex + 1); };
         }
 
-// --- 1. DOSYA ADI BELİRLEME (STANDARTLAR) ---
-function getPlayerFileName(id) {
+// --- 1. DOSYA ADI TAHMİN EDİCİ ---
+function getPrefix(id) {
     let numId = parseInt(id);
-    // 515 ve yukarısı (792 dahil) EURO formatında
-    if (numId >= 515) return `euro${numId}.png`;
-    // Diğerleri
-    if (numId >= 301) return `afr${numId}.png`;
-    if (numId >= 226) return `asian${numId}.png`;
-    if (numId >= 202) return `nam${numId}.png`;
-    // 1-201 arası
-    return `sam${numId}.png`;
+    if (numId >= 515) return "euro";
+    if (numId >= 301) return "afr";
+    if (numId >= 226) return "asian";
+    if (numId >= 202) return "nam";
+    return "sam"; // 1-201 arası varsayılan
 }
 
-// --- 2. GÜÇLENDİRİLMİŞ YÜZ YÜKLEME (BRUTE FORCE TARAMA) ---
-function loadFace(containerElement, playerId, urlIndex = 0, tryBare = false) {
-    // Resim elementi yoksa oluştur
+// --- 2. GELİŞMİŞ "HER YERDE ARA" FONKSİYONU ---
+function loadFace(containerElement, playerId, urlIndex = 0, searchMode = 'prefix') {
+    // 1. Resim elementi yoksa yarat
     let img = containerElement.querySelector("img");
     if (!img) {
         containerElement.innerHTML = ""; 
@@ -8992,35 +9034,41 @@ function loadFace(containerElement, playerId, urlIndex = 0, tryBare = false) {
         containerElement.appendChild(img);
     }
 
-    // LİMİT KONTROLÜ: Tüm klasörler (0'dan 9'a kadar) tarandı mı?
+    // 2. LİMİT KONTROLÜ (Tüm klasörler bitti mi?)
     if (urlIndex >= FACE_BASE_URLS.length) {
-        // Eğer formatlı isimlerle (örn: euro792.png) bulamadıysa,
-        // Son bir şans olarak sadece numara (örn: 792.png) olarak en baştan tara.
-        if (!tryBare) {
-            loadFace(containerElement, playerId, 0, true);
+        
+        // Eğer 'prefix' modunda (örn: euro792.png) bulamadıysa,
+        // Modu 'bare' (sade) yapıp (örn: 792.png) BAŞTAN (0. klasörden) tekrar tara.
+        if (searchMode === 'prefix') {
+            loadFace(containerElement, playerId, 0, 'bare');
             return;
         }
         
-        // Hiçbir şekilde bulunamadı -> EMOJİ KOY
+        // İki modda da bulamadıysa -> EMOJİ
         let flagEmoji = containerElement.getAttribute("data-emoji") || "🌍";
         containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
         return;
     }
 
-    // Dosya ismini belirle
-    // tryBare true ise sadece "792.png" arar, false ise "euro792.png" arar.
-    let fileName = tryBare ? `${playerId}.png` : getPlayerFileName(playerId);
+    // 3. DOSYA ADINI BELİRLE
+    let fileName;
+    if (searchMode === 'prefix') {
+        // Örn: euro792.png
+        fileName = getPrefix(playerId) + playerId + ".png";
+    } else {
+        // Örn: 792.png
+        fileName = playerId + ".png";
+    }
     
+    // 4. DENEME YAP
     // Şu anki klasör URL'si + Dosya adı
     let currentUrl = FACE_BASE_URLS[urlIndex] + fileName; 
     
-    // Resmi yüklemeyi dene
     img.src = currentUrl;
     
-    // EĞER BU KLASÖRDE YOKSA (404 HATASI):
+    // 5. HATA OLURSA SONRAKİ KLASÖRE GEÇ
     img.onerror = function() { 
-        // Bir sonraki klasöre geç (index'i 1 artır) ve tekrar dene
-        loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
+        loadFace(containerElement, playerId, urlIndex + 1, searchMode); 
     };
 }
         // --- LOCAL STORAGE ---
