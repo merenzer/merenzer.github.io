@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Borsası Pro v4.6 (Resim Fix)</title>
+    <title>Transfer Borsası Pro v5.0 (Final Facepack)</title>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     
     <style>
@@ -69,8 +69,6 @@
         .modal-content { background-color: #2f3136; width: 90%; max-width: 750px; max-height: 90vh; border-radius: 12px; overflow-y: auto; padding: 0; position: relative; border: 1px solid #40444b; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; z-index: 10; }
         .profile-header { background: linear-gradient(to right, #202225, #2f3136); padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--accent); }
-        
-        /* PROFİL AVATARI */
         .profile-avatar { width: 100px; height: 100px; border-radius: 12px; border: 2px solid var(--accent); overflow: hidden; background: #202225; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 0 15px rgba(88, 101, 242, 0.3); }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -128,7 +126,7 @@
 
     <div class="header">
         <div class="header-left">
-            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v4.6</span></h1>
+            <h1>⚽ TRANSFER BORSASI <span style="font-size:12px; color:#555; margin-left:10px;">PRO v5.0</span></h1>
         </div>
         <div class="header-right">
             <div class="user-badge" id="userBadge" style="display:none;">
@@ -8823,7 +8821,7 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
     </textarea>
     <script>
         // --- 1. AYARLAR ---
-        // Düzeltilmiş RAW Linkler (Önemli: Sondaki slash işaretlerine dikkat)
+        // Düzeltilmiş RAW Linkler
         const LOGO_BASE_URLS = [
             "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar/", 
             "https://raw.githubusercontent.com/merenzer/merenzer.github.io/main/logolar2/"
@@ -8911,19 +8909,24 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
             if (numId >= 226 && numId <= 300) return `asian${numId}.png`;
             if (numId >= 301 && numId <= 514) return `afr${numId}.png`;
             if (numId >= 515 && numId <= 890) return `euro${numId}.png`;
-            return `${numId}.png`;
+            return `${numId}.png`; // Fallback
         }
 
-        function loadFace(containerElement, playerId, urlIndex = 0) {
-            let flagEmoji = document.getElementById("modalFlag").getAttribute("data-emoji") || "🌍";
-
+        // --- AKILLI YÜZ YÜKLEYİCİ (SMART FALLBACK) ---
+        function loadFace(containerElement, playerId, urlIndex = 0, tryBare = false) {
             if (urlIndex >= FACE_BASE_URLS.length) {
-                // Hepsini denedik, yoksa EMOJİ KOY
-                containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
+                // Eğer tüm klasörlerde "euro520.png" yoksa...
+                if (!tryBare) {
+                    // ...bir de sadece "520.png" olarak baştan tara!
+                    loadFace(containerElement, playerId, 0, true);
+                } else {
+                    // İkisinde de yoksa EMOJİYE dön
+                    let flagEmoji = document.getElementById("modalFlag").getAttribute("data-emoji") || "🌍";
+                    containerElement.innerHTML = `<span style="font-size:50px;">${flagEmoji}</span>`;
+                }
                 return;
             }
             
-            // Eğer img etiketi yoksa oluştur
             let img = containerElement.querySelector("img");
             if (!img) {
                 containerElement.innerHTML = ""; 
@@ -8934,11 +8937,22 @@ Fiziksel Güç80 Zıplama75 Denge75 Hız50 Hızlanma45 Dayanıklılık70 Çevikl
                 containerElement.appendChild(img);
             }
 
-            let fileName = getPlayerFileName(playerId);
+            // Dosya adını belirle
+            let fileName;
+            if (tryBare) {
+                 fileName = playerId + ".png"; // Sadece "520.png"
+            } else {
+                 fileName = getPlayerFileName(playerId); // "euro520.png"
+            }
+
             let url = FACE_BASE_URLS[urlIndex] + fileName; 
             
             img.src = url;
-            img.onerror = function() { loadFace(containerElement, playerId, urlIndex + 1); };
+            
+            // Yüklenemezse bir sonraki klasöre geç
+            img.onerror = function() { 
+                loadFace(containerElement, playerId, urlIndex + 1, tryBare); 
+            };
         }
 
         // --- LOCAL STORAGE ---
