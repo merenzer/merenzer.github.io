@@ -38,7 +38,6 @@
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
-  /* MÜKEMMEL Y2K İMLEÇ SİSTEMİ VE LİNK SIFIRLAMA */
   body, * { cursor: crosshair !important; }
   a, button, .interactive-link { cursor: cell !important; text-decoration: none !important; }
   a:hover, button:hover, .interactive-link:hover, .interactive-link:hover * { 
@@ -55,7 +54,6 @@
   ::-webkit-scrollbar-thumb { background: var(--text-color); }
   ::-webkit-scrollbar-thumb:hover { background: var(--c-me); }
 
-  /* Y2K GRUNGE NOISE ARKA PLAN */
   body::before {
     content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -68,7 +66,6 @@
     background-size: 40px 40px;
   }
 
-  /* MİNİK ÇIKARTMALAR (DECALS) */
   .decals { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
   .barcode {
     position: absolute; right: 2%; bottom: 15%; width: 120px; height: 50px;
@@ -79,7 +76,6 @@
     position: absolute; left: -2%; top: 15%; font-size: 15rem; color: var(--text-secondary); opacity: 0.05; transform: rotate(15deg);
   }
 
-  /* KAYAN YAZI BANDI */
   .marquee {
     width: 100vw; background: var(--text-color); color: var(--bg-color); font-family: 'Courier New', monospace; font-weight: bold;
     overflow: hidden; white-space: nowrap; padding: 6px 0; border-bottom: 2px solid var(--text-secondary); font-size: 0.85rem; letter-spacing: 2px;
@@ -95,6 +91,8 @@
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; border-bottom: 2px dashed rgba(128,128,128,0.3); padding-bottom: 20px; }
   header h1 { font-size: 2.2rem; margin: 0; font-family: 'Patrick Hand', cursive; text-transform: lowercase; }
 
+  .header-controls { display: flex; gap: 15px; }
+
   .theme-btn {
     background: transparent; border: 2px solid var(--text-color); color: var(--text-color); padding: 8px 16px;
     font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase;
@@ -102,7 +100,6 @@
   }
   .theme-btn:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--text-color); }
 
-  /* TEMİZ BAŞLIK */
   .hero { text-align: center; margin-bottom: 120px; position: relative; }
   .hero h2 { font-size: 5.5rem; line-height: 0.9; margin-bottom: 10px; }
   @media (max-width: 768px) { .hero h2 { font-size: 3rem; } }
@@ -154,7 +151,7 @@
   .interactive-link:hover .polaroid-img::after { animation: cameraFlash 0.5s ease-out; }
   @keyframes cameraFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-  /* 2. YOUTUBE (Windows 95 Media Player) */
+  /* 2. YOUTUBE */
   .obj-player {
     width: 300px; height: 230px; background: #c0c0c0;
     border: 3px solid; border-color: #ffffff #808080 #808080 #ffffff;
@@ -310,7 +307,7 @@
   @keyframes alienMove { 0% { left: 5%; } 100% { left: calc(100% - 40px); } }
   @keyframes laserShoot { 0% { bottom: 25px; opacity: 1; } 70% { bottom: 65px; opacity: 1; } 71% { opacity: 0; } 100% { opacity: 0; bottom: 65px; } }
 
-  /* 8. E-MAIL (ZARF - KUSURSUZ GECİKMELİ ANİMASYON & OKUNAKLI FONT) */
+  /* 8. E-MAIL */
   .obj-mail {
     width: 240px; height: 160px; background: transparent; position: relative;
     transform: perspective(1000px) rotateX(20deg) rotateY(-15deg); transition: var(--transition);
@@ -339,9 +336,7 @@
   }
   
   .interactive-link:hover .obj-mail { transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.1); box-shadow: 0 20px 40px rgba(250, 204, 21, 0.4); }
-  /* Önce kapak açılır ve arkaya düşer */
   .interactive-link:hover .mail-flap { transform: rotateX(180deg); z-index: 1; transition: transform 0.4s, z-index 0s 0.2s; } 
-  /* Kapağın açılması beklendikten sonra mektup çıkar (delay: 0.1s) */
   .interactive-link:hover .mail-letter { transform: translateY(-50px); transition-delay: 0.1s; }
 
 </style>
@@ -363,7 +358,10 @@
   <div class="container">
     <header>
       <h1>merenzer.</h1>
-      <button class="theme-btn" id="theme-toggle">THEME</button>
+      <div class="header-controls">
+        <button class="theme-btn" id="theme-toggle">THEME</button>
+        <button class="theme-btn" id="lang-toggle">EN / TR</button>
+      </div>
     </header>
     
     <div class="hero">
@@ -374,8 +372,14 @@
 
       <div class="content-row brand-me">
         <div class="text-col">
-          <h2 class="brand-title">Ben Kimim?</h2>
-          <p>Selam, ben Eren. 18 yaşındayım. Hakkıma köpekbalığı olduğuma dair iddialar var, oyunları, dizi/filmleri ama daha çok animeleri severim, müzik zevki olarak ne sevdiğimi ben de bilmem, bazen kim olduğumu ben de bilmiyorum, ayrıca kedileri severim : 3</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">Ben Kimim?</span>
+            <span class="lang-en" style="display: none;">Who tf am I??</span>
+          </h2>
+          <p>
+            <span class="lang-tr">Selam, ben Eren. 18 yaşındayım. Hakkımda köpekbalığı olduğuma dair iddialar var, oyunları, dizi/filmleri ama daha çok animeleri severim, müzik zevki olarak ne sevdiğimi ben de bilmem, bazen kim olduğumu ben de bilmiyorum, ayrıca kedileri severim : 3</span>
+            <span class="lang-en" style="display: none;">Sup, I'm Eren. I'm 18. Rumor has it I'm actually a shark. I'm into games, shows and movies, but mostly anime. As for my music taste, I have absolutely no clue what I even listen to. Tbh, half the time I don't even know who I am myself. Also, I love cats :3</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="#" class="interactive-link">
@@ -389,8 +393,14 @@
 
       <div class="content-row brand-yt">
         <div class="text-col">
-          <h2 class="brand-title">YouTube</h2>
-          <p>Moruk yayınları kaçırdım diye üzülmene gerek yok, burada bambaşka bir eğlence var, oyundan tut animeye, yemeğini çayını kahveni kap gel</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">YouTube</span>
+            <span class="lang-en" style="display: none;">YouTube</span>
+          </h2>
+          <p>
+            <span class="lang-tr">Moruk yayınları kaçırdım diye üzülmene gerek yok, burada bambaşka bir eğlence var, oyundan tut animeye, yemeğini çayını kahveni kap gel</span>
+            <span class="lang-en" style="display: none;">Dude, don't sweat it if you missed the streams. We've got a whole different vibe going on here, from games to anime. Just grab your food, tea, or coffee and come chill.</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="https://www.youtube.com/@merenzer" class="interactive-link" target="_blank">
@@ -417,8 +427,15 @@
 
       <div class="content-row brand-kick">
         <div class="text-col">
-          <h2 class="brand-title">Kick</h2>
-          <p>Yayın açıyoz gelen gelsin</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">Kick</span>
+            <span class="lang-en" style="display: none;">Kick</span>
+          </h2>
+          <p>
+            <span class="lang-tr">Yayın açıyoz gelen gelsin</span>
+            <span class="lang-en" style="display: none;">We’re going live — hop in, guys.
+</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="https://kick.com/merenzer" class="interactive-link" target="_blank">
@@ -429,8 +446,14 @@
 
       <div class="content-row brand-lbxd">
         <div class="text-col">
-          <h2 class="brand-title">Letterboxd</h2>
-          <p>İzlediğim dizileri/filmleri ve onlar hakkında ne yorum yaptığımı merak ediyorsan Letterboxd hesabım da burada.</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">Letterboxd</span>
+            <span class="lang-en" style="display: none;">Letterboxd</span>
+          </h2>
+          <p>
+            <span class="lang-tr">İzlediğim dizileri/filmleri ve onlar hakkında ne yorum yaptığımı merak ediyorsan Letterboxd hesabım da burada.</span>
+            <span class="lang-en" style="display: none;">Wanna see what movies and shows I’ve been watching, and what kind of stupid opinions I had about them? My Letterboxd is right here.</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="https://letterboxd.com/merenzer/" class="interactive-link" target="_blank">
@@ -444,8 +467,14 @@
 
       <div class="content-row brand-anilist">
         <div class="text-col">
-          <h2 class="brand-title">AniList</h2>
-          <p>Benden iyi anime zevkin olduğunu düşünüyosan, gel de yaz AMK!!</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">AniList</span>
+            <span class="lang-en" style="display: none;">AniList</span>
+          </h2>
+          <p>
+            <span class="lang-tr">Benden iyi anime zevkin olduğunu düşünüyosan, gel de yaz AMK!!</span>
+            <span class="lang-en" style="display: none;">Think your anime taste is better than mine? Come talk your shit, motherfucker.</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="https://anilist.co/user/merenzer/" class="interactive-link" target="_blank">
@@ -459,8 +488,14 @@
 
       <div class="content-row brand-spoti">
         <div class="text-col">
-          <h2 class="brand-title">Spotify</h2>
-          <p>Yayınlarda vs. dinlediğim müzikler hoşuna gidiyorsa ve ben paylaşmamakta inat ediyorsam, buradan Spotify profilimi görebilirsin.</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">Spotify</span>
+            <span class="lang-en" style="display: none;">Spotify</span>
+          </h2>
+          <p>
+            <span class="lang-tr">Yayınlarda vs. dinlediğim müzikler hoşuna gidiyorsa ve ben paylaşmamakta inat ediyorsam, buradan Spotify profilimi görebilirsin.</span>
+            <span class="lang-en" style="display: none;">If you vibe with the music I play on stream and I’m being a stubborn bastard about sharing it, you can stalk my Spotify profile here.</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="https://open.spotify.com/user/315me3zayuitp3iq64kgtv6ghnyy?si=f48c8aec2f114591" class="interactive-link" target="_blank">
@@ -475,8 +510,14 @@
 
       <div class="content-row brand-dc">
         <div class="text-col">
-          <h2 class="brand-title">Discord</h2>
-          <p>Eğer yayınlar ve videolarım hoşuma gidiyorsa ve yayın veya video olmadığı zaman eğlenceden mahrum kalmak istemiyorsan, Discord sunucumuzda aramıza katıl!.</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">Discord</span>
+            <span class="lang-en" style="display: none;">Discord</span>
+          </h2>
+          <p>
+            <span class="lang-tr">Eğer yayınlar ve videolarım hoşuma gidiyorsa ve yayın veya video olmadığı zaman eğlenceden mahrum kalmak istemiyorsan, Discord sunucumuzda aramıza katıl!.</span>
+            <span class="lang-en" style="display: none;">If you like my streams and videos, and don’t wanna be left starving for entertainment when I’m not live or uploading, join the boys on our Discord server.</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="https://discord.gg/EvY9taCNNw" class="interactive-link" target="_blank">
@@ -501,8 +542,14 @@
 
       <div class="content-row brand-mail">
         <div class="text-col">
-          <h2 class="brand-title">E-Mail</h2>
-          <p>İş teklifleri, profesyonel projeler ve diğer tüm resmi iletişimler için bana direkt olarak e-posta üzerinden ulaşabilirsin. Mesajlarını olabildiğince hızlı bir şekilde yanıtlıyorum.</p>
+          <h2 class="brand-title">
+            <span class="lang-tr">E-Mail</span>
+            <span class="lang-en" style="display: none;">E-Mail</span>
+          </h2>
+          <p>
+            <span class="lang-tr">İş teklifleri, profesyonel projeler ve diğer tüm resmi iletişimler için bana direkt olarak e-posta üzerinden ulaşabilirsin. Mesajlarını olabildiğince hızlı bir şekilde yanıtlıyorum.</span>
+            <span class="lang-en" style="display: none;">For business offers, professional projects, and all that serious grown-up stuff, you can reach me directly by email. I’ll try to get back to you as fast as I can.</span>
+          </p>
         </div>
         <div class="visual-col">
           <a href="mailto:ozerneren@gmail.com" class="interactive-link">
@@ -520,14 +567,33 @@
   </div>
 
   <script>
-    const btn = document.getElementById('theme-toggle');
+    // Tema Değiştirme Kodu
+    const themeBtn = document.getElementById('theme-toggle');
     const body = document.body;
-    btn.addEventListener('click', () => {
+    themeBtn.addEventListener('click', () => {
       if(body.getAttribute('data-theme') === 'dark') { 
         body.setAttribute('data-theme', 'light'); 
       } else { 
         body.setAttribute('data-theme', 'dark'); 
       }
+    });
+
+    // Dil Değiştirme Kodu (Düzeltildi)
+    const langBtn = document.getElementById('lang-toggle');
+    let currentLang = 'tr';
+    
+    langBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'tr' ? 'en' : 'tr';
+      
+      // Türkçe metinleri aç/kapat
+      document.querySelectorAll('.lang-tr').forEach(el => {
+        el.style.display = currentLang === 'tr' ? '' : 'none';
+      });
+      
+      // İngilizce metinleri aç/kapat
+      document.querySelectorAll('.lang-en').forEach(el => {
+        el.style.display = currentLang === 'en' ? '' : 'none';
+      });
     });
   </script>
 </body>
